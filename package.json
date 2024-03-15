@@ -37,7 +37,7 @@
     "changelog": "conventional-changelog -p angular -r 2",
     "prebuild": "yarn clean:build",
     "build": "yarn build:only",
-    "build:only": "tsc -p tsconfig.build.json && rollup -c",
+    "build:only": "yarn tsc -p tsconfig.build.json && rollup -c",
     "prebuild:examples": "yarn build:only",
     "build:examples": "yarn data && TZ=America/Los_Angeles scripts/build-examples.sh",
     "prebuild:examples-full": "yarn build:only",
@@ -67,8 +67,7 @@
     "watch:site": "yarn build:site -w",
     "watch:test": "yarn jest --watch test/",
     "watch:test:runtime": "TZ=America/Los_Angeles npx jest --watch test-runtime/ --config test-runtime/jest-config.json",
-    "release": "release-it",
-    "postinstall": "yarn build"
+    "release": "release-it"
   },
   "repository": {
     "type": "git",
