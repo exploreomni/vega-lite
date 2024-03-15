@@ -119,6 +119,7 @@
     "ts-jest": "^29.1.2",
     "ts-json-schema-generator": "^1.5.0",
     "typescript": "~5.3.3",
+    "vega": "^5.24.0",
     "vega-cli": "^5.27.0",
     "vega-datasets": "^2.8.0",
     "vega-embed": "^6.24.0",
@@ -138,5 +139,6 @@
   },
   "engines": {
     "node": ">=18"
-  }
+  },
+  "packageManager": "yarn@4.1.1"
 }
