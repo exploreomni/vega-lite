@@ -121,7 +121,7 @@ describe('Mark: Point', () => {
     const props = point.encodeEntry(model);
 
     expect(props.x).toEqual({
-      signal: 'scale("x", 0.6 * datum["bin_maxbins_10_a"] + 0.4 * datum["bin_maxbins_10_a_end"])'
+      signal: 'scale("x", 0.4 * datum["bin_maxbins_10_a"] + 0.6 * datum["bin_maxbins_10_a_end"])'
     });
   });
   it('interpolates x timeUnit with timeUnitBand = 0.5', () => {
@@ -238,7 +238,7 @@ describe('Mark: Point', () => {
 
     it('should test for invalid values on y', () => {
       expect(props.y).toEqual([
-        {field: {group: 'height'}, test: '!isValid(datum["yield"]) || !isFinite(+datum["yield"])'},
+        {scale: 'y', value: 0, test: '!isValid(datum["yield"]) || !isFinite(+datum["yield"])'},
         {scale: Y, field: 'yield'}
       ]);
     });
@@ -289,6 +289,26 @@ describe('Mark: Point', () => {
       expect(props.stroke).toEqual({scale: COLOR, field: 'yield'});
     });
   });
+  describe('with x, y, color with invalid color specified', () => {
+    const model = parseUnitModelWithScaleAndLayoutSize(
+      pointXY(
+        {
+          color: {field: 'yield', type: 'quantitative'}
+        },
+        {
+          scale: {invalid: {color: {value: 'red'}}}
+        }
+      )
+    );
+    const props = point.encodeEntry(model);
+
+    it('should have scale for color', () => {
+      expect(props.stroke).toEqual([
+        {test: '!isValid(datum["yield"]) || !isFinite(+datum["yield"])', value: 'red'},
+        {scale: COLOR, field: 'yield'}
+      ]);
+    });
+  });
 
   describe('with x, y, and condition-only color', () => {
     const model = parseUnitModelWithScaleAndLayoutSize({
@@ -303,8 +323,8 @@ describe('Mark: Point', () => {
     it('should have one condition for color with scale for "yield"', () => {
       expect(Array.isArray(props.stroke)).toBe(true);
       expect(props.stroke).toHaveLength(2);
-      expect(props.stroke[0].scale).toEqual(COLOR);
-      expect(props.stroke[0].field).toBe('yield');
+      expect((props.stroke as any)[0].scale).toEqual(COLOR);
+      expect((props.stroke as any)[0].field).toBe('yield');
     });
   });
 
@@ -320,8 +340,8 @@ describe('Mark: Point', () => {
     it('should have one condition for color with scale for "yield"', () => {
       expect(Array.isArray(props.stroke)).toBe(true);
       expect(props.stroke).toHaveLength(2);
-      expect(props.stroke[0].test).toBe('true');
-      expect(props.stroke[1].value).toBe('#4c78a8');
+      expect((props.stroke as any)[0].test).toBe('true');
+      expect((props.stroke as any)[1].value).toBe('#4c78a8');
     });
   });
 
@@ -395,7 +415,7 @@ describe('Mark: Square', () => {
     });
     const props = square.encodeEntry(model);
 
-    expect(props.shape['value']).toBe('square');
+    expect((props.shape as any).value).toBe('square');
   });
 
   it('should be filled by default', () => {
@@ -407,7 +427,7 @@ describe('Mark: Square', () => {
     });
     const props = square.encodeEntry(model);
 
-    expect(props.fill['value']).toBe('blue');
+    expect((props.fill as any).value).toBe('blue');
   });
 
   it('with config.mark.filled:false should have transparent fill', () => {
@@ -425,8 +445,8 @@ describe('Mark: Square', () => {
 
     const props = square.encodeEntry(model);
 
-    expect(props.stroke['value']).toBe('blue');
-    expect(props.fill['value']).toBe('transparent');
+    expect((props.stroke as any).value).toBe('blue');
+    expect((props.fill as any).value).toBe('transparent');
   });
 });
 
@@ -440,11 +460,11 @@ describe('Mark: Circle', () => {
   const props = circle.encodeEntry(model);
 
   it('should have correct shape', () => {
-    expect(props.shape['value']).toBe('circle');
+    expect((props.shape as any).value).toBe('circle');
   });
 
   it('should be filled by default', () => {
-    expect(props.fill['value']).toBe('blue');
+    expect((props.fill as any).value).toBe('blue');
   });
 
   it('with config.mark.filled:false should have transparent fill', () => {
@@ -462,8 +482,8 @@ describe('Mark: Circle', () => {
 
     const filledCircleProps = circle.encodeEntry(filledCircleModel);
 
-    expect(filledCircleProps.stroke['value']).toBe('blue');
-    expect(filledCircleProps.fill['value']).toBe('transparent');
+    expect((filledCircleProps.stroke as any).value).toBe('blue');
+    expect((filledCircleProps.fill as any).value).toBe('transparent');
   });
 
   it('converts expression in mark properties to signal', () => {

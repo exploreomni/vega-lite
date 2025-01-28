@@ -26,7 +26,7 @@
       "transform": [
         {
           "type": "filter",
-          "expr": "(datum[\"Acceleration\"] < datum[\"lower_box_Acceleration\"] - 1.5 * (datum[\"upper_box_Acceleration\"] - datum[\"lower_box_Acceleration\"])) || (datum[\"Acceleration\"] > datum[\"upper_box_Acceleration\"] + 1.5 * (datum[\"upper_box_Acceleration\"] - datum[\"lower_box_Acceleration\"]))"
+          "expr": "(datum['Acceleration'] < datum['lower_box_Acceleration'] - 1.5 * (datum['upper_box_Acceleration'] - datum['lower_box_Acceleration'])) || (datum['Acceleration'] > datum['upper_box_Acceleration'] + 1.5 * (datum['upper_box_Acceleration'] - datum['lower_box_Acceleration']))"
         },
         {
           "type": "filter",
@@ -40,7 +40,7 @@
       "transform": [
         {
           "type": "filter",
-          "expr": "(datum[\"lower_box_Acceleration\"] - 1.5 * (datum[\"upper_box_Acceleration\"] - datum[\"lower_box_Acceleration\"]) <= datum[\"Acceleration\"]) && (datum[\"Acceleration\"] <= datum[\"upper_box_Acceleration\"] + 1.5 * (datum[\"upper_box_Acceleration\"] - datum[\"lower_box_Acceleration\"]))"
+          "expr": "(datum['lower_box_Acceleration'] - 1.5 * (datum['upper_box_Acceleration'] - datum['lower_box_Acceleration']) <= datum['Acceleration']) && (datum['Acceleration'] <= datum['upper_box_Acceleration'] + 1.5 * (datum['upper_box_Acceleration'] - datum['lower_box_Acceleration']))"
         },
         {
           "type": "aggregate",
@@ -240,7 +240,14 @@
       "encode": {
         "update": {
           "opacity": {"value": 0.7},
-          "fill": {"value": "white"},
+          "fill": [
+            {
+              "test": "datum['lower_box_Acceleration'] >= datum['upper_box_Acceleration']",
+              "scale": "color",
+              "field": "Origin"
+            },
+            {"value": "white"}
+          ],
           "tooltip": {
             "signal": "{\"Max of Acceleration\": format(datum[\"max_Acceleration\"], \"\"), \"Q3 of Acceleration\": format(datum[\"upper_box_Acceleration\"], \"\"), \"Median of Acceleration\": format(datum[\"mid_box_Acceleration\"], \"\"), \"Q1 of Acceleration\": format(datum[\"lower_box_Acceleration\"], \"\"), \"Min of Acceleration\": format(datum[\"min_Acceleration\"], \"\"), \"Cylinders\": isValid(datum[\"Cylinders\"]) ? datum[\"Cylinders\"] : \"\"+datum[\"Cylinders\"], \"Origin\": isValid(datum[\"Origin\"]) ? datum[\"Origin\"] : \"\"+datum[\"Origin\"]}"
           },
@@ -249,8 +256,8 @@
             "field": "Cylinders",
             "offset": {"scale": "xOffset", "field": "Origin", "band": 0.5}
           },
-          "yc": {"scale": "y", "field": "mid_box_Acceleration"},
           "width": {"value": 14},
+          "yc": {"scale": "y", "field": "mid_box_Acceleration"},
           "height": {"value": 1}
         }
       }
@@ -314,7 +321,8 @@
       "domain": {
         "fields": [
           {"data": "data_1", "field": "Origin"},
-          {"data": "data_6", "field": "Origin"}
+          {"data": "data_6", "field": "Origin"},
+          {"data": "data_7", "field": "Origin"}
         ],
         "sort": true
       },

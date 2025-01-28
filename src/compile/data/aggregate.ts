@@ -5,9 +5,18 @@ import {
   getPositionChannelFromLatLong,
   getSecondaryRangeChannel,
   isGeoPositionChannel,
-  isScaleChannel
+  isScaleChannel,
+  isXorY
 } from '../../channel';
-import {binRequiresRange, FieldDef, hasBandEnd, isScaleFieldDef, isTypedFieldDef, vgField} from '../../channeldef';
+import {
+  binRequiresRange,
+  FieldDef,
+  getBandPosition,
+  hasBandEnd,
+  isScaleFieldDef,
+  isTypedFieldDef,
+  vgField
+} from '../../channeldef';
 import * as log from '../../log';
 import {isFieldRange} from '../../scale';
 import {AggregateTransform} from '../../transform';
@@ -15,6 +24,8 @@ import {Dict, duplicate, hash, keys, replacePathInField, setEqual} from '../../u
 import {isUnitModel, ModelWithField} from '../model';
 import {UnitModel} from '../unit';
 import {DataFlowNode} from './dataflow';
+import {isRectBasedMark} from '../../mark';
+import {OFFSETTED_RECT_END_SUFFIX, OFFSETTED_RECT_START_SUFFIX} from './timeunit';
 
 type Measures = Dict<Partial<Record<AggregateOp, Set<string>>>>;
 
@@ -28,6 +39,15 @@ function addDimension(dims: Set<string>, channel: Channel, fieldDef: FieldDef<st
   ) {
     dims.add(vgField(fieldDef, {}));
     dims.add(vgField(fieldDef, {suffix: 'end'}));
+
+    const {mark, markDef, config} = model;
+
+    const bandPosition = getBandPosition({fieldDef, markDef, config});
+
+    if (isRectBasedMark(mark) && bandPosition !== 0.5 && isXorY(channel)) {
+      dims.add(vgField(fieldDef, {suffix: OFFSETTED_RECT_START_SUFFIX}));
+      dims.add(vgField(fieldDef, {suffix: OFFSETTED_RECT_END_SUFFIX}));
+    }
 
     if (fieldDef.bin && binRequiresRange(fieldDef, channel)) {
       dims.add(vgField(fieldDef, {binSuffix: 'range'}));
@@ -68,7 +88,11 @@ export class AggregateNode extends DataFlowNode {
    * @param dimensions string set for dimensions
    * @param measures dictionary mapping field name => dict of aggregation functions and names to use
    */
-  constructor(parent: DataFlowNode, private dimensions: Set<string>, private measures: Measures) {
+  constructor(
+    parent: DataFlowNode,
+    private dimensions: Set<string>,
+    private measures: Measures
+  ) {
     super(parent);
   }
 
@@ -101,12 +125,12 @@ export class AggregateNode extends DataFlowNode {
         } else {
           if (isArgminDef(aggregate) || isArgmaxDef(aggregate)) {
             const op = isArgminDef(aggregate) ? 'argmin' : 'argmax';
-            const argField = aggregate[op];
+            const argField = (aggregate as any)[op];
             meas[argField] ??= {};
             meas[argField][op] = new Set([vgField({op, field: argField}, {forAs: true})]);
           } else {
             meas[field] ??= {};
-            meas[field][aggregate] = new Set([vgField(fieldDef, {forAs: true})]);
+            (meas[field] as any)[aggregate] = new Set([vgField(fieldDef, {forAs: true})]);
           }
 
           // For scale channel with domain === 'unaggregated', add min/max so we can use their union as unaggregated domain
@@ -140,7 +164,8 @@ export class AggregateNode extends DataFlowNode {
           meas['*']['count'] = new Set([as ? as : vgField(s, {forAs: true})]);
         } else {
           meas[field] ??= {};
-          meas[field][op] = new Set([as ? as : vgField(s, {forAs: true})]);
+          meas[field][op] ??= new Set();
+          meas[field][op].add(as ? as : vgField(s, {forAs: true}));
         }
       }
     }

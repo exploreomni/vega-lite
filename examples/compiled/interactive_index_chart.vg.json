@@ -101,7 +101,7 @@
       "name": "unit",
       "value": {},
       "on": [
-        {"events": "mousemove", "update": "isTuple(group()) ? group() : unit"}
+        {"events": "pointermove", "update": "isTuple(group()) ? group() : unit"}
       ]
     },
     {
@@ -115,7 +115,7 @@
           "events": [
             {
               "source": "scope",
-              "type": "mouseover",
+              "type": "pointerover",
               "markname": "layer_0_voronoi"
             }
           ],
@@ -137,7 +137,7 @@
           "events": [
             {
               "source": "scope",
-              "type": "mouseover",
+              "type": "pointerover",
               "markname": "layer_0_voronoi"
             }
           ],
@@ -220,7 +220,7 @@
           "name": "layer_1_marks",
           "type": "line",
           "style": ["line"],
-          "sort": {"field": "datum[\"date\"]"},
+          "sort": {"field": "x"},
           "interactive": false,
           "from": {"data": "faceted_path_layer_1_main"},
           "encode": {

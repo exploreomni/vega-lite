@@ -25,7 +25,7 @@ const inputBindings: SelectionCompiler<'point'> = {
     const name = selCmpt.name;
     const proj = selCmpt.project;
     const bind = selCmpt.bind;
-    const init = selCmpt.init && selCmpt.init[0]; // Can only exist on single selections (one initial value).
+    const init = selCmpt.init?.[0]; // Can only exist on single selections (one initial value).
     const datum = nearest.defined(selCmpt) ? '(item().isVoronoi ? datum.datum : datum)' : 'datum';
 
     proj.items.forEach((p, i) => {
@@ -44,7 +44,7 @@ const inputBindings: SelectionCompiler<'point'> = {
                 }
               ]
             : [],
-          bind: bind[p.field] ?? bind[p.channel] ?? bind
+          bind: (bind as any)[p.field] ?? (bind as any)[p.channel] ?? bind
         });
       }
     });
@@ -55,7 +55,7 @@ const inputBindings: SelectionCompiler<'point'> = {
   signals: (model, selCmpt, signals) => {
     const name = selCmpt.name;
     const proj = selCmpt.project;
-    const signal: NewSignal = signals.filter(s => s.name === name + TUPLE)[0];
+    const signal: NewSignal = signals.find(s => s.name === name + TUPLE);
     const fields = name + TUPLE_FIELDS;
     const values = proj.items.map(p => varName(`${name}_${p.field}`));
     const valid = values.map(v => `${v} !== null`).join(' && ');

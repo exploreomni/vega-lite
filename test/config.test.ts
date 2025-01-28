@@ -1,4 +1,4 @@
-import {SignalRef} from 'vega';
+import type {SignalRef} from 'vega';
 import {
   Config,
   defaultConfig,
@@ -124,12 +124,12 @@ describe('config', () => {
     });
 
     it('correctly merges object-valued configs', () => {
-      const cfg = initConfig({selection: {point: {on: 'mouseover'}, interval: {encodings: ['x']}}});
+      const cfg = initConfig({selection: {point: {on: 'pointerover'}, interval: {encodings: ['x']}}});
       expect(cfg.selection).toHaveProperty('point');
       expect(cfg.selection).toHaveProperty('interval');
 
       // Overrides correctly
-      expect(cfg.selection.point).toHaveProperty('on', 'mouseover');
+      expect(cfg.selection.point).toHaveProperty('on', 'pointerover');
       expect(cfg.selection.interval).toHaveProperty('encodings', ['x']);
 
       // Preserves defaults
@@ -203,9 +203,9 @@ describe('config', () => {
         expect(output[mark]).toBeUndefined();
       }
       expect(output.style.bar['binSpacing']).toBeUndefined();
-      expect(output.style.cell['width']).toBeUndefined();
-      expect(output.style.cell['height']).toBeUndefined();
-      expect(output.style.cell['fill']).toBe('#eee');
+      expect((output.style.cell as any).width).toBeUndefined();
+      expect((output.style.cell as any).height).toBeUndefined();
+      expect((output.style.cell as any).fill).toBe('#eee');
 
       expect(output.style.bar.opacity).toBe(0.5);
     });

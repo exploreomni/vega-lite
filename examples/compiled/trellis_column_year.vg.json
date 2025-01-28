@@ -109,6 +109,9 @@
           },
           "formatType": "time",
           "labelOverlap": true,
+          "tickMinStep": {
+            "signal": "datetime(2001, 3, 1, 0, 0, 0, 0) - datetime(2001, 0, 1, 0, 0, 0, 0)"
+          },
           "zindex": 0
         }
       ]
@@ -149,7 +152,7 @@
               "name": "child_marks",
               "type": "line",
               "style": ["line"],
-              "sort": {"field": "datum[\"quarter_date\"]"},
+              "sort": {"field": "x"},
               "from": {"data": "faceted_path_child_main"},
               "encode": {
                 "update": {

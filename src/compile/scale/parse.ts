@@ -1,7 +1,6 @@
-import {getMainChannelFromOffsetChannel, isXorYOffset, ScaleChannel, SCALE_CHANNELS, SHAPE} from '../../channel';
+import {ScaleChannel, SCALE_CHANNELS, SHAPE} from '../../channel';
 import {getFieldOrDatumDef, ScaleDatumDef, TypedFieldDef} from '../../channeldef';
 import {channelHasNestedOffsetScale} from '../../encoding';
-import * as log from '../../log';
 import {GEOSHAPE} from '../../mark';
 import {
   NON_TYPE_DOMAIN_RANGE_VEGA_SCALE_PROPERTIES,
@@ -55,18 +54,7 @@ function parseUnitScaleCore(model: UnitModel): ScaleComponentIndex {
       continue;
     }
 
-    let specifiedScale = fieldOrDatumDef && fieldOrDatumDef['scale'];
-    if (isXorYOffset(channel)) {
-      const mainChannel = getMainChannelFromOffsetChannel(channel);
-      if (!channelHasNestedOffsetScale(encoding, mainChannel)) {
-        // Don't generate scale when the offset encoding shouldn't yield a nested scale
-        if (specifiedScale) {
-          log.warn(log.message.offsetEncodingScaleIgnored(channel));
-        }
-        continue;
-      }
-    }
-
+    let specifiedScale = fieldOrDatumDef && (fieldOrDatumDef as any).scale;
     if (fieldOrDatumDef && specifiedScale !== null && specifiedScale !== false) {
       specifiedScale ??= {};
       const hasNestedOffsetScale = channelHasNestedOffsetScale(encoding, channel);

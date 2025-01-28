@@ -1,3 +1,4 @@
+import {hasOwnProperty} from 'vega-util';
 import {entries, isEmpty} from '../../../util';
 import {getMarkPropOrConfig, signalOrValueRef} from '../../common';
 import {VG_MARK_INDEX} from './../../../vega.schema';
@@ -37,7 +38,7 @@ function ariaRoleDescription(model: UnitModel) {
     return {ariaRoleDescription: {value: ariaRoleDesc}};
   }
 
-  return mark in VG_MARK_INDEX ? {} : {ariaRoleDescription: {value: mark}};
+  return hasOwnProperty(VG_MARK_INDEX, mark) ? {} : {ariaRoleDescription: {value: mark}};
 }
 
 export function description(model: UnitModel) {
@@ -45,7 +46,13 @@ export function description(model: UnitModel) {
   const channelDef = encoding.description;
 
   if (channelDef) {
-    return wrapCondition(model, channelDef, 'description', cDef => textRef(cDef, model.config));
+    return wrapCondition({
+      model,
+      channelDef,
+      vgChannel: 'description',
+      mainRefFn: cDef => textRef(cDef, model.config),
+      invalidValueRef: undefined // aria encoding doesn't have continuous scales and thus can't have invalid values
+    });
   }
 
   // Use default from mark def or config if defined.

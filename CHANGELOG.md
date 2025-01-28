@@ -1,5 +1,297 @@
 
 
+# [5.23.0](https://github.com/vega/vega-lite/compare/v5.21.0...v5.23.0) (2024-12-10)
+
+
+### Bug Fixes
+
+* **#9480:** apply proper quote escapes for the datum access expression ([#9479](https://github.com/vega/vega-lite/issues/9479)) ([6a73892](https://github.com/vega/vega-lite/commit/6a7389272e179fadc3d502bf2f80e319241029c6)), closes [#9480](https://github.com/vega/vega-lite/issues/9480)
+* links in docs ([#9450](https://github.com/vega/vega-lite/issues/9450)) ([4098609](https://github.com/vega/vega-lite/commit/409860957c46d07f9fe449aaeb6d86ef50c89ec9))
+
+
+### Features
+
+* frame animations with time encoding and timer param ([#8921](https://github.com/vega/vega-lite/issues/8921)) ([e3f9620](https://github.com/vega/vega-lite/commit/e3f9620ed3d3284bb4acd66cc39074d579b80903))
+
+# [5.21.0](https://github.com/vega/vega-lite/compare/v5.20.1...v5.21.0) (2024-08-28)
+
+
+### Bug Fixes
+
+* **#7724,#9414:** Make ticks respect bin/timeUnit bands and custom band ([#9415](https://github.com/vega/vega-lite/issues/9415)) ([088094e](https://github.com/vega/vega-lite/commit/088094ee4401ca2c888a44057789093a2cd7f3df)), closes [#7724](https://github.com/vega/vega-lite/issues/7724) [#9414](https://github.com/vega/vega-lite/issues/9414)
+* make 1D tick mark responsive to width/height ([#9411](https://github.com/vega/vega-lite/issues/9411)) ([c0c7b6b](https://github.com/vega/vega-lite/commit/c0c7b6b4ef126e138b48990366b24ae7d713dafe))
+
+
+### Features
+
+* update code to not need implicit any, add hasProperty util ([#9394](https://github.com/vega/vega-lite/issues/9394)) ([6ce344e](https://github.com/vega/vega-lite/commit/6ce344e3d3e92023ca991267565e39e195241485))
+
+## [5.20.1](https://github.com/vega/vega-lite/compare/v5.20.0...v5.20.1) (2024-07-31)
+
+
+### Bug Fixes
+
+* **#9401:** conditional opacity should respect default value ([#9402](https://github.com/vega/vega-lite/issues/9402)) ([b4c7e14](https://github.com/vega/vega-lite/commit/b4c7e1435339cd57cef620459ad6481aa4ec526e)), closes [#9401](https://github.com/vega/vega-lite/issues/9401)
+
+# [5.20.0](https://github.com/vega/vega-lite/compare/v5.19.0...v5.20.0) (2024-07-30)
+
+
+### Bug Fixes
+
+* for issue when there are multiple aggregates with the same data field and aggregation operation ([#9320](https://github.com/vega/vega-lite/issues/9320)) ([da84469](https://github.com/vega/vega-lite/commit/da844691cb4ad6e4d6cf32af90c7f14d248b4764)), closes [#6184](https://github.com/vega/vega-lite/issues/6184)
+* make tick size responsive to plot height ([#9395](https://github.com/vega/vega-lite/issues/9395)) ([3f5dce6](https://github.com/vega/vega-lite/commit/3f5dce6ed3df7783c61afd5fb80eb4520668aa04))
+
+
+### Features
+
+* Expose `react` option for params ([#9374](https://github.com/vega/vega-lite/issues/9374)) ([93d92ef](https://github.com/vega/vega-lite/commit/93d92efa4e1893fb01b77f8145ca3bf7bf8dba05)), closes [/github.com/vega/altair/pull/3394#issuecomment-2140320905](https://github.com//github.com/vega/altair/pull/3394/issues/issuecomment-2140320905)
+
+# [5.19.0](https://github.com/vega/vega-lite/compare/v5.18.1...v5.19.0) (2024-06-14)
+
+
+### Bug Fixes
+
+* **#3488:** don't use zero as min for size scale by default so no points will be ever hidden ([#9347](https://github.com/vega/vega-lite/issues/9347)) ([7db657a](https://github.com/vega/vega-lite/commit/7db657a23fca5ee849320e3ee8f3dcc13998f6a6)), closes [#3488](https://github.com/vega/vega-lite/issues/3488) [#3488](https://github.com/vega/vega-lite/issues/3488)
+* **#9343:** binned stacked area now correctly filter null values ([#9344](https://github.com/vega/vega-lite/issues/9344)) ([7cd3829](https://github.com/vega/vega-lite/commit/7cd3829dc2b297be5f954d2f6c685541435f8776)), closes [#9343](https://github.com/vega/vega-lite/issues/9343)
+* fix typo in time unit 'utcweekdayhours' ([b32c73c](https://github.com/vega/vega-lite/commit/b32c73caf650a31319e634d3d98cc3c911e46031))
+* use array for single item valueRefs in conditional if test exists ([#9361](https://github.com/vega/vega-lite/issues/9361)) ([64201d6](https://github.com/vega/vega-lite/commit/64201d6d2a53364e6c214b07950b6ce77d174d5c)), closes [/github.com/vega/vega-lite/pull/9342/files#diff-f26cb911cd80159bbd659afb430b97fa7227afb4cc15e43565f2ca74c3361d22R64](https://github.com//github.com/vega/vega-lite/pull/9342/files/issues/diff-f26cb911cd80159bbd659afb430b97fa7227afb4cc15e43565f2ca74c3361d22R64)
+
+
+### Features
+
+* more options and examples for how marks and scales represent invalid data (e.g., nulls, NaNs) ([#9342](https://github.com/vega/vega-lite/issues/9342)) ([502db1d](https://github.com/vega/vega-lite/commit/502db1d848ea0ea93a90d45995ad50fea353950a)), closes [#8254](https://github.com/vega/vega-lite/issues/8254)
+
+## [5.18.1](https://github.com/vega/vega-lite/compare/v5.18.0...v5.18.1) (2024-05-07)
+
+
+### Bug Fixes
+
+* Allow non-linear scale for stacked bars ([#9315](https://github.com/vega/vega-lite/issues/9315)) ([716fe73](https://github.com/vega/vega-lite/commit/716fe734df2b4bd00fe78d7789ac43f5b035e4ed))
+* correctly place unfiltered null values for line ([#9326](https://github.com/vega/vega-lite/issues/9326)) ([#9334](https://github.com/vega/vega-lite/issues/9334)) ([b617c84](https://github.com/vega/vega-lite/commit/b617c84d6fca636ff1469b7db5a40e7393354e5c))
+* extent name collision in transforms ([#9312](https://github.com/vega/vega-lite/issues/9312)) ([8b3b30b](https://github.com/vega/vega-lite/commit/8b3b30b352ce0e50fe5422cd4d24323a5a5ec9b4))
+
+# [5.18.0](https://github.com/vega/vega-lite/compare/v5.17.0...v5.18.0) (2024-04-09)
+
+
+### Bug Fixes
+
+* **#8338,#8126:** make boxplot work with single value per group ([#8339](https://github.com/vega/vega-lite/issues/8339)) ([4e55836](https://github.com/vega/vega-lite/commit/4e558369eecc5d84fbccd0fd2bc84be19f5f5e35)), closes [#8338](https://github.com/vega/vega-lite/issues/8338) [#8126](https://github.com/vega/vega-lite/issues/8126) [#8338](https://github.com/vega/vega-lite/issues/8338) [#8126](https://github.com/vega/vega-lite/issues/8126)
+* describe how to set a custom scheme by setting the range, reverts [#9262](https://github.com/vega/vega-lite/issues/9262) ([#9266](https://github.com/vega/vega-lite/issues/9266)) ([e6af641](https://github.com/vega/vega-lite/commit/e6af6414431ade1f52359ad682ffc1f4f4a667c3)), closes [#9022](https://github.com/vega/vega-lite/issues/9022)
+* generate unescaped boxplot calculated field aliases ([#9284](https://github.com/vega/vega-lite/issues/9284)) ([44fbceb](https://github.com/vega/vega-lite/commit/44fbceb0120ee54a8989cb1537537757adac8c58))
+
+
+### Features
+
+* add explicit option to control how densities are resolved, change how densities are resolved by default ([#9172](https://github.com/vega/vega-lite/issues/9172)) ([bf0b8d3](https://github.com/vega/vega-lite/commit/bf0b8d3e2c80dc1d28cd3c6c4e764ea2ed714d6c))
+
+# [5.17.0](https://github.com/vega/vega-lite/compare/v5.16.3...v5.17.0) (2024-03-12)
+
+
+### Bug Fixes
+
+* add markDef.tooltip for interactive check ([#9237](https://github.com/vega/vega-lite/issues/9237)) ([3891832](https://github.com/vega/vega-lite/commit/3891832bc50e8d94cbdc0756b4ef26f860477866)), closes [#9190](https://github.com/vega/vega-lite/issues/9190) [/github.com/vega/vega-lite/blob/ffec017f638103c37d0dbe72cac7d44f4f44b9d6/src/compile/mark/mark.ts#L377-L381](https://github.com//github.com/vega/vega-lite/blob/ffec017f638103c37d0dbe72cac7d44f4f44b9d6/src/compile/mark/mark.ts/issues/L377-L381)
+* duplicate sorting in stack ([#9213](https://github.com/vega/vega-lite/issues/9213)) ([3e35dc2](https://github.com/vega/vega-lite/commit/3e35dc22ec50489fc46eb875a9cbfdfd2c4e28f2)), closes [#8033](https://github.com/vega/vega-lite/issues/8033)
+* fix typo in time unit 'weekdayhours' ([#9206](https://github.com/vega/vega-lite/issues/9206)) ([12788a5](https://github.com/vega/vega-lite/commit/12788a59a4c8313f56c0558163c26b3dce07756d))
+* mark sequential scales as deprecated ([#9212](https://github.com/vega/vega-lite/issues/9212)) ([93a44db](https://github.com/vega/vega-lite/commit/93a44db5757787044942c3f09964524183797463)), closes [#9017](https://github.com/vega/vega-lite/issues/9017)
+* remove default opacity if fillOpacity is set ([#9238](https://github.com/vega/vega-lite/issues/9238)) ([98ba02d](https://github.com/vega/vega-lite/commit/98ba02d7624fcdf9dd90661fca2f3ffd1f11e7ff)), closes [#9137](https://github.com/vega/vega-lite/issues/9137) [#9163](https://github.com/vega/vega-lite/issues/9163)
+* revert [#9253](https://github.com/vega/vega-lite/issues/9253) ([#9267](https://github.com/vega/vega-lite/issues/9267)) ([9da3ecb](https://github.com/vega/vega-lite/commit/9da3ecbd35b76f99c202518e67e76e9c9c9cca04))
+* support arrays in color schemes ([#9262](https://github.com/vega/vega-lite/issues/9262)) ([d86c90e](https://github.com/vega/vega-lite/commit/d86c90eb80eb736faca18a009e096d9d5450b5e1)), closes [#9022](https://github.com/vega/vega-lite/issues/9022)
+* update deps and resolve issue with images in docs ([#9210](https://github.com/vega/vega-lite/issues/9210)) ([fc94297](https://github.com/vega/vega-lite/commit/fc942975c125ebcc9d7cd6b2439adb88a1fa9f9a))
+* use child signal for radius if faceted ([#9232](https://github.com/vega/vega-lite/issues/9232)) ([e11af45](https://github.com/vega/vega-lite/commit/e11af455edfd11d992838a51cf842a20a6cd0069)), closes [#8754](https://github.com/vega/vega-lite/issues/8754) [/github.com/vega/vega-lite/blob/c33f46bad7f80f779e463a8a36481f888f18e222/src/compile/scale/range.ts#L311-L314](https://github.com//github.com/vega/vega-lite/blob/c33f46bad7f80f779e463a8a36481f888f18e222/src/compile/scale/range.ts/issues/L311-L314)
+
+
+### Features
+
+* 'move' cursor added over brush mark ([#9164](https://github.com/vega/vega-lite/issues/9164)) ([ffec017](https://github.com/vega/vega-lite/commit/ffec017f638103c37d0dbe72cac7d44f4f44b9d6))
+* add support for signals in mark clip ([#9282](https://github.com/vega/vega-lite/issues/9282)) ([bf14024](https://github.com/vega/vega-lite/commit/bf140243e51cb45a516a9fef77f93790ddb8389b))
+* update Vega and other deps ([#9182](https://github.com/vega/vega-lite/issues/9182)) ([e3a6232](https://github.com/vega/vega-lite/commit/e3a6232e0fee0802edbbc5cf4180c359ea72f1bf))
+
+## [5.16.3](https://github.com/vega/vega-lite/compare/v5.16.2...v5.16.3) (2023-11-10)
+
+
+### Bug Fixes
+
+* make isRectWithOffset check consistent ([#9169](https://github.com/vega/vega-lite/issues/9169)) ([3e0f312](https://github.com/vega/vega-lite/commit/3e0f312f2f7f4e9ab4bc9c6ef1323c573edd3de0))
+
+## [5.16.2](https://github.com/vega/vega-lite/compare/v5.16.1...v5.16.2) (2023-11-08)
+
+
+### Bug Fixes
+
+* **#9167:** make 1D bars respect orient for stack calculation ([#9168](https://github.com/vega/vega-lite/issues/9168)) ([432f354](https://github.com/vega/vega-lite/commit/432f3548323d72505f18e30e1e23d83718d3ad20)), closes [#9167](https://github.com/vega/vega-lite/issues/9167) [#9167](https://github.com/vega/vega-lite/issues/9167)
+
+## [5.16.1](https://github.com/vega/vega-lite/compare/v5.16.0...v5.16.1) (2023-10-12)
+
+
+### Bug Fixes
+
+* support x/yOffset without x/y ([#9135](https://github.com/vega/vega-lite/issues/9135)) ([58294a7](https://github.com/vega/vega-lite/commit/58294a75745aaf160ad1034afd1a3a5d1a2ea81d))
+
+# [5.16.0](https://github.com/vega/vega-lite/compare/v5.15.1...v5.16.0) (2023-10-09)
+
+
+### Bug Fixes
+
+* correct types for domain unionWith ([#9131](https://github.com/vega/vega-lite/issues/9131)) ([6f66759](https://github.com/vega/vega-lite/commit/6f667590d2f78093d53e513a6e4ae119810e12df))
+
+
+### Features
+
+* make bar & rect marks support bandPosition (allow center-alignment with ticks) ([#9126](https://github.com/vega/vega-lite/issues/9126)) ([bd014eb](https://github.com/vega/vega-lite/commit/bd014eb168060ae7f925dc0a927e7ca333a96c7b))
+* swap 'mouse' events to 'pointer' events for mobile compatibility; update site and docs ([#9089](https://github.com/vega/vega-lite/issues/9089)) ([fa97659](https://github.com/vega/vega-lite/commit/fa97659e40ea340fa497783e4b32ef63ebe4bc3f))
+
+## [5.15.1](https://github.com/vega/vega-lite/compare/v5.15.0...v5.15.1) (2023-10-02)
+
+
+### Bug Fixes
+
+* correct the formula for interpolating between bin start and end (interpolatedSignalRef) ([#9111](https://github.com/vega/vega-lite/issues/9111)) ([d4b27bb](https://github.com/vega/vega-lite/commit/d4b27bba1439dccab3dbf54f7c1af64155d8c7d5))
+* use resolve "shared" instead of steps to fix artifacts in grouped density transform ([#9106](https://github.com/vega/vega-lite/issues/9106)) ([06e63e6](https://github.com/vega/vega-lite/commit/06e63e6bae3d4efa3d2041e6582415327ebdeb3b))
+
+# [5.15.0](https://github.com/vega/vega-lite/compare/v5.14.1...v5.15.0) (2023-09-13)
+
+
+### Bug Fixes
+
+* unescape paths in binned `timeUnits` to allow for fields with periods in name ([#9088](https://github.com/vega/vega-lite/issues/9088)) ([53ede0e](https://github.com/vega/vega-lite/commit/53ede0e9e0e3195eab3a2a6a105020a74b913cba))
+* update ts and fix typing issues ([#9066](https://github.com/vega/vega-lite/issues/9066)) ([b421a44](https://github.com/vega/vega-lite/commit/b421a445e68e43e563f02f1e6006e3f5d9434a2b))
+
+
+### Features
+
+* switch from clone to built in structured clone ([#9068](https://github.com/vega/vega-lite/issues/9068)) ([7874ea9](https://github.com/vega/vega-lite/commit/7874ea9396c2256bfd31307365da6fb5b6e66912))
+
+## [5.14.1](https://github.com/vega/vega-lite/compare/v5.14.0...v5.14.1) (2023-07-20)
+
+
+### Bug Fixes
+
+* Area with plain quantitative fields on both axes get stacked by default ([#9018](https://github.com/vega/vega-lite/issues/9018)) ([b79bc9f](https://github.com/vega/vega-lite/commit/b79bc9fc3bc757b30aafd744d8ab3d679f85aedb))
+
+# [5.14.0](https://github.com/vega/vega-lite/compare/v5.13.0...v5.14.0) (2023-07-20)
+
+
+### Bug Fixes
+
+* escape Quotes in tooltip `title` ([#9019](https://github.com/vega/vega-lite/issues/9019)) ([f7f7735](https://github.com/vega/vega-lite/commit/f7f77351d55a309b820406b4bfa90f0e11b13423))
+
+
+### Features
+
+* Improve color scheme type ([#9015](https://github.com/vega/vega-lite/issues/9015)) ([d535812](https://github.com/vega/vega-lite/commit/d5358127c8e8c097bba02a0cc9004676c576367f))
+
+# [5.13.0](https://github.com/vega/vega-lite/compare/v5.12.0...v5.13.0) (2023-07-07)
+
+
+### Features
+
+* support domainRaw so one may bind domainRaw to a parameter to build custom interaction ([#8989](https://github.com/vega/vega-lite/issues/8989)) ([21c823d](https://github.com/vega/vega-lite/commit/21c823df1ce7c34f9f7a394f39501c5d8033bc49))
+
+# [5.12.0](https://github.com/vega/vega-lite/compare/v5.11.1...v5.12.0) (2023-06-29)
+
+
+### Features
+
+* support pre-binned timeUnit ([#8971](https://github.com/vega/vega-lite/issues/8971)) ([dac5c19](https://github.com/vega/vega-lite/commit/dac5c199fe02f6fa73dfbdd6f9717224ffb81cf2))
+
+## [5.11.1](https://github.com/vega/vega-lite/compare/v5.11.0...v5.11.1) (2023-06-26)
+
+
+### Bug Fixes
+
+* show gridline of first axis only for dual axes charts ([#8962](https://github.com/vega/vega-lite/issues/8962)) ([a522a87](https://github.com/vega/vega-lite/commit/a522a877ec79745e94f43fae8d0eeec9fbdc2e4b))
+
+# [5.11.0](https://github.com/vega/vega-lite/compare/v5.10.0...v5.11.0) (2023-06-21)
+
+
+### Bug Fixes
+
+* make bin/timeUnit band respect minBandSize config ([#8958](https://github.com/vega/vega-lite/issues/8958)) ([d1c012e](https://github.com/vega/vega-lite/commit/d1c012e563a4e3dac3b95777257b6b613430fb00))
+
+
+### Features
+
+* config.rect/bar.minBandSize ([#8959](https://github.com/vega/vega-lite/issues/8959)) ([f541070](https://github.com/vega/vega-lite/commit/f5410708c2249d3e18d644f1f9cf760df3d8ec3d))
+
+# [5.10.0](https://github.com/vega/vega-lite/compare/v5.9.3...v5.10.0) (2023-06-20)
+
+
+### Bug Fixes
+
+* make timeUnit band respect x2Offset ([#8956](https://github.com/vega/vega-lite/issues/8956)) ([f8a0cfa](https://github.com/vega/vega-lite/commit/f8a0cfae000d335e81a462f9a869552e3e465fe1))
+
+
+### Features
+
+* add `extent` transform ([#8940](https://github.com/vega/vega-lite/issues/8940)) ([85e5cc8](https://github.com/vega/vega-lite/commit/85e5cc84799824aab883cae52d9ccb10b73430ba))
+
+## [5.9.3](https://github.com/vega/vega-lite/compare/v5.9.2...v5.9.3) (2023-05-18)
+
+
+### Bug Fixes
+
+* support stack bar with reverse order ([#8910](https://github.com/vega/vega-lite/issues/8910)) ([055e32f](https://github.com/vega/vega-lite/commit/055e32f2ce109c6a663c3950e6ad9f80b321f65b))
+
+## [5.9.2](https://github.com/vega/vega-lite/compare/v5.9.1...v5.9.2) (2023-05-17)
+
+
+### Bug Fixes
+
+* make durationExpr work for week ([#8907](https://github.com/vega/vega-lite/issues/8907)) ([bf99571](https://github.com/vega/vega-lite/commit/bf995711ccb05fb27cfea8bab14fd419dadee503))
+* respect bandWithNestedOffsetPaddingInner for grouped bar within discretized temporal axis ([#8906](https://github.com/vega/vega-lite/issues/8906)) ([9050e6b](https://github.com/vega/vega-lite/commit/9050e6bbb87ede9475040d57c13c49b18e364aea))
+
+## [5.9.1](https://github.com/vega/vega-lite/compare/v5.9.0...v5.9.1) (2023-05-15)
+
+
+### Bug Fixes
+
+* handle falsy legend values in selections (take 2) ([#8895](https://github.com/vega/vega-lite/issues/8895)) ([fe599a2](https://github.com/vega/vega-lite/commit/fe599a2ab82f3a161d0df0f88f35eba9115d5e88))
+* Make bars with one axis thicker ([#8894](https://github.com/vega/vega-lite/issues/8894)) ([309af9a](https://github.com/vega/vega-lite/commit/309af9ac314b5c83ecf89afbda6069a63fd7a53e))
+
+# [5.9.0](https://github.com/vega/vega-lite/compare/v5.8.0...v5.9.0) (2023-05-05)
+
+
+### Features
+
+* allow custom tooltip formatting ([#8883](https://github.com/vega/vega-lite/issues/8883)) ([e7b45b8](https://github.com/vega/vega-lite/commit/e7b45b8ca0dd67915a8d8d962747f56de41a4cab))
+* support grouped bars inside time axis with time bins ([#8874](https://github.com/vega/vega-lite/issues/8874)) ([b29fa64](https://github.com/vega/vega-lite/commit/b29fa64d2b06d424385d0ed7d9bb7163f73d5706))
+
+# [5.8.0](https://github.com/vega/vega-lite/compare/v5.7.1...v5.8.0) (2023-05-01)
+
+
+### Bug Fixes
+
+* avoid repetitive labels by using tickMinStep ([#8872](https://github.com/vega/vega-lite/issues/8872)) ([0b1c385](https://github.com/vega/vega-lite/commit/0b1c3857b5ec538ad0acec3e21c9ed741b38135f))
+* remove incorrect stack transform from charts with one linear Q-axis one non-linear Q-axis. ([#8871](https://github.com/vega/vega-lite/issues/8871)) ([f4d928a](https://github.com/vega/vega-lite/commit/f4d928a4e9f3272e0b24025e7243499d023dca76))
+
+
+### Features
+
+* enable ppi setting on png cli export ([#8854](https://github.com/vega/vega-lite/issues/8854)) ([d3a30bf](https://github.com/vega/vega-lite/commit/d3a30bf56397177f0764163c9ee37ca675d074f2))
+* return error exit code for cli tools ([#8858](https://github.com/vega/vega-lite/issues/8858)) ([c3f1b8f](https://github.com/vega/vega-lite/commit/c3f1b8f35171c9f95ceed1cd26f3afe7825b98f2))
+* simplify rollup script and update to more modern js ([#8852](https://github.com/vega/vega-lite/issues/8852)) ([b396595](https://github.com/vega/vega-lite/commit/b39659563a9e1d1d9418c3587c3fc8f696c5f165))
+* update vega and other dependencies ([#8857](https://github.com/vega/vega-lite/issues/8857)) ([6a6da3b](https://github.com/vega/vega-lite/commit/6a6da3b85b58e2ae71d07f2b029d56c4a73c9171))
+
+## [5.7.1](https://github.com/vega/vega-lite/compare/v5.7.0...v5.7.1) (2023-04-17)
+
+# [5.7.0](https://github.com/vega/vega-lite/compare/v5.6.1...v5.7.0) (2023-04-15)
+
+
+### Bug Fixes
+
+* add repeat prefix to name in normalization ([#8733](https://github.com/vega/vega-lite/issues/8733)) ([2ea3265](https://github.com/vega/vega-lite/commit/2ea32651f9865311b25aa71f2da30277ea2a976e))
+* allow setting width/height in repeated layers ([#8723](https://github.com/vega/vega-lite/issues/8723)) ([9e26410](https://github.com/vega/vega-lite/commit/9e264103dea45996b52ab8cdeb9be15254fc1bba))
+* correctly apply stacked to bar with quantitative x and quantitative y axes ([#8838](https://github.com/vega/vega-lite/issues/8838)) ([4b9d22c](https://github.com/vega/vega-lite/commit/4b9d22c693860faf58c1868c0960b0b60405b504))
+* correctly handle merging of domains with more than one sort object ([#8567](https://github.com/vega/vega-lite/issues/8567)) ([1eedb8f](https://github.com/vega/vega-lite/commit/1eedb8f31e35afb5e05fdacd8902448c2a9da706))
+* move name from layer chart to one of the inside layers ([#8662](https://github.com/vega/vega-lite/issues/8662)) ([d99f614](https://github.com/vega/vega-lite/commit/d99f614cb322f9dd47c07af2cf02d6a3bfe36c9d))
+* orient logic for when bar with x=T + simplify logic ([#8739](https://github.com/vega/vega-lite/issues/8739)) ([ea4aa64](https://github.com/vega/vega-lite/commit/ea4aa64644fbc31b0c9ee06cfde5660c04efe59b))
+* prevent duplicate spec names in top-level selection view paths ([#8486](https://github.com/vega/vega-lite/issues/8486)) ([ba46bd2](https://github.com/vega/vega-lite/commit/ba46bd2b538be46686e90d8d6da032d160fac6e6))
+
+
+### Features
+
+* enable interval selections for cartographic projections ([#6953](https://github.com/vega/vega-lite/issues/6953)) ([e5cbe8f](https://github.com/vega/vega-lite/commit/e5cbe8f71e4d99f81c83ea1cbbc2938839cc8933))
+
 ## <small>5.6.1 (2023-02-13)</small>
 
 * chore: require clean working dir and main for releases ([b9f15eb](https://github.com/vega/vega-lite/commit/b9f15eb))

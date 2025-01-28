@@ -4,7 +4,7 @@ import {stringValue} from 'vega-util';
 import {getAxisConfigs} from '../../../src/compile/axis/config';
 import * as properties from '../../../src/compile/axis/properties';
 import {defaultLabelAlign, defaultLabelBaseline, getLabelAngle} from '../../../src/compile/axis/properties';
-import {TimeUnit} from '../../../src/timeunit';
+import {TimeUnit, TimeUnitTransformParams} from '../../../src/timeunit';
 import {normalizeAngle} from '../../../src/util';
 import {isSignalRef} from '../../../src/vega.schema';
 import {range} from '../../util';
@@ -104,6 +104,54 @@ describe('compile/axis/properties', () => {
         scaleType: 'point'
       });
       expect(tickCount).toBeUndefined();
+    });
+  });
+  describe('defaultTickMinStep()', () => {
+    it('should return 1 for integer', () => {
+      const tickMinStep = properties.defaultTickMinStep({
+        fieldOrDatumDef: {field: 'a', type: 'quantitative'},
+        format: 'd'
+      });
+      expect(tickMinStep).toBe(1);
+    });
+
+    const TIMEUNIT_CASES: {timeUnit: TimeUnit | TimeUnitTransformParams; signal: string}[] = [
+      {
+        timeUnit: 'year',
+        signal: 'datetime(2002, 0, 1, 0, 0, 0, 0) - datetime(2001, 0, 1, 0, 0, 0, 0)'
+      },
+      {
+        timeUnit: {unit: 'year', step: 2},
+        signal: 'datetime(2003, 0, 1, 0, 0, 0, 0) - datetime(2001, 0, 1, 0, 0, 0, 0)'
+      },
+      {
+        timeUnit: 'yearmonth',
+        signal: 'datetime(2001, 1, 1, 0, 0, 0, 0) - datetime(2001, 0, 1, 0, 0, 0, 0)'
+      },
+      {
+        timeUnit: {unit: 'yearmonth', step: 4},
+        signal: 'datetime(2001, 4, 1, 0, 0, 0, 0) - datetime(2001, 0, 1, 0, 0, 0, 0)'
+      },
+      {
+        timeUnit: 'month',
+        signal: 'datetime(2001, 1, 1, 0, 0, 0, 0) - datetime(2001, 0, 1, 0, 0, 0, 0)'
+      },
+      {
+        timeUnit: 'yearquarter',
+        signal: 'datetime(2001, 3, 1, 0, 0, 0, 0) - datetime(2001, 0, 1, 0, 0, 0, 0)'
+      },
+      {
+        timeUnit: 'yearmonthdate',
+        signal: 'datetime(2001, 0, 2, 0, 0, 0, 0) - datetime(2001, 0, 1, 0, 0, 0, 0)'
+      }
+    ];
+
+    it.each(TIMEUNIT_CASES)('should return timestamp duration for $timeUnit', ({timeUnit, signal}) => {
+      const tickMinStep = properties.defaultTickMinStep({
+        fieldOrDatumDef: {timeUnit, field: 'a', type: 'temporal'},
+        format: undefined
+      });
+      expect(tickMinStep).toEqual({signal});
     });
   });
 
@@ -230,7 +278,7 @@ describe('compile/axis/properties', () => {
     });
 
     it('correctly align y-axis labels for labelAngle and orient signals', () => {
-      const ast = parseExpression(defaultLabelAlign({signal: 'a'}, {signal: 'o'}, 'y')['signal']);
+      const ast = parseExpression((defaultLabelAlign({signal: 'a'}, {signal: 'o'}, 'y') as any).signal);
       let a: number;
       let o: AxisOrient;
       // test all angles
@@ -249,7 +297,7 @@ describe('compile/axis/properties', () => {
 
     it('correctly align x-axis labels for labelAngle and orient signals', () => {
       return new Promise<void>(done => {
-        const ast = parseExpression(defaultLabelAlign({signal: 'a'}, {signal: 'o'}, 'x')['signal']);
+        const ast = parseExpression((defaultLabelAlign({signal: 'a'}, {signal: 'o'}, 'x') as any).signal);
         let a: number;
         let o: AxisOrient;
         // test all angles
@@ -342,7 +390,7 @@ describe('compile/axis/properties', () => {
 
     it('correctly align y-axis labels for labelAngle and orient signals', () => {
       return new Promise<void>(done => {
-        const ast = parseExpression(defaultLabelBaseline({signal: 'a'}, {signal: 'o'}, 'y')['signal']);
+        const ast = parseExpression((defaultLabelBaseline({signal: 'a'}, {signal: 'o'}, 'y') as any).signal);
         let a: number;
         let o: AxisOrient;
         // test all angles
@@ -363,7 +411,7 @@ describe('compile/axis/properties', () => {
 
     it('correctly align x-axis labels for labelAngle and orient signals', () => {
       return new Promise<void>(done => {
-        const ast = parseExpression(defaultLabelBaseline({signal: 'a'}, {signal: 'o'}, 'x')['signal']);
+        const ast = parseExpression((defaultLabelBaseline({signal: 'a'}, {signal: 'o'}, 'x') as any).signal);
         let a: number;
         let o: AxisOrient;
         // test all angles

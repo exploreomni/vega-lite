@@ -41,7 +41,7 @@ export function initMarkdef(originalMarkDef: MarkDef, encoding: Encoding<string>
     if (cornerRadiusEnd !== undefined) {
       const newProps =
         (markDef.orient === 'horizontal' && encoding.x2) || (markDef.orient === 'vertical' && encoding.y2)
-          ? ['cornerRadius']
+          ? (['cornerRadius'] as const)
           : BAR_CORNER_RADIUS_END_INDEX[markDef.orient];
 
       for (const newProp of newProps) {
@@ -56,7 +56,8 @@ export function initMarkdef(originalMarkDef: MarkDef, encoding: Encoding<string>
 
   // set opacity and filled if not specified in mark config
   const specifiedOpacity = getMarkPropOrConfig('opacity', markDef, config);
-  if (specifiedOpacity === undefined) {
+  const specifiedfillOpacity = getMarkPropOrConfig('fillOpacity', markDef, config);
+  if (specifiedOpacity === undefined && specifiedfillOpacity === undefined) {
     markDef.opacity = opacity(markDef.type, encoding);
   }
 

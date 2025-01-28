@@ -1,4 +1,4 @@
-import {AggregateOp} from 'vega';
+import type {AggregateOp} from 'vega';
 import {isArray} from 'vega-util';
 import {isBinning} from '../../bin';
 import {COLUMN, FACET_CHANNELS, POSITION_SCALE_CHANNELS, ROW} from '../../channel';
@@ -63,8 +63,8 @@ export class FacetNode extends DataFlowNode {
           ...(isSortField(sort)
             ? {sortField: sort}
             : isArray(sort)
-            ? {sortIndexField: sortArrayIndexField(fieldDef, channel)}
-            : {})
+              ? {sortIndexField: sortArrayIndexField(fieldDef, channel)}
+              : {})
         };
       }
     }
@@ -152,7 +152,7 @@ export class FacetNode extends DataFlowNode {
     crossedDataName: string,
     childIndependentFieldsWithStep: ChildIndependentFieldsWithStep
   ): VgData {
-    const childChannel = {row: 'y', column: 'x', facet: undefined}[channel];
+    const childChannel = ({row: 'y', column: 'x', facet: undefined} as const)[channel];
 
     const fields: string[] = [];
     const ops: AggregateOp[] = [];
@@ -213,7 +213,7 @@ export class FacetNode extends DataFlowNode {
     const hasSharedAxis: {row?: true; column?: true} = {};
     for (const headerChannel of HEADER_CHANNELS) {
       for (const headerType of HEADER_TYPES) {
-        const headers = (layoutHeaders[headerChannel] && layoutHeaders[headerChannel][headerType]) ?? [];
+        const headers = layoutHeaders[headerChannel]?.[headerType] ?? [];
         for (const header of headers) {
           if (header.axes?.length > 0) {
             hasSharedAxis[headerChannel] = true;
@@ -231,8 +231,8 @@ export class FacetNode extends DataFlowNode {
               ? {signal: `ceil(${cardinality} / ${columns})`}
               : 1
             : columns
-            ? {signal: `min(${cardinality}, ${columns})`}
-            : {signal: cardinality};
+              ? {signal: `min(${cardinality}, ${columns})`}
+              : {signal: cardinality};
 
         data.push({
           name: `${this.facet.name}_${headerChannel}`,

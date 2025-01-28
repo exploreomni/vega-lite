@@ -111,7 +111,7 @@ describe('Mark: Tick', () => {
     });
 
     it('should scale on y', () => {
-      expect(props.yc).toEqual({scale: Y, field: 'Cylinders'});
+      expect(props.y).toEqual({scale: Y, field: 'Cylinders'});
     });
 
     it('width should be tick thickness with default orient vertical', () => {
@@ -119,7 +119,42 @@ describe('Mark: Tick', () => {
     });
 
     it('height should be matched to field with default orient vertical', () => {
-      expect(props.height).toEqual({value: 15});
+      expect(props.height).toEqual({signal: "max(0.25, bandwidth('y'))"});
+    });
+  });
+  describe('with quantitative x and ordinal y with yOffset', () => {
+    const model = parseUnitModelWithScaleAndLayoutSize({
+      mark: 'tick',
+      encoding: {
+        x: {field: 'Horsepower', type: 'quantitative'},
+        y: {field: 'Cylinders', type: 'ordinal'},
+        yOffset: {field: 'Acceleration', type: 'ordinal'}
+      },
+      data: {url: 'data/cars.json'}
+    });
+    const props = tick.encodeEntry(model);
+
+    it('should scale on x', () => {
+      expect(props.xc).toEqual({scale: X, field: 'Horsepower'});
+    });
+
+    it('should scale on y', () => {
+      expect(props.y).toEqual({
+        scale: Y,
+        field: 'Cylinders',
+        offset: {
+          field: 'Acceleration',
+          scale: 'yOffset'
+        }
+      });
+    });
+
+    it('width should be tick thickness with default orient vertical', () => {
+      expect(props.width).toEqual({value: 1});
+    });
+
+    it('height should be matched to field with default orient vertical', () => {
+      expect(props.height).toEqual({signal: "max(0.25, bandwidth('yOffset'))"});
     });
   });
 
@@ -168,6 +203,34 @@ describe('Mark: Tick', () => {
     const props = tick.encodeEntry(model);
     it('maps size to height in Vega', () => {
       expect(props.height).toEqual({field: 'Acceleration', scale: SIZE});
+    });
+  });
+
+  describe('vertical ticks without Y', () => {
+    const model = parseUnitModelWithScaleAndLayoutSize({
+      mark: 'tick',
+      encoding: {
+        x: {field: 'Horsepower', type: 'quantitative'}
+      },
+      data: {url: 'data/cars.json'}
+    });
+    const props = tick.encodeEntry(model);
+    it('sets mark height to (1-tickBandPaddingInner) * plot_height', () => {
+      expect(props.height).toEqual({signal: '0.75 * height'});
+    });
+  });
+
+  describe('horizontal ticks without X', () => {
+    const model = parseUnitModelWithScaleAndLayoutSize({
+      mark: 'tick',
+      encoding: {
+        y: {field: 'Horsepower', type: 'quantitative'}
+      },
+      data: {url: 'data/cars.json'}
+    });
+    const props = tick.encodeEntry(model);
+    it('sets mark width to (1-tickBandPaddingInner) * plot_width', () => {
+      expect(props.width).toEqual({signal: '0.75 * width'});
     });
   });
 });

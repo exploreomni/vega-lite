@@ -1,4 +1,4 @@
-import {array, isBoolean} from 'vega-util';
+import {array, hasOwnProperty, isBoolean} from 'vega-util';
 import {Aggregate, SUM_OPS} from './aggregate';
 import {getSecondaryRangeChannel, NonPositionChannel, NONPOSITION_CHANNELS} from './channel';
 import {
@@ -43,7 +43,7 @@ const STACK_OFFSET_INDEX = {
 export type StackOffset = keyof typeof STACK_OFFSET_INDEX;
 
 export function isStackOffset(s: string): s is StackOffset {
-  return s in STACK_OFFSET_INDEX;
+  return hasOwnProperty(STACK_OFFSET_INDEX, s);
 }
 
 export interface StackProperties {
@@ -87,7 +87,7 @@ function potentialStackedChannel(
 ): 'x' | 'y' | 'theta' | 'radius' | undefined {
   const y = x === 'x' ? 'y' : 'radius';
 
-  const isCartesian = x === 'x';
+  const isCartesianBarOrArea = x === 'x' && ['bar', 'area'].includes(mark);
 
   const xDef = encoding[x];
   const yDef = encoding[y];
@@ -104,18 +104,9 @@ function potentialStackedChannel(
       // if there is no explicit stacking, only apply stack if there is only one aggregate for x or y
       if (xAggregate !== yAggregate) {
         return xAggregate ? x : y;
-      } else {
-        const xScale = xDef.scale?.type;
-        const yScale = yDef.scale?.type;
-
-        if (xScale && xScale !== 'linear') {
-          return y;
-        } else if (yScale && yScale !== 'linear') {
-          return x;
-        }
       }
 
-      if (isCartesian && mark === 'bar') {
+      if (isCartesianBarOrArea) {
         if (orient === 'vertical') {
           return y;
         } else if (orient === 'horizontal') {
@@ -128,8 +119,14 @@ function potentialStackedChannel(
       return y;
     }
   } else if (isUnbinnedQuantitative(xDef)) {
+    if (isCartesianBarOrArea && orient === 'vertical') {
+      return undefined;
+    }
     return x;
   } else if (isUnbinnedQuantitative(yDef)) {
+    if (isCartesianBarOrArea && orient === 'horizontal') {
+      return undefined;
+    }
     return y;
   }
   return undefined;
@@ -185,16 +182,16 @@ export function stack(m: Mark | MarkDef, encoding: Encoding<string>): StackPrope
       groupbyChannels.push(dimensionChannel);
       groupbyFields.add(dimensionField);
     }
+  }
 
-    const dimensionOffsetChannel = dimensionChannel === 'x' ? 'xOffset' : 'yOffset';
-    const dimensionOffsetDef = encoding[dimensionOffsetChannel];
-    const dimensionOffsetField = isFieldDef(dimensionOffsetDef) ? vgField(dimensionOffsetDef, {}) : undefined;
+  const dimensionOffsetChannel = dimensionChannel === 'x' ? 'xOffset' : 'yOffset';
+  const dimensionOffsetDef = encoding[dimensionOffsetChannel];
+  const dimensionOffsetField = isFieldDef(dimensionOffsetDef) ? vgField(dimensionOffsetDef, {}) : undefined;
 
-    if (dimensionOffsetField && dimensionOffsetField !== stackedField) {
-      // avoid grouping by the stacked field
-      groupbyChannels.push(dimensionOffsetChannel);
-      groupbyFields.add(dimensionOffsetField);
-    }
+  if (dimensionOffsetField && dimensionOffsetField !== stackedField) {
+    // avoid grouping by the stacked field
+    groupbyChannels.push(dimensionOffsetChannel);
+    groupbyFields.add(dimensionOffsetField);
   }
 
   // If the dimension has offset, don't stack anymore
@@ -247,8 +244,9 @@ export function stack(m: Mark | MarkDef, encoding: Encoding<string>): StackPrope
 
   // warn when stacking non-linear
   if (stackedFieldDef?.scale?.type && stackedFieldDef?.scale?.type !== ScaleType.LINEAR) {
-    log.warn(log.message.cannotStackNonLinearScale(stackedFieldDef.scale.type));
-    return null;
+    if (stackedFieldDef?.stack) {
+      log.warn(log.message.stackNonLinearScale(stackedFieldDef.scale.type));
+    }
   }
 
   // Check if it is a ranged mark

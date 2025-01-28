@@ -1,4 +1,4 @@
-import {AxisEncode as VgAxisEncode, AxisOrient, SignalRef} from 'vega';
+import type {AxisEncode as VgAxisEncode, AxisOrient, SignalRef} from 'vega';
 import {Axis, AXIS_PARTS, isAxisProperty, isConditionalAxisValue} from '../../axis';
 import {PositionScaleChannel, POSITION_SCALE_CHANNELS} from '../../channel';
 import {getFieldOrDatumDef, PositionDatumDef, PositionFieldDef} from '../../channeldef';
@@ -14,6 +14,7 @@ import {AxisComponent, AxisComponentIndex, AxisComponentProps, AXIS_COMPONENT_PR
 import {getAxisConfig, getAxisConfigs} from './config';
 import * as encode from './encode';
 import {AxisRuleParams, axisRules, defaultOrient, getFieldDefTitle, getLabelAngle} from './properties';
+import {guideFormat, guideFormatType} from '../format';
 
 export function parseUnitAxes(model: UnitModel): AxisComponentIndex {
   return POSITION_SCALE_CHANNELS.reduce((axis, channel) => {
@@ -92,10 +93,10 @@ export function parseLayerAxes(model: LayerModel) {
       delete child.component.axes[channel];
     }
 
-    // Suppress grid lines for dual axis charts (https://github.com/vega/vega-lite/issues/4676)
+    // Show gridlines for first axis only for dual-axis chart
     if (resolve.axis[channel] === 'independent' && axes[channel] && axes[channel].length > 1) {
-      for (const axisCmpt of axes[channel]) {
-        if (!!axisCmpt.get('grid') && !axisCmpt.explicit.grid) {
+      for (const [index, axisCmpt] of (axes[channel] || []).entries()) {
+        if (index > 0 && !!axisCmpt.get('grid') && !axisCmpt.explicit.grid) {
           axisCmpt.implicit.grid = false;
         }
       }
@@ -197,7 +198,7 @@ function isExplicit<T extends string | number | boolean | unknown>(
       }
   }
   // Otherwise, things are explicit if the returned value matches the specified property
-  return value === axis[property];
+  return value === (axis as any)[property];
 }
 
 /**
@@ -247,6 +248,8 @@ function parseAxis(channel: PositionScaleChannel, model: UnitModel): AxisCompone
   axis = axis || {};
 
   const labelAngle = getLabelAngle(fieldOrDatumDef, axis, channel, config.style, axisConfigs);
+  const formatType = guideFormatType(axis.formatType, fieldOrDatumDef, scaleType);
+  const format = guideFormat(fieldOrDatumDef, fieldOrDatumDef.type, axis.format, axis.formatType, config, true);
 
   const ruleParams: AxisRuleParams = {
     fieldOrDatumDef,
@@ -256,6 +259,8 @@ function parseAxis(channel: PositionScaleChannel, model: UnitModel): AxisCompone
     scaleType,
     orient,
     labelAngle,
+    format,
+    formatType,
     mark,
     config
   };

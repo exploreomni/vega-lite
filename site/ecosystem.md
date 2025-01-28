@@ -33,6 +33,7 @@ We mark featured plugins and tools with a <span class="octicon octicon-star"></s
 
 - [altair-transform](https://github.com/altair-viz/altair-transform), a Python library for pre-evaluating Altair/Vega-Lite transforms with Pandas.
 - [ibis-vega-transform](https://github.com/Quansight/ibis-vega-transform), a Python library and JupyterLab extension for evaluating Altair/Vega-Lite transforms with external databases using [Ibis](https://ibis-project.org/).
+- [StatisticalGraphics.jl](https://sl-solution.github.io/StatisticalGraphics.jl/stable/Plots/), a Julia library for statistical graphics.
 - <span class="octicon octicon-star"></span> [VegaFusion](https://vegafusion.io/), a Rust library and Python API that provides server-side acceleration for interactive Altair/Vega-Lite visualizations using [Apache Arrow](https://arrow.apache.org/) and [DataFusion](https://arrow.apache.org/datafusion/).
 - [Scalable Vega](https://github.com/vega/scalable-vega), a demo of how to scale Vega to large datasets by implementing a custom transform that accepts SQL queries and requests data from an external database.
 
@@ -68,7 +69,9 @@ We mark featured plugins and tools with a <span class="octicon octicon-star"></s
 - [Jekyll Diagrams](https://github.com/zhustec/jekyll-diagrams) A Jekyll plugin with support for Vega & Vega-Lite and others diagramming libraries.
 - [Liquid Diagrams](https://github.com/zhustec/liquid-diagrams) A Liquid plugin with support for Vega & Vega-Lite and others diagramming libraries.
 - [Vega-Lite-Linter](https://github.com/idvxlab/vega-lite-linter) is a python package to help users detect and fix encoding issues.
-- [PyGWalker](https://github.com/Kanaries/pygwalker) Turn your pandas dataframe into a Tableau-style User Interface for visual analysis.
+- [VegaLite](https://github.com/JoshDavid/VegaLite) is a library for [Dyalog APL](https://www.dyalog.com) to build and render Vega-Lite specifications from your data.
+- [React Spectrum Charts](https://github.com/adobe/react-spectrum-charts) are declarative visualization components from Adobe using Vega and Vega-Lite.
+- [vega-view](https://github.com/cuprous-au/vega-view) displays [nushell](https://www.nushell.sh/) tables using Vega-Lite in a webview.
 
 ## Programming / Data Science Environment that supports Vega-Lite
 
@@ -106,6 +109,10 @@ We mark featured plugins and tools with a <span class="octicon octicon-star"></s
 - [MarkText](https://github.com/marktext/marktext): An open-source markdown editor that supports Vega-Lite.
 - [Scalene](https://github.com/plasma-umass/scalene): A CPU+GPU+memory profiler for Python.
 - [CSrankings](https://csrankings.org): a metrics-based ranking of top computer science institutions around the world.
+- [Kibana](https://github.com/elastic/kibana): a browser-based analytics and search dashboard for Elasticsearch that supports [authoring and embedding Vega and Vega-Lite visualizations](https://www.elastic.co/guide/en/kibana/current/vega.html).
+- [PyGWalker](https://github.com/Kanaries/pygwalker) A python library that turns your data into an interactive visual exploration app with one line of code.
+- [GWalkR](https://github.com/Kanaries/GWalkR) An R library that turns your dataframe into an interactive visual exploration app in RStudio.
+- [graphic-walker](https://github.com/Kanaries/graphic-walker), an open-source alternative to Tableau, is a versatile visualization tool for data exploration and no-code Vega-Lite editing, that can be easily embedded as a component in web apps.
 - [prolly-yes.com](https://probability.prolly-yes.com) An online graphical interface for probability distributions. Leverages Vega to create beautiful and intuitive visualizations.
 
 ## Tools for Embedding Vega-Lite Visualizations
@@ -120,4 +127,3 @@ We mark featured plugins and tools with a <span class="octicon octicon-star"></s
 - [generator-veeg](https://github.com/millette/generator-veeg) is a Vega and Vega-Lite boilerplate generator for [Yeoman](https://yeoman.io/).
 - [Kroki](https://kroki.io/) is a service to render Vega and Vega-Lite as PNG, SVG, or PDF.
 - [vega_embed_flutter](https://pub.dev/packages/vega_embed_flutter), a flutter-web widget to embed Vega-Lite specs into flutter-web apps.
-- [graphic-walker](https://github.com/Kanaries/graphic-walker), an open-source alternative to Tableau, is a versatile visualization tool for data exploration and no-code Vega-Lite editing, that can be easily embedded as a component in web apps.

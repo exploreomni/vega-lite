@@ -82,10 +82,10 @@ function onDelta(
   const name = selCmpt.name;
   const channel = proj.channel as ScaleChannel;
   const boundScales = scalesCompiler.defined(selCmpt);
-  const signal = signals.filter(s => s.name === proj.signals[boundScales ? 'data' : 'visual'])[0];
+  const signal = signals.find(s => s.name === proj.signals[boundScales ? 'data' : 'visual']);
   const sizeSg = model.getSizeSignalRef(size).signal;
   const scaleCmpt = model.getScaleComponent(channel);
-  const scaleType = scaleCmpt && scaleCmpt.get('type');
+  const scaleType = scaleCmpt?.get('type');
   const base = boundScales ? domain(model, channel) : signal.name;
   const delta = name + DELTA;
   const anchor = `${name}${ANCHOR}.${channel}`;
@@ -93,19 +93,19 @@ function onDelta(
     !boundScales || !scaleCmpt
       ? 'zoomLinear'
       : scaleType === 'log'
-      ? 'zoomLog'
-      : scaleType === 'symlog'
-      ? 'zoomSymlog'
-      : scaleType === 'pow'
-      ? 'zoomPow'
-      : 'zoomLinear';
+        ? 'zoomLog'
+        : scaleType === 'symlog'
+          ? 'zoomSymlog'
+          : scaleType === 'pow'
+            ? 'zoomPow'
+            : 'zoomLinear';
   const arg = !boundScales
     ? ''
     : scaleType === 'pow'
-    ? `, ${scaleCmpt.get('exponent') ?? 1}`
-    : scaleType === 'symlog'
-    ? `, ${scaleCmpt.get('constant') ?? 1}`
-    : '';
+      ? `, ${scaleCmpt.get('exponent') ?? 1}`
+      : scaleType === 'symlog'
+        ? `, ${scaleCmpt.get('constant') ?? 1}`
+        : '';
   const update = `${zoomFn}(${base}, ${anchor}, ${delta}${arg})`;
 
   signal.on.push({

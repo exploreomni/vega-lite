@@ -49,7 +49,7 @@
       "name": "unit",
       "value": {},
       "on": [
-        {"events": "mousemove", "update": "isTuple(group()) ? group() : unit"}
+        {"events": "pointermove", "update": "isTuple(group()) ? group() : unit"}
       ]
     },
     {
@@ -74,7 +74,7 @@
               "markname": "series_legend_entries"
             }
           ],
-          "update": "datum.value || item().items[0].items[0].datum.value",
+          "update": "isDefined(datum.value) ? datum.value : item().items[0].items[0].datum.value",
           "force": true
         },
         {
@@ -138,7 +138,7 @@
           "name": "marks",
           "type": "area",
           "style": ["area"],
-          "sort": {"field": "datum[\"yearmonth_date\"]"},
+          "sort": {"field": "x"},
           "interactive": true,
           "from": {"data": "faceted_path_main"},
           "encode": {
@@ -199,6 +199,9 @@
       "gridScale": "y",
       "grid": true,
       "tickCount": {"signal": "ceil(width/40)"},
+      "tickMinStep": {
+        "signal": "datetime(2001, 1, 1, 0, 0, 0, 0) - datetime(2001, 0, 1, 0, 0, 0, 0)"
+      },
       "domain": false,
       "labels": false,
       "aria": false,
@@ -218,6 +221,9 @@
       "labelFlush": true,
       "labelOverlap": true,
       "tickCount": {"signal": "ceil(width/40)"},
+      "tickMinStep": {
+        "signal": "datetime(2001, 1, 1, 0, 0, 0, 0) - datetime(2001, 0, 1, 0, 0, 0, 0)"
+      },
       "zindex": 0
     }
   ],

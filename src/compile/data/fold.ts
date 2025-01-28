@@ -1,4 +1,4 @@
-import {FoldTransform as VgFoldTransform} from 'vega';
+import type {FoldTransform as VgFoldTransform} from 'vega';
 import {FoldTransform} from '../../transform';
 import {duplicate, hash} from '../../util';
 import {DataFlowNode} from './dataflow';
@@ -11,7 +11,10 @@ export class FoldTransformNode extends DataFlowNode {
     return new FoldTransformNode(null, duplicate(this.transform));
   }
 
-  constructor(parent: DataFlowNode, private transform: FoldTransform) {
+  constructor(
+    parent: DataFlowNode,
+    private transform: FoldTransform
+  ) {
     super(parent);
     this.transform = duplicate(transform); // duplicate to prevent side effects
     const specifiedAs = this.transform.as ?? [undefined, undefined];
