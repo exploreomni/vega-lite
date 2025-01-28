@@ -415,6 +415,14 @@ export interface ScaleConfig<ES extends ExprRef | SignalRef> {
    * Reverse x-scale by default (useful for right-to-left charts).
    */
   xReverse?: boolean | ES;
+
+  /**
+   * Default `scale.zero` for [`continuous`](https://vega.github.io/vega-lite/docs/scale.html#continuous) scales except for (1) x/y-scales of non-ranged bar or area charts and (2) size scales.
+   *
+   * __Default value:__ `true`
+   *
+   */
+  zero?: boolean;
 }
 
 export const defaultScaleConfig: ScaleConfig<SignalRef> = {
@@ -439,7 +447,9 @@ export const defaultScaleConfig: ScaleConfig<SignalRef> = {
   minStrokeWidth: 1,
   maxStrokeWidth: 4,
   quantileCount: 4,
-  quantizeCount: 4
+  quantizeCount: 4,
+
+  zero: true
 };
 
 export interface SchemeParams {
@@ -487,7 +497,7 @@ export interface DomainUnionWith {
 }
 
 export function isDomainUnionWith(domain: Domain): domain is DomainUnionWith {
-  return domain && domain['unionWith'];
+  return domain?.['unionWith'];
 }
 
 export interface FieldRange {
@@ -811,7 +821,7 @@ export function channelScalePropertyIncompatability(channel: Channel, propName: 
     case 'scheme':
     case 'domainMid':
       if (!isColorChannel(channel)) {
-        return log.message.cannotUseScalePropertyWithNonColor(channel);
+        return log.message.cannotUseScalePropertyWithNonColor(propName);
       }
       return undefined;
     case 'align':

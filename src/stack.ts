@@ -82,9 +82,12 @@ function isUnbinnedQuantitative(channelDef: PositionDef<string>) {
 
 function potentialStackedChannel(
   encoding: Encoding<string>,
-  x: 'x' | 'theta'
+  x: 'x' | 'theta',
+  {orient, type: mark}: MarkDef
 ): 'x' | 'y' | 'theta' | 'radius' | undefined {
   const y = x === 'x' ? 'y' : 'radius';
+
+  const isCartesian = x === 'x';
 
   const xDef = encoding[x];
   const yDef = encoding[y];
@@ -108,6 +111,14 @@ function potentialStackedChannel(
         if (xScale && xScale !== 'linear') {
           return y;
         } else if (yScale && yScale !== 'linear') {
+          return x;
+        }
+      }
+
+      if (isCartesian && mark === 'bar') {
+        if (orient === 'vertical') {
+          return y;
+        } else if (orient === 'horizontal') {
           return x;
         }
       }
@@ -137,16 +148,10 @@ function getDimensionChannel(channel: 'x' | 'y' | 'theta' | 'radius') {
   }
 }
 
-// Note: CompassQL uses this method and only pass in required properties of each argument object.
-// If required properties change, make sure to update CompassQL.
-export function stack(
-  m: Mark | MarkDef,
-  encoding: Encoding<string>,
-  opt: {
-    disallowNonLinearStack?: boolean; // This option is for CompassQL
-  } = {}
-): StackProperties {
-  const mark = isMarkDef(m) ? m.type : m;
+export function stack(m: Mark | MarkDef, encoding: Encoding<string>): StackProperties {
+  const markDef = isMarkDef(m) ? m : {type: m};
+  const mark = markDef.type;
+
   // Should have stackable mark
   if (!STACKABLE_MARKS.has(mark)) {
     return null;
@@ -157,7 +162,8 @@ export function stack(
 
   // Note: The logic here is not perfectly correct.  If we want to support stacked dot plots where each dot is a pie chart with label, we have to change the stack logic here to separate Cartesian stacking for polar stacking.
   // However, since we probably never want to do that, let's just note the limitation here.
-  const fieldChannel = potentialStackedChannel(encoding, 'x') || potentialStackedChannel(encoding, 'theta');
+  const fieldChannel =
+    potentialStackedChannel(encoding, 'x', markDef) || potentialStackedChannel(encoding, 'theta', markDef);
 
   if (!fieldChannel) {
     return null;
@@ -241,11 +247,8 @@ export function stack(
 
   // warn when stacking non-linear
   if (stackedFieldDef?.scale?.type && stackedFieldDef?.scale?.type !== ScaleType.LINEAR) {
-    if (opt.disallowNonLinearStack) {
-      return null;
-    } else {
-      log.warn(log.message.cannotStackNonLinearScale(stackedFieldDef.scale.type));
-    }
+    log.warn(log.message.cannotStackNonLinearScale(stackedFieldDef.scale.type));
+    return null;
   }
 
   // Check if it is a ranged mark

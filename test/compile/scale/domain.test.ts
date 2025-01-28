@@ -50,7 +50,7 @@ describe('compile/scale', () => {
       });
 
       const xDomain = testParseDomainForChannel(model, 'x');
-      expect(xDomain).toEqual([{data: 'main', field: 'a'}, [0, 100]]);
+      expect(xDomain).toEqual([[0, 100], {data: 'main', field: 'a'}]);
     });
 
     it('correctly parse signal domain', () => {
@@ -1078,6 +1078,38 @@ describe('compile/scale', () => {
           data: 'foo',
           fields: ['a', 'b'],
           sort: true
+        });
+
+        expect(localLogger.warns[0]).toEqual(log.message.MORE_THAN_ONE_SORT);
+      })
+    );
+
+    it(
+      'should use non-min aggregation when sort ops conflict',
+      log.wrap(localLogger => {
+        const domain = mergeDomains([
+          {
+            data: 'foo',
+            field: 'a',
+            sort: {
+              op: 'min'
+            }
+          },
+          {
+            data: 'foo',
+            field: 'a',
+            sort: {
+              op: 'sum'
+            }
+          }
+        ]);
+
+        expect(domain).toEqual({
+          data: 'foo',
+          field: 'a',
+          sort: {
+            op: 'sum'
+          }
         });
 
         expect(localLogger.warns[0]).toEqual(log.message.MORE_THAN_ONE_SORT);

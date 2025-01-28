@@ -4,7 +4,10 @@
   "padding": 5,
   "style": "cell",
   "data": [
-    {"name": "pts_store"},
+    {
+      "name": "pts_store",
+      "transform": [{"type": "collect", "sort": {"field": "_vgsid_"}}]
+    },
     {
       "name": "source_0",
       "url": "data/cars.json",
@@ -46,13 +49,12 @@
       "on": [
         {
           "events": [{"source": "scope", "type": "click"}],
-          "update": "datum && item().mark.marktype !== 'group' ? {unit: \"\", fields: pts_tuple_fields, values: [(item().isVoronoi ? datum.datum : datum)[\"_vgsid_\"]]} : null",
+          "update": "datum && item().mark.marktype !== 'group' && indexof(item().mark.role, 'legend') < 0 ? {unit: \"\", _vgsid_: (item().isVoronoi ? datum.datum : datum)[\"_vgsid_\"]} : null",
           "force": true
         },
         {"events": [{"source": "view", "type": "dblclick"}], "update": "null"}
       ]
     },
-    {"name": "pts_tuple_fields", "value": [{"type": "E", "field": "_vgsid_"}]},
     {
       "name": "pts_toggle",
       "value": false,
@@ -85,7 +87,7 @@
         "update": {
           "fill": [
             {
-              "test": "!length(data(\"pts_store\")) || vlSelectionTest(\"pts_store\", datum)",
+              "test": "!length(data(\"pts_store\")) || vlSelectionIdTest(\"pts_store\", datum)",
               "scale": "color",
               "field": "__count"
             },
@@ -95,9 +97,9 @@
             "signal": "\"Cylinders: \" + (isValid(datum[\"Cylinders\"]) ? datum[\"Cylinders\"] : \"\"+datum[\"Cylinders\"]) + \"; Origin: \" + (isValid(datum[\"Origin\"]) ? datum[\"Origin\"] : \"\"+datum[\"Origin\"]) + \"; Count of Records: \" + (format(datum[\"__count\"], \"\"))"
           },
           "x": {"scale": "x", "field": "Cylinders"},
-          "width": {"scale": "x", "band": 1},
+          "width": {"signal": "max(0.25, bandwidth('x'))"},
           "y": {"scale": "y", "field": "Origin"},
-          "height": {"scale": "y", "band": 1}
+          "height": {"signal": "max(0.25, bandwidth('y'))"}
         }
       }
     }

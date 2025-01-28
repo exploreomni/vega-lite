@@ -3,14 +3,14 @@ import {sync as mkdirp} from 'mkdirp';
 import {Page} from 'puppeteer/lib/cjs/puppeteer/common/Page';
 import {promisify} from 'util';
 import {stringValue} from 'vega-util';
-import {SelectionResolution, SelectionType} from '../src/selection';
+import {IntervalSelectionConfigWithoutType, SelectionResolution, SelectionType} from '../src/selection';
 import {NormalizedLayerSpec, NormalizedUnitSpec, TopLevelSpec} from '../src/spec';
 
 const generate = process.env.VL_GENERATE_TESTS;
 const output = 'test-runtime/resources';
 
 export type ComposeType = 'unit' | 'repeat' | 'facet';
-export const selectionTypes: SelectionType[] = ['point', 'interval'];
+export const selectionTypes: SelectionType[] = ['point', 'interval', 'region'];
 export const compositeTypes: ComposeType[] = ['repeat', 'facet'];
 export const resolutions: SelectionResolution[] = ['union', 'intersect'];
 
@@ -56,7 +56,7 @@ const UNIT_NAMES = {
 };
 
 export const hits = {
-  discrete: {
+  point: {
     qq: [8, 19],
     qq_clear: [5, 16],
 
@@ -104,7 +104,57 @@ export const hits = {
       [4, 10]
     ],
     facet_clear: [[3], [5], [7]]
+  },
+
+  region: {
+    circle: [
+      {id: 14, count: 5},
+      {id: 3, count: 2},
+      {id: 6, count: 4}
+    ],
+    circle_clear: [{id: 14}],
+
+    polygon: [
+      {
+        id: 6,
+        coords: [
+          [-30, -30],
+          [-30, 30],
+          [30, 30],
+          [30, -30]
+        ],
+        count: 4
+      },
+      {
+        id: 14,
+        coords: [
+          [-30, -30],
+          [-30, 30],
+          [-15, 15],
+          [-15, -15],
+          [15, -15],
+          [15, 30],
+          [30, 30],
+          [30, -30]
+        ],
+        count: 2
+      }
+    ],
+
+    facet: [2, 4, 7],
+    facet_clear: [3, 5, 8],
+
+    repeat: [5, 10, 16],
+    repeat_clear: [13, 14, 2]
   }
+};
+
+const config = {
+  // reduce changes in generated SVGs
+  aria: false,
+
+  // A lot of magic numbers in this file use the old step = 21
+  view: {discreteWidth: {step: 21}, discreteHeight: {step: 21}}
 };
 
 function base(iter: number, selDef: any, opts: any = {}): NormalizedUnitSpec | NormalizedLayerSpec {
@@ -160,13 +210,6 @@ function base(iter: number, selDef: any, opts: any = {}): NormalizedUnitSpec | N
 export function spec(compose: ComposeType, iter: number, sel: any, opts: any = {}): TopLevelSpec {
   const {data, ...specification} = base(iter, sel, opts);
   const resolve = opts.resolve;
-  const config = {
-    // reduce changes in generated SVGs
-    aria: false,
-
-    // A lot of magic numbers in this file use the old step = 21
-    view: {discreteWidth: {step: 21}, discreteHeight: {step: 21}}
-  };
   switch (compose) {
     case 'unit':
       return {data, ...specification, config} as TopLevelSpec;
@@ -189,6 +232,65 @@ export function spec(compose: ComposeType, iter: number, sel: any, opts: any = {
   }
 }
 
+export function geoSpec(selDef?: IntervalSelectionConfigWithoutType): TopLevelSpec {
+  return {
+    width: 500,
+    height: 300,
+    projection: {type: 'albersUsa'},
+    config,
+    data: {
+      values: [
+        {latitude: 31.95376472, longitude: -89.23450472},
+        {latitude: 30.68586111, longitude: -95.01792778},
+        {latitude: 38.94574889, longitude: -104.5698933},
+        {latitude: 42.74134667, longitude: -78.05208056},
+        {latitude: 30.6880125, longitude: -81.90594389},
+        {latitude: 34.49166667, longitude: -88.20111111},
+        {latitude: 32.85048667, longitude: -86.61145333},
+        {latitude: 43.08751, longitude: -88.17786917},
+        {latitude: 40.67331278, longitude: -80.64140639},
+        {latitude: 40.44725889, longitude: -92.22696056},
+        {latitude: 33.93011222, longitude: -89.34285194},
+        {latitude: 46.88384889, longitude: -96.35089861},
+        {latitude: 41.51961917, longitude: -87.40109333},
+        {latitude: 31.42127556, longitude: -97.79696778},
+        {latitude: 39.60416667, longitude: -116.0050597},
+        {latitude: 32.46047167, longitude: -85.68003611},
+        {latitude: 41.98934083, longitude: -88.10124278},
+        {latitude: 48.88434111, longitude: -99.62087694},
+        {latitude: 33.53456583, longitude: -89.31256917},
+        {latitude: 41.43156583, longitude: -74.39191722},
+        {latitude: 41.97602222, longitude: -114.6580911},
+        {latitude: 41.30716667, longitude: -85.06433333},
+        {latitude: 32.52883861, longitude: -94.97174556},
+        {latitude: 42.57450861, longitude: -84.81143139},
+        {latitude: 41.11668056, longitude: -98.05033639},
+        {latitude: 32.52943944, longitude: -86.32822139},
+        {latitude: 48.30079861, longitude: -102.4063514},
+        {latitude: 40.65138528, longitude: -98.07978667},
+        {latitude: 32.76124611, longitude: -89.53007139},
+        {latitude: 32.11931306, longitude: -88.1274625}
+      ]
+    },
+    mark: 'circle',
+    params: [
+      {
+        name: 'sel',
+        select: {type: 'interval', ...selDef}
+      }
+    ],
+    encoding: {
+      longitude: {field: 'longitude', type: 'quantitative'},
+      latitude: {field: 'latitude', type: 'quantitative'},
+      color: {
+        condition: {param: 'sel', empty: false, value: 'goldenrod'},
+        value: 'steelblue'
+      },
+      size: {value: 10}
+    }
+  };
+}
+
 export function unitNameRegex(specType: ComposeType, idx: number) {
   const name = UNIT_NAMES[specType][idx].replace('child_', '');
   return new RegExp(`child(.*?)_${name}`);
@@ -198,6 +300,24 @@ export function parentSelector(compositeType: ComposeType, index: number) {
   return compositeType === 'facet' ? `cell > g:nth-child(${index + 1})` : `${UNIT_NAMES.repeat[index]}_group`;
 }
 
+export function clearRegion(idx: number, parent?: string, targetBrush?: boolean) {
+  return `clear(${idx}, ${stringValue(parent)}, ${!!targetBrush})`;
+}
+
+export function circleRegion(idx: number, parent?: string, targetBrush?: boolean, radius = 40, segments = 20) {
+  return `circleRegion(${idx}, ${radius}, ${segments}, ${stringValue(parent)}, ${!!targetBrush})`;
+}
+
+export function polygonRegion(idx: number, polygon: number[][], parent?: string, targetBrush?: boolean) {
+  return `polygonRegion(${idx}, ${JSON.stringify(polygon)}, ${stringValue(parent)}, ${!!targetBrush})`;
+}
+
+export function multiviewRegion(key: string, idx: number, parent?: string, targetBrush?: boolean) {
+  return key.match('_clear')
+    ? clearRegion(hits.region[key][idx], parent, targetBrush)
+    : circleRegion(hits.region[key][idx], parent, targetBrush, 10);
+}
+
 export function brush(key: string, idx: number, parent?: string, targetBrush?: boolean) {
   const fn = key.match('_clear') ? 'clear' : 'brush';
   return `${fn}(${hits.interval[key][idx].join(', ')}, ${stringValue(parent)}, ${!!targetBrush})`;
@@ -205,7 +325,7 @@ export function brush(key: string, idx: number, parent?: string, targetBrush?: b
 
 export function pt(key: string, idx: number, parent?: string) {
   const fn = key.match('_clear') ? 'clear' : 'pt';
-  return `${fn}(${hits.discrete[key][idx]}, ${stringValue(parent)})`;
+  return `${fn}(${hits.point[key][idx]}, ${stringValue(parent)})`;
 }
 
 export function embedFn(page: Page) {

@@ -7,15 +7,13 @@ import {ParameterName} from './parameter';
 import {Dict} from './util';
 
 export const SELECTION_ID = '_vgsid_';
-export type SelectionType = 'point' | 'interval';
+export type SelectionType = 'point' | 'interval' | 'region';
 export type SelectionResolution = 'global' | 'union' | 'intersect';
 
 export type SelectionInit = PrimitiveValue | DateTime;
 export type SelectionInitInterval = Vector2<boolean> | Vector2<number> | Vector2<string> | Vector2<DateTime>;
-
 export type SelectionInitMapping = Dict<SelectionInit>;
 export type SelectionInitIntervalMapping = Dict<SelectionInitInterval>;
-
 export type LegendStreamBinding = {legend: string | Stream};
 export type LegendBinding = 'legend' | LegendStreamBinding;
 
@@ -86,12 +84,12 @@ export interface PointSelectionConfig extends BaseSelectionConfig<'point'> {
 
   /**
    * Controls whether data values should be toggled (inserted or removed from a point selection)
-   * or only ever inserted into multi selections.
+   * or only ever inserted into point selections.
    *
    * One of:
    * - `true` -- the default behavior, which corresponds to `"event.shiftKey"`.  As a result, data values are toggled when the user interacts with the shift-key pressed.
-   * - `false` -- disables toggling behaviour; as the user interacts, data values are only inserted into the multi selection and never removed.
-   * - A [Vega expression](https://vega.github.io/vega/docs/expressions/) which is re-evaluated as the user interacts. If the expression evaluates to `true`, the data value is toggled into or out of the multi selection. If the expression evaluates to `false`, the multi selection is first clear, and the data value is then inserted. For example, setting the value to the Vega expression `"true"` will toggle data values
+   * - `false` -- disables toggling behaviour; the selection will only ever contain a single data value corresponding to the most recent interaction.
+   * - A [Vega expression](https://vega.github.io/vega/docs/expressions/) which is re-evaluated as the user interacts. If the expression evaluates to `true`, the data value is toggled into or out of the point selection. If the expression evaluates to `false`, the point selection is first cleared, and the data value is then inserted. For example, setting the value to the Vega expression `"true"` will toggle data values
    * without the user pressing the shift-key.
    *
    * __Default value:__ `true`
@@ -200,6 +198,17 @@ export interface IntervalSelectionConfig extends BaseSelectionConfig<'interval'>
   mark?: BrushConfig;
 }
 
+export interface RegionSelectionConfig extends BaseSelectionConfig<'region'> {
+  /**
+   * A region selection also adds a path mark to depict the
+   * shape of the region. The `mark` property can be used to customize the
+   * appearance of the mark.
+   *
+   * __See also:__ [`mark` examples](https://vega.github.io/vega-lite/docs/selection.html#mark) in the documentation.
+   */
+  mark?: BrushConfig;
+}
+
 export interface SelectionParameter<T extends SelectionType = SelectionType> {
   /**
    * Required. A unique name for the selection parameter. Selection names should be valid JavaScript identifiers: they should contain only alphanumeric characters (or "$", or "_") and may not start with a digit. Reserved keywords that may not be used as parameter names are "datum", "event", "item", and "parent".
@@ -212,7 +221,15 @@ export interface SelectionParameter<T extends SelectionType = SelectionType> {
    * - `"point"` -- to select multiple discrete data values; the first value is selected on `click` and additional values toggled on shift-click.
    * - `"interval"` -- to select a continuous range of data values on `drag`.
    */
-  select: T | (T extends 'point' ? PointSelectionConfig : T extends 'interval' ? IntervalSelectionConfig : never);
+  select:
+    | T
+    | (T extends 'point'
+        ? PointSelectionConfig
+        : T extends 'interval'
+        ? IntervalSelectionConfig
+        : T extends 'region'
+        ? RegionSelectionConfig
+        : never);
 
   /**
    * Initialize the selection with a mapping between [projected channels or field names](https://vega.github.io/vega-lite/docs/selection.html#project) and initial values.
@@ -249,7 +266,7 @@ export type TopLevelSelectionParameter = SelectionParameter & {
    * By default, top-level selections are applied to every view in the visualization.
    * If this property is specified, selections will only be applied to views with the given names.
    */
-  views?: (string | string[])[];
+  views?: string[];
 };
 
 export type ParameterExtent =
@@ -282,6 +299,8 @@ export type PointSelectionConfigWithoutType = Omit<PointSelectionConfig, 'type'>
 
 export type IntervalSelectionConfigWithoutType = Omit<IntervalSelectionConfig, 'type'>;
 
+export type RegionSelectionConfigWithoutType = Omit<RegionSelectionConfig, 'type'>;
+
 export interface SelectionConfig {
   /**
    * The default definition for a [`point`](https://vega.github.io/vega-lite/docs/parameter.html#select) selection. All properties and transformations
@@ -299,6 +318,12 @@ export interface SelectionConfig {
    * interval selections by default.
    */
   interval?: IntervalSelectionConfigWithoutType;
+
+  /**
+   * The default definition for an [`region`](https://vega.github.io/vega-lite/docs/parameter.html#select) selection. All properties and transformations
+   * for an region selection definition (except `type`) may be specified here.
+   */
+  region?: RegionSelectionConfigWithoutType;
 }
 
 export const defaultConfig: SelectionConfig = {
@@ -317,11 +342,17 @@ export const defaultConfig: SelectionConfig = {
     mark: {fill: '#333', fillOpacity: 0.125, stroke: 'white'},
     resolve: 'global',
     clear: 'dblclick'
+  },
+  region: {
+    on: '[mousedown, window:mouseup] > window:mousemove!',
+    resolve: 'global',
+    mark: {fill: '#333', fillOpacity: 0.125, stroke: 'gray', strokeWidth: 2, strokeDash: [8, 5]},
+    clear: 'dblclick'
   }
 };
 
 export function isLegendBinding(bind: any): bind is LegendBinding {
-  return !!bind && (bind === 'legend' || !!bind.legend);
+  return bind === 'legend' || !!bind?.legend;
 }
 
 export function isLegendStreamBinding(bind: any): bind is LegendStreamBinding {
@@ -329,5 +360,5 @@ export function isLegendStreamBinding(bind: any): bind is LegendStreamBinding {
 }
 
 export function isSelectionParameter(param: any): param is SelectionParameter {
-  return !!param['select'];
+  return !!param?.['select'];
 }

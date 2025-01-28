@@ -143,21 +143,20 @@ export type StringValueDefWithCondition<F extends Field, T extends Type = Standa
 >;
 export type TypeForShape = 'nominal' | 'ordinal' | 'geojson';
 
-export type Conditional<CD extends FieldDef<any> | DatumDef | ValueDef<any> | ExprRef | SignalRef> =
-  | ConditionalPredicate<CD>
-  | ConditionalParameter<CD>;
+export type ConditionalTemplate = FieldDef<any> | DatumDef | ValueDef<any> | ExprRef | SignalRef;
 
-export type ConditionalPredicate<CD extends FieldDef<any> | DatumDef | ValueDef<any> | ExprRef | SignalRef> = {
+export type Conditional<CD extends ConditionalTemplate> = ConditionalPredicate<CD> | ConditionalParameter<CD>;
+
+export type ConditionalPredicate<CD extends ConditionalTemplate> = {
   /**
    * Predicate for triggering the condition
    */
   test: LogicalComposition<Predicate>;
 } & CD;
 
-export type ConditionalParameter<CD extends FieldDef<any> | DatumDef | ValueDef<any> | ExprRef | SignalRef> =
-  ParameterPredicate & CD;
+export type ConditionalParameter<CD extends ConditionalTemplate> = ParameterPredicate & CD;
 
-export function isConditionalParameter<T>(c: Conditional<T>): c is ConditionalParameter<T> {
+export function isConditionalParameter<T extends ConditionalTemplate>(c: Conditional<T>): c is ConditionalParameter<T> {
   return c['param'];
 }
 
@@ -425,9 +424,9 @@ export interface FieldDefBase<F, B extends Bin = Bin> extends BandMixins {
   aggregate?: Aggregate | HiddenCompositeAggregate;
 
   /**
-   * A flag for binning a `quantitative` field, [an object defining binning parameters](https://vega.github.io/vega-lite/docs/bin.html#params), or indicating that the data for `x` or `y` channel are binned before they are imported into Vega-Lite (`"binned"`).
+   * A flag for binning a `quantitative` field, [an object defining binning parameters](https://vega.github.io/vega-lite/docs/bin.html#bin-parameters), or indicating that the data for `x` or `y` channel are binned before they are imported into Vega-Lite (`"binned"`).
    *
-   * - If `true`, default [binning parameters](https://vega.github.io/vega-lite/docs/bin.html) will be applied.
+   * - If `true`, default [binning parameters](https://vega.github.io/vega-lite/docs/bin.html#bin-parameters) will be applied.
    *
    * - If `"binned"`, this indicates that the data for the `x` (or `y`) channel are already binned. You can map the bin-start field to `x` (or `y`) and the bin-end field to `x2` (or `y2`). The scale and axis will be formatted similar to binning in Vega-Lite.  To adjust the axis ticks based on the bin step, you can also set the axis's [`tickMinStep`](https://vega.github.io/vega-lite/docs/axis.html#ticks) property.
    *
@@ -462,7 +461,7 @@ export interface TypeMixins<T extends Type> {
    * 1) For a data `field`, `"nominal"` is the default data type unless the field encoding has `aggregate`, `channel`, `bin`, scale type, `sort`, or `timeUnit` that satisfies the following criteria:
    * - `"quantitative"` is the default type if (1) the encoded field contains `bin` or `aggregate` except `"argmin"` and `"argmax"`, (2) the encoding channel is `latitude` or `longitude` channel or (3) if the specified scale type is [a quantitative scale](https://vega.github.io/vega-lite/docs/scale.html#type).
    * - `"temporal"` is the default type if (1) the encoded field contains `timeUnit` or (2) the specified scale type is a time or utc scale
-   * - `ordinal""` is the default type if (1) the encoded field contains a [custom `sort` order](https://vega.github.io/vega-lite/docs/sort.html#specifying-custom-sort-order), (2) the specified scale type is an ordinal/point/band scale, or (3) the encoding channel is `order`.
+   * - `"ordinal"` is the default type if (1) the encoded field contains a [custom `sort` order](https://vega.github.io/vega-lite/docs/sort.html#specifying-custom-sort-order), (2) the specified scale type is an ordinal/point/band scale, or (3) the encoding channel is `order`.
    *
    * 2) For a constant value in data domain (`datum`):
    * - `"quantitative"` if the datum is a number
@@ -626,7 +625,7 @@ export interface PositionBaseMixins {
    *
    * `stack` can be one of the following values:
    * - `"zero"` or `true`: stacking with baseline offset at zero value of the scale (for creating typical stacked [bar](https://vega.github.io/vega-lite/docs/stack.html#bar) and [area](https://vega.github.io/vega-lite/docs/stack.html#area) chart).
-   * - `"normalize"` - stacking with normalized domain (for creating [normalized stacked bar and area charts](https://vega.github.io/vega-lite/docs/stack.html#normalized). <br/>
+   * - `"normalize"` - stacking with normalized domain (for creating [normalized stacked bar and area charts](https://vega.github.io/vega-lite/docs/stack.html#normalized) and pie charts [with percentage tooltip](https://vega.github.io/vega-lite/docs/arc.html#tooltip)). <br/>
    * -`"center"` - stacking with center baseline (for [streamgraph](https://vega.github.io/vega-lite/docs/stack.html#streamgraph)).
    * - `null` or `false` - No-stacking. This will produce layered [bar](https://vega.github.io/vega-lite/docs/stack.html#layered-bar-chart) and area chart.
    *
@@ -823,21 +822,21 @@ export function isConditionalDef<CD extends ChannelDef<any> | GuideEncodingCondi
 export function hasConditionalFieldDef<F extends Field>(
   channelDef: Partial<ChannelDef<F>>
 ): channelDef is {condition: Conditional<TypedFieldDef<F>>} {
-  const condition = channelDef && channelDef['condition'];
+  const condition = channelDef?.['condition'];
   return !!condition && !isArray(condition) && isFieldDef(condition);
 }
 
 export function hasConditionalFieldOrDatumDef<F extends Field>(
   channelDef: ChannelDef<F>
 ): channelDef is {condition: Conditional<TypedFieldDef<F>>} {
-  const condition = channelDef && channelDef['condition'];
+  const condition = channelDef?.['condition'];
   return !!condition && !isArray(condition) && isFieldOrDatumDef(condition);
 }
 
 export function hasConditionalValueDef<F extends Field>(
   channelDef: ChannelDef<F>
 ): channelDef is ValueDef<any> & {condition: Conditional<ValueDef<any>> | Conditional<ValueDef<any>>[]} {
-  const condition = channelDef && channelDef['condition'];
+  const condition = channelDef?.['condition'];
   return !!condition && (isArray(condition) || isValueDef(condition));
 }
 
@@ -849,7 +848,7 @@ export function isFieldDef<F extends Field>(
 }
 
 export function channelDefType<F extends Field>(channelDef: ChannelDef<F>): Type | undefined {
-  return channelDef && channelDef['type'];
+  return channelDef?.['type'];
 }
 
 export function isDatumDef<F extends Field>(
@@ -865,9 +864,9 @@ export function isContinuousFieldOrDatumDef<F extends Field>(
   return (isTypedFieldDef(cd) && !isDiscrete(cd)) || isNumericDataDef(cd);
 }
 
-export function isQuantitativeFieldOrDatumDef<F extends Field>(cd: ChannelDef<F>) {
+export function isUnbinnedQuantitativeFieldOrDatumDef<F extends Field>(cd: ChannelDef<F>) {
   // TODO: make datum support DateTime object
-  return channelDefType(cd) === 'quantitative' || isNumericDataDef(cd);
+  return (isTypedFieldDef(cd) && cd.type === 'quantitative' && !cd.bin) || isNumericDataDef(cd);
 }
 
 export function isNumericDataDef<F extends Field>(cd: ChannelDef<F>): cd is DatumDef<F, number> {

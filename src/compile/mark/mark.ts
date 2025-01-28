@@ -556,7 +556,7 @@ function interactiveFlag(model: UnitModel) {
   }
   return parentCount
     ? {
-        interactive: unitCount > 0 || !!model.encoding.tooltip
+        interactive: unitCount > 0 || model.mark === 'geoshape' || !!model.encoding.tooltip
       }
     : null;
 }

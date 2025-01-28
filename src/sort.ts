@@ -15,7 +15,7 @@ export interface SortField {
   field: FieldName;
 
   /**
-   * Whether to sort the field in ascending or descending order. One of `"ascending"` (default), `"descending"`, or `null` (no not sort).
+   * Whether to sort the field in ascending or descending order. One of `"ascending"` (default), `"descending"`, or `null` (do not sort).
    */
   order?: SortOrder | null;
 }
@@ -50,7 +50,7 @@ export interface EncodingSortField<F> {
   op?: NonArgAggregateOp;
 
   /**
-   * The sort order. One of `"ascending"` (default), `"descending"`, or `null` (no not sort).
+   * The sort order. One of `"ascending"` (default), `"descending"`, or `null` (do not sort).
    */
   order?: SortOrder | null;
 }
@@ -62,7 +62,7 @@ export interface SortByEncoding {
   encoding: SortByChannel;
 
   /**
-   * The sort order. One of `"ascending"` (default), `"descending"`, or `null` (no not sort).
+   * The sort order. One of `"ascending"` (default), `"descending"`, or `null` (do not sort).
    */
   order?: SortOrder | null;
 }
@@ -109,13 +109,13 @@ export type AllSortString = SortOrder | SortByChannel | SortByChannelDesc;
 export type Sort<F> = SortArray | AllSortString | EncodingSortField<F> | SortByEncoding | null;
 
 export function isSortByEncoding<F>(sort: Sort<F>): sort is SortByEncoding {
-  return !!sort && !!sort['encoding'];
+  return !!sort?.['encoding'];
 }
 
 export function isSortField<F>(sort: Sort<F>): sort is EncodingSortField<F> {
-  return !!sort && (sort['op'] === 'count' || !!sort['field']);
+  return sort && (sort['op'] === 'count' || !!sort['field']);
 }
 
 export function isSortArray<F>(sort: Sort<F>): sort is SortArray {
-  return !!sort && isArray(sort);
+  return sort && isArray(sort);
 }

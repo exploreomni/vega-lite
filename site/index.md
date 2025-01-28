@@ -83,7 +83,7 @@ For more information, read our [introduction article to Vega-Lite v2 on Medium](
 - Award winning [research paper](https://idl.cs.washington.edu/papers/vega-lite) and [video of our OpenVis Conf talk](https://www.youtube.com/watch?v=9uaHRWj04D4) on the design of Vega-Lite
 - Listen to a Data Stories episode about [Declarative Visualization with Vega-Lite and Altair](http://datastori.es/121-declarative-visualization-with-vega-lite-and-altair-with-dominik-moritz-jacob-vanderplas-kanit-ham-wongsuphasawat/)
 - [JSON schema](http://json-schema.org/) specification for [Vega-Lite](https://github.com/vega/schema) ([latest](https://vega.github.io/schema/vega-lite/v5.json))
-- Ask questions about Vega-Lite on [Stack Overflow](https://stackoverflow.com/tags/vega-lite) or [Slack](https://bit.ly/join-vega-slack-2020)
+- Ask questions about Vega-Lite on [Stack Overflow](https://stackoverflow.com/tags/vega-lite) or [Slack](https://bit.ly/join-vega-slack-2022)
 - Fork our [Vega-Lite Block](https://bl.ocks.org/domoritz/455e1c7872c4b38a58b90df0c3d7b1b9), or [Observable Notebook](https://beta.observablehq.com/@domoritz/vega-lite-demo).
 
 ## Users
@@ -92,18 +92,19 @@ Vega-Lite is used by thousands of data enthusiasts, developers, journalists, dat
 
 {:.logos}
 
+- ![Airbnb]({{ site.baseurl }}/static/logo_airbnb.png 'Airbnb')
 - ![Apple]({{ site.baseurl }}/static/logo_apple.png 'Apple')
+- ![Databricks]({{ site.baseurl }}/static/logo_databricks.png 'Databricks')
 - ![Google]({{ site.baseurl }}/static/logo_google.png 'Google')
 - ![Microsoft]({{ site.baseurl }}/static/logo_ms.png 'Microsoft')
 - ![Tableau]({{ site.baseurl }}/static/logo_tableau.png 'Tableau')
-- ![Airbnb]({{ site.baseurl }}/static/logo_airbnb.png 'Airbnb')
+- ![Berkeley]({{ site.baseurl }}/static/logo_berkeley.png 'Berkeley')
+- ![Carnegie Mellon University]({{ site.baseurl }}/static/logo_cmu.png 'Carnegie Mellon University')
+- ![CERN]({{ site.baseurl }}/static/logo_cern.png 'CERN')
 - ![JupyterLab]({{ site.baseurl }}/static/logo_jlab.png 'JupyterLab')
 - ![LA Times]({{ site.baseurl }}/static/logo_la_times.png 'LA Times')
-- ![CERN]({{ site.baseurl }}/static/logo_cern.png 'CERN')
 - ![Massachusetts Institute of Technology]({{ site.baseurl }}/static/logo_mit.png 'Massachusetts Institute of Technology')
 - ![University of Washington]({{ site.baseurl }}/static/logo_uw.png 'University of Washington')
-- ![Carnegie Mellon University]({{ site.baseurl }}/static/logo_cmu.png 'Carnegie Mellon University')
-- ![Berkeley]({{ site.baseurl }}/static/logo_berkeley.png 'Berkeley')
 
 ## Team
 

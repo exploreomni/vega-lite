@@ -37,7 +37,7 @@ describe('stack', () => {
           color: {field: 'site', type: 'nominal'}
         }
       };
-      const stackProps = stack(spec.mark, spec.encoding, undefined);
+      const stackProps = stack(spec.mark, spec.encoding);
       expect(stackProps.fieldChannel).toBe(X);
     }
   });
@@ -51,7 +51,7 @@ describe('stack', () => {
           x: {field: 'yield', type: 'quantitative', bin: true}
         }
       };
-      const stackProps = stack(spec.mark, spec.encoding, undefined);
+      const stackProps = stack(spec.mark, spec.encoding);
       expect(stackProps).toBeNull();
     }
   });
@@ -67,7 +67,7 @@ describe('stack', () => {
           color: {field: 'site', type: 'nominal'}
         }
       };
-      const stackProps = stack(spec.mark, spec.encoding, undefined);
+      const stackProps = stack(spec.mark, spec.encoding);
       expect(stackProps).toBeNull();
     }
   });
@@ -82,7 +82,7 @@ describe('stack', () => {
           y: {field: 'variety', type: 'nominal'}
         }
       };
-      const stackProps = stack(spec.mark, spec.encoding, undefined);
+      const stackProps = stack(spec.mark, spec.encoding);
       expect(stackProps.fieldChannel).toBe(X);
     }
   });
@@ -98,7 +98,7 @@ describe('stack', () => {
           color: {field: 'site', type: 'nominal'}
         }
       };
-      const stackProps = stack(spec.mark, spec.encoding, undefined);
+      const stackProps = stack(spec.mark, spec.encoding);
       expect(stackProps.fieldChannel).toBe(X);
     }
   });
@@ -137,7 +137,7 @@ describe('stack', () => {
           }
         };
 
-        const _stack = stack(spec.mark, spec.encoding, undefined);
+        const _stack = stack(spec.mark, spec.encoding);
         expect(_stack).toBeTruthy();
 
         expect(_stack.stackBy[0].channel).toEqual(DETAIL);
@@ -158,7 +158,7 @@ describe('stack', () => {
       }
     };
 
-    const _stack = stack(spec.mark, spec.encoding, undefined);
+    const _stack = stack(spec.mark, spec.encoding);
     expect(_stack).toBeTruthy();
 
     for (const stackBy of _stack.stackBy) {
@@ -249,7 +249,7 @@ describe('stack', () => {
                 color: {field: 'site', type: 'nominal'}
               }
             };
-            expect(stack(spec.mark, spec.encoding)).not.toBeNull();
+            expect(stack(spec.mark, spec.encoding)).toBeNull();
 
             const warns = localLogger.warns;
             expect(warns[warns.length - 1]).toEqual(log.message.cannotStackNonLinearScale(scaleType));
@@ -259,7 +259,7 @@ describe('stack', () => {
     })
   );
 
-  it('returns null if the aggregated axis has non-linear scale and disallowNonLinearStack = true', () => {
+  it('returns null if the aggregated axis has non-linear scale', () => {
     for (const stacked of [undefined, 'center', 'zero', 'normalize'] as const) {
       for (const scaleType of [ScaleType.LOG, ScaleType.POW, ScaleType.SQRT]) {
         const marks = stacked === undefined ? STACK_BY_DEFAULT_NON_POLAR_MARKS : STACKABLE_NON_POLAR_MARKS;
@@ -273,7 +273,7 @@ describe('stack', () => {
               color: {field: 'site', type: 'nominal'}
             }
           };
-          expect(stack(spec.mark, spec.encoding, {disallowNonLinearStack: true})).toBeNull();
+          expect(stack(spec.mark, spec.encoding)).toBeNull();
         }
       }
     }
@@ -301,7 +301,7 @@ describe('stack', () => {
               }
             };
 
-            stack(spec.mark, spec.encoding, undefined);
+            stack(spec.mark, spec.encoding);
 
             const warns = localLogger.warns;
             expect(warns[warns.length - 1]).toEqual(log.message.stackNonSummativeAggregate(aggregate));
@@ -323,7 +323,7 @@ describe('stack', () => {
             color: {field: 'site', type: 'nominal'}
           }
         };
-        const _stack = stack(spec.mark, spec.encoding, undefined);
+        const _stack = stack(spec.mark, spec.encoding);
         expect(_stack.fieldChannel).toBe(X);
         expect(_stack.groupbyChannels).toEqual([Y]);
       }
@@ -339,7 +339,7 @@ describe('stack', () => {
             color: {field: 'site', type: 'nominal'}
           }
         };
-        const _stack = stack(spec.mark, spec.encoding, undefined);
+        const _stack = stack(spec.mark, spec.encoding);
         expect(_stack.fieldChannel).toBe(X);
         expect(_stack.groupbyChannels).toEqual([]);
       }
@@ -356,7 +356,7 @@ describe('stack', () => {
             color: {field: 'site', type: 'nominal'}
           }
         };
-        const _stack = stack(spec.mark, spec.encoding, undefined);
+        const _stack = stack(spec.mark, spec.encoding);
         expect(_stack.fieldChannel).toBe(Y);
         expect(_stack.groupbyChannels).toEqual([X]);
       }
@@ -372,7 +372,7 @@ describe('stack', () => {
             color: {field: 'site', type: 'nominal'}
           }
         };
-        const _stack = stack(spec.mark, spec.encoding, undefined);
+        const _stack = stack(spec.mark, spec.encoding);
         expect(_stack.fieldChannel).toBe(Y);
         expect(_stack.groupbyChannels).toEqual([]);
       }
@@ -387,7 +387,7 @@ describe('stack', () => {
           color: {field: 'id', type: 'nominal'}
         }
       };
-      const _stack = stack(spec.mark, spec.encoding, undefined);
+      const _stack = stack(spec.mark, spec.encoding);
       expect(_stack.fieldChannel).toBe('theta');
       expect(_stack.stackBy[0].channel).toBe('color');
     });
@@ -405,7 +405,7 @@ describe('stack', () => {
           }
         }
       };
-      const _stack = stack(spec.mark, spec.encoding, undefined);
+      const _stack = stack(spec.mark, spec.encoding);
       expect(_stack.fieldChannel).toBe('theta');
     });
   });
@@ -423,7 +423,7 @@ describe('stack', () => {
               color: {field: 'site', type: 'nominal'}
             }
           };
-          expect(stack(spec.mark, spec.encoding, undefined).offset).toBe('zero');
+          expect(stack(spec.mark, spec.encoding).offset).toBe('zero');
         }
       }
     });

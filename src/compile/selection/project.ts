@@ -1,11 +1,19 @@
 import {array, isObject} from 'vega-util';
-import {isSingleDefUnitChannel, ScaleChannel, SingleDefUnitChannel} from '../../channel';
+import {
+  GeoPositionChannel,
+  getPositionChannelFromLatLong,
+  isGeoPositionChannel,
+  isScaleChannel,
+  isSingleDefUnitChannel,
+  SingleDefUnitChannel
+} from '../../channel';
 import * as log from '../../log';
 import {hasContinuousDomain} from '../../scale';
-import {PointSelectionConfig, SelectionInitIntervalMapping, SelectionInitMapping} from '../../selection';
-import {Dict, hash, keys, replacePathInField, varName, isEmpty} from '../../util';
+import {PointSelectionConfig, SelectionInitIntervalMapping, SelectionInitMapping, SELECTION_ID} from '../../selection';
+import {Dict, hash, keys, varName, isEmpty} from '../../util';
 import {TimeUnitComponent, TimeUnitNode} from '../data/timeunit';
 import {SelectionCompiler} from '.';
+import {assembleProjection} from './assemble';
 export const TUPLE_FIELDS = '_tuple_fields';
 
 /**
@@ -22,7 +30,9 @@ export type TupleStoreType =
 export interface SelectionProjection {
   type: TupleStoreType;
   field: string;
+  index: number;
   channel?: SingleDefUnitChannel;
+  geoChannel?: GeoPositionChannel;
   signals?: {data?: string; visual?: string};
   hasLegend?: boolean;
 }
@@ -30,6 +40,7 @@ export interface SelectionProjection {
 export class SelectionProjectionComponent {
   public hasChannel: Partial<Record<SingleDefUnitChannel, SelectionProjection>>;
   public hasField: Record<string, SelectionProjection>;
+  public hasSelectionId: boolean;
   public timeUnit?: TimeUnitNode;
   public items: SelectionProjection[];
 
@@ -37,6 +48,7 @@ export class SelectionProjectionComponent {
     this.items = items;
     this.hasChannel = {};
     this.hasField = {};
+    this.hasSelectionId = false;
   }
 }
 
@@ -84,10 +96,10 @@ const project: SelectionCompiler = {
             (encodings || (encodings = [])).push(key as SingleDefUnitChannel);
           } else {
             if (type === 'interval') {
-              log.warn(log.message.INTERVAL_INITIALIZED_WITH_X_Y);
+              log.warn(log.message.INTERVAL_INITIALIZED_WITH_POS);
               encodings = cfg.encodings;
             } else {
-              (fields || (fields = [])).push(key);
+              (fields ??= []).push(key);
             }
           }
         }
@@ -138,20 +150,28 @@ const project: SelectionCompiler = {
           // Determine whether the tuple will store enumerated or ranged values.
           // Interval selections store ranges for continuous scales, and enumerations otherwise.
           // Single/multi selections store ranges for binned fields, and enumerations otherwise.
-          let tplType: TupleStoreType = 'E';
-          if (type === 'interval') {
-            const scaleType = model.getScaleComponent(channel as ScaleChannel).get('type');
-            if (hasContinuousDomain(scaleType)) {
-              tplType = 'R';
-            }
-          } else if (fieldDef.bin) {
-            tplType = 'R-RE';
-          }
+          const tplType: TupleStoreType =
+            type === 'interval' &&
+            isScaleChannel(channel) &&
+            hasContinuousDomain(model.getScaleComponent(channel).get('type'))
+              ? 'R'
+              : fieldDef.bin
+              ? 'R-RE'
+              : 'E';
 
-          const p: SelectionProjection = {field, channel, type: tplType};
+          const p: SelectionProjection = {field, channel, type: tplType, index: proj.items.length};
           p.signals = {...signalName(p, 'data'), ...signalName(p, 'visual')};
           proj.items.push((parsed[field] = p));
-          proj.hasField[field] = proj.hasChannel[channel] = parsed[field];
+          proj.hasField[field] = parsed[field];
+          proj.hasSelectionId = proj.hasSelectionId || field === SELECTION_ID;
+
+          if (isGeoPositionChannel(channel)) {
+            p.geoChannel = channel;
+            p.channel = getPositionChannelFromLatLong(channel);
+            proj.hasChannel[p.channel] = parsed[field];
+          } else {
+            proj.hasChannel[channel] = parsed[field];
+          }
         }
       } else {
         log.warn(log.message.cannotProjectOnChannelWithoutField(channel));
@@ -160,17 +180,20 @@ const project: SelectionCompiler = {
 
     for (const field of fields ?? []) {
       if (proj.hasField[field]) continue;
-      const p: SelectionProjection = {type: 'E', field};
+      const p: SelectionProjection = {type: 'E', field, index: proj.items.length};
       p.signals = {...signalName(p, 'data')};
       proj.items.push(p);
       proj.hasField[field] = p;
+      proj.hasSelectionId = proj.hasSelectionId || field === SELECTION_ID;
     }
 
     if (init) {
       selCmpt.init = (init as any).map((v: SelectionInitMapping | SelectionInitIntervalMapping) => {
         // Selections can be initialized either with a full object that maps projections to values
         // or scalar values to smoothen the abstraction gradient from variable params to point selections.
-        return proj.items.map(p => (isObject(v) ? (v[p.channel] !== undefined ? v[p.channel] : v[p.field]) : v));
+        return proj.items.map(p =>
+          isObject(v) ? (v[p.geoChannel || p.channel] !== undefined ? v[p.geoChannel || p.channel] : v[p.field]) : v
+        );
       });
     }
 
@@ -182,15 +205,11 @@ const project: SelectionCompiler = {
   signals: (model, selCmpt, allSignals) => {
     const name = selCmpt.name + TUPLE_FIELDS;
     const hasSignal = allSignals.filter(s => s.name === name);
-    return hasSignal.length > 0
+    return hasSignal.length > 0 || selCmpt.project.hasSelectionId
       ? allSignals
       : allSignals.concat({
           name,
-          value: selCmpt.project.items.map(proj => {
-            const {signals, hasLegend, ...rest} = proj;
-            rest.field = replacePathInField(rest.field);
-            return rest;
-          })
+          value: selCmpt.project.items.map(assembleProjection)
         });
   }
 };
