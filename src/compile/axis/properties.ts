@@ -17,12 +17,12 @@ import {Config, StyleConfigIndex} from '../../config';
 import {Mark} from '../../mark';
 import {hasDiscreteDomain} from '../../scale';
 import {Sort} from '../../sort';
-import {normalizeTimeUnit} from '../../timeunit';
+import {durationExpr, normalizeTimeUnit} from '../../timeunit';
 import {NOMINAL, ORDINAL, Type} from '../../type';
 import {contains, normalizeAngle} from '../../util';
 import {isSignalRef} from '../../vega.schema';
 import {mergeTitle, mergeTitleFieldDefs} from '../common';
-import {guideFormat, guideFormatType} from '../format';
+import {guideFormatType} from '../format';
 import {UnitModel} from '../unit';
 import {ScaleType} from './../../scale';
 import {AxisComponentProps} from './component';
@@ -38,6 +38,8 @@ export interface AxisRuleParams {
   scaleType: ScaleType;
   orient: Orient | SignalRef;
   labelAngle: number | SignalRef;
+  format: string | SignalRef;
+  formatType: ReturnType<typeof guideFormatType>;
   config: Config;
 }
 
@@ -46,15 +48,9 @@ export const axisRules: {
 } = {
   scale: ({model, channel}) => model.scaleName(channel),
 
-  format: ({fieldOrDatumDef, config, axis}) => {
-    const {format, formatType} = axis;
-    return guideFormat(fieldOrDatumDef, fieldOrDatumDef.type, format, formatType, config, true);
-  },
+  format: ({format}) => format, // we already calculate this in parse
 
-  formatType: ({axis, fieldOrDatumDef, scaleType}) => {
-    const {formatType} = axis;
-    return guideFormatType(formatType, fieldOrDatumDef, scaleType);
-  },
+  formatType: ({formatType}) => formatType, // we already calculate this in parse
 
   grid: ({fieldOrDatumDef, axis, scaleType}) => axis.grid ?? defaultGrid(scaleType, fieldOrDatumDef),
 
@@ -87,6 +83,8 @@ export const axisRules: {
     const size = sizeType ? model.getSizeSignalRef(sizeType) : undefined;
     return axis.tickCount ?? defaultTickCount({fieldOrDatumDef, scaleType, size, values: axis.values});
   },
+
+  tickMinStep: defaultTickMinStep,
 
   title: ({axis, model, channel}) => {
     if (axis.title !== undefined) {
@@ -312,6 +310,23 @@ export function defaultTickCount({
     return {signal: `ceil(${size.signal}/40)`};
   }
 
+  return undefined;
+}
+
+export function defaultTickMinStep({format, fieldOrDatumDef}: Pick<AxisRuleParams, 'format' | 'fieldOrDatumDef'>) {
+  if (format === 'd') {
+    return 1;
+  }
+
+  if (isFieldDef(fieldOrDatumDef)) {
+    const {timeUnit} = fieldOrDatumDef;
+    if (timeUnit) {
+      const signal = durationExpr(timeUnit);
+      if (signal) {
+        return {signal};
+      }
+    }
+  }
   return undefined;
 }
 

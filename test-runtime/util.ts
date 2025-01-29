@@ -11,7 +11,7 @@ const output = 'test-runtime/resources';
 
 export type ComposeType = 'unit' | 'repeat' | 'facet';
 export const selectionTypes: SelectionType[] = ['point', 'interval', 'region'];
-export const compositeTypes: ComposeType[] = ['repeat', 'facet'];
+export const compositeTypes = ['repeat', 'facet'] as const;
 export const resolutions: SelectionResolution[] = ['union', 'intersect'];
 
 export const bound = 'bound';
@@ -291,7 +291,7 @@ export function geoSpec(selDef?: IntervalSelectionConfigWithoutType): TopLevelSp
   };
 }
 
-export function unitNameRegex(specType: ComposeType, idx: number) {
+export function unitNameRegex(specType: 'repeat' | 'facet', idx: number) {
   const name = UNIT_NAMES[specType][idx].replace('child_', '');
   return new RegExp(`child(.*?)_${name}`);
 }
@@ -318,20 +318,38 @@ export function multiviewRegion(key: string, idx: number, parent?: string, targe
     : circleRegion(hits.region[key][idx], parent, targetBrush, 10);
 }
 
-export function brush(key: string, idx: number, parent?: string, targetBrush?: boolean) {
+export type BrushKeys = keyof typeof hits.interval;
+export function brush(key: BrushKeys, idx: number, parent?: string, targetBrush?: boolean) {
   const fn = key.match('_clear') ? 'clear' : 'brush';
   return `${fn}(${hits.interval[key][idx].join(', ')}, ${stringValue(parent)}, ${!!targetBrush})`;
 }
 
-export function pt(key: string, idx: number, parent?: string) {
+export function pt(key: keyof typeof hits.discrete, idx: number, parent?: string) {
   const fn = key.match('_clear') ? 'clear' : 'pt';
   return `${fn}(${hits.point[key][idx]}, ${stringValue(parent)})`;
+}
+
+export function getState(signals: string[], data: string[]) {
+  return `getState(${JSON.stringify(signals)}, ${JSON.stringify(data)})`;
+}
+export function getSignal(name: string) {
+  return `getSignal('${name}')`;
+}
+
+export function setSignal(name: string, value: any) {
+  return `setSignal(${stringValue(name)}, ${value})`;
+}
+
+export function sleep(milliseconds: number) {
+  return new Promise(resolve => {
+    setTimeout(resolve, milliseconds);
+  });
 }
 
 export function embedFn(page: Page) {
   return async (specification: TopLevelSpec) => {
     await page.evaluate(
-      (_: any) => window['embed'](_),
+      (_: any) => (window as any).embed(_),
       // specification is serializable even if the types don't agree
       specification as any
     );

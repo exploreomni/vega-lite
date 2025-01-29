@@ -1,17 +1,16 @@
 import alias from '@rollup/plugin-alias';
 import babel from '@rollup/plugin-babel';
-import commonjs from '@rollup/plugin-commonjs';
 import json from '@rollup/plugin-json';
 import resolve from '@rollup/plugin-node-resolve';
 import terser from '@rollup/plugin-terser';
 import bundleSize from 'rollup-plugin-bundle-size';
 
-import pkg from './package.json' assert {type: 'json'};
+import pkg from './package.json' with {type: 'json'};
 
 export function disallowedImports() {
   return {
     resolveId: module => {
-      if (module === 'vega' || module === 'util' || module === 'd3') {
+      if (['vega', 'util', 'd3'].includes(module)) {
         throw new Error('Cannot import from Vega, Node Util, or D3 in Vega-Lite.');
       }
       return null;
@@ -67,7 +66,6 @@ const outputs = [
         }
       }),
       resolve({browser: true, extensions}),
-      commonjs(),
       json(),
       babel({
         extensions,
@@ -76,7 +74,7 @@ const outputs = [
           [
             '@babel/env',
             {
-              targets: 'defaults and not IE 11'
+              targets: 'defaults'
             }
           ],
           '@babel/typescript'

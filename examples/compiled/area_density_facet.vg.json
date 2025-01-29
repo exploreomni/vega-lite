@@ -15,7 +15,7 @@
           "groupby": ["Species"],
           "extent": [2500, 6500],
           "as": ["value", "density"],
-          "steps": 200
+          "resolve": "shared"
         },
         {
           "type": "impute",
@@ -129,7 +129,7 @@
           "name": "child_marks",
           "type": "area",
           "style": ["area"],
-          "sort": {"field": "datum[\"value\"]"},
+          "sort": {"field": "x"},
           "from": {"data": "facet"},
           "encode": {
             "update": {

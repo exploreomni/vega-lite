@@ -104,7 +104,7 @@
       "name": "unit",
       "value": {},
       "on": [
-        {"events": "mousemove", "update": "isTuple(group()) ? group() : unit"}
+        {"events": "pointermove", "update": "isTuple(group()) ? group() : unit"}
       ]
     },
     {
@@ -139,7 +139,7 @@
             {
               "events": {
                 "source": "scope",
-                "type": "mousedown",
+                "type": "pointerdown",
                 "filter": [
                   "event.shiftKey",
                   "!event.item || event.item.mark.name !== \"brush_brush\""
@@ -150,18 +150,18 @@
             {
               "events": {
                 "source": "window",
-                "type": "mousemove",
+                "type": "pointermove",
                 "consume": true,
                 "between": [
                   {
                     "source": "scope",
-                    "type": "mousedown",
+                    "type": "pointerdown",
                     "filter": [
                       "event.shiftKey",
                       "!event.item || event.item.mark.name !== \"brush_brush\""
                     ]
                   },
-                  {"source": "window", "type": "mouseup"}
+                  {"source": "window", "type": "pointerup"}
                 ]
               },
               "update": "[brush_x[0], clamp(x(unit), 0, childWidth)]"
@@ -200,7 +200,7 @@
             {
               "events": {
                 "source": "scope",
-                "type": "mousedown",
+                "type": "pointerdown",
                 "filter": [
                   "event.shiftKey",
                   "!event.item || event.item.mark.name !== \"brush_brush\""
@@ -211,18 +211,18 @@
             {
               "events": {
                 "source": "window",
-                "type": "mousemove",
+                "type": "pointermove",
                 "consume": true,
                 "between": [
                   {
                     "source": "scope",
-                    "type": "mousedown",
+                    "type": "pointerdown",
                     "filter": [
                       "event.shiftKey",
                       "!event.item || event.item.mark.name !== \"brush_brush\""
                     ]
                   },
-                  {"source": "window", "type": "mouseup"}
+                  {"source": "window", "type": "pointerup"}
                 ]
               },
               "update": "[brush_y[0], clamp(y(unit), 0, childHeight)]"
@@ -293,7 +293,7 @@
               "events": [
                 {
                   "source": "scope",
-                  "type": "mousedown",
+                  "type": "pointerdown",
                   "filter": ["event.shiftKey"],
                   "markname": "brush_brush"
                 }
@@ -310,16 +310,16 @@
               "events": [
                 {
                   "source": "window",
-                  "type": "mousemove",
+                  "type": "pointermove",
                   "consume": true,
                   "between": [
                     {
                       "source": "scope",
-                      "type": "mousedown",
+                      "type": "pointerdown",
                       "filter": ["event.shiftKey"],
                       "markname": "brush_brush"
                     },
-                    {"source": "window", "type": "mouseup"}
+                    {"source": "window", "type": "pointerup"}
                   ]
                 }
               ],
@@ -433,7 +433,7 @@
               "events": [
                 {
                   "source": "scope",
-                  "type": "mousedown",
+                  "type": "pointerdown",
                   "filter": ["!event.shiftKey"]
                 }
               ],
@@ -449,15 +449,15 @@
               "events": [
                 {
                   "source": "window",
-                  "type": "mousemove",
+                  "type": "pointermove",
                   "consume": true,
                   "between": [
                     {
                       "source": "scope",
-                      "type": "mousedown",
+                      "type": "pointerdown",
                       "filter": ["!event.shiftKey"]
                     },
-                    {"source": "window", "type": "mouseup"}
+                    {"source": "window", "type": "pointerup"}
                   ]
                 }
               ],
@@ -565,7 +565,10 @@
           "type": "rect",
           "clip": true,
           "encode": {
-            "enter": {"fill": {"value": "transparent"}},
+            "enter": {
+              "cursor": {"value": "move"},
+              "fill": {"value": "transparent"}
+            },
             "update": {
               "x": {"signal": "brush_x[0]"},
               "y": {"signal": "brush_y[0]"},
@@ -651,7 +654,7 @@
             {
               "events": {
                 "source": "scope",
-                "type": "mousedown",
+                "type": "pointerdown",
                 "filter": [
                   "event.shiftKey",
                   "!event.item || event.item.mark.name !== \"brush_brush\""
@@ -662,18 +665,18 @@
             {
               "events": {
                 "source": "window",
-                "type": "mousemove",
+                "type": "pointermove",
                 "consume": true,
                 "between": [
                   {
                     "source": "scope",
-                    "type": "mousedown",
+                    "type": "pointerdown",
                     "filter": [
                       "event.shiftKey",
                       "!event.item || event.item.mark.name !== \"brush_brush\""
                     ]
                   },
-                  {"source": "window", "type": "mouseup"}
+                  {"source": "window", "type": "pointerup"}
                 ]
               },
               "update": "[brush_x[0], clamp(x(unit), 0, childWidth)]"
@@ -712,7 +715,7 @@
             {
               "events": {
                 "source": "scope",
-                "type": "mousedown",
+                "type": "pointerdown",
                 "filter": [
                   "event.shiftKey",
                   "!event.item || event.item.mark.name !== \"brush_brush\""
@@ -723,18 +726,18 @@
             {
               "events": {
                 "source": "window",
-                "type": "mousemove",
+                "type": "pointermove",
                 "consume": true,
                 "between": [
                   {
                     "source": "scope",
-                    "type": "mousedown",
+                    "type": "pointerdown",
                     "filter": [
                       "event.shiftKey",
                       "!event.item || event.item.mark.name !== \"brush_brush\""
                     ]
                   },
-                  {"source": "window", "type": "mouseup"}
+                  {"source": "window", "type": "pointerup"}
                 ]
               },
               "update": "[brush_y[0], clamp(y(unit), 0, childHeight)]"
@@ -803,7 +806,7 @@
               "events": [
                 {
                   "source": "scope",
-                  "type": "mousedown",
+                  "type": "pointerdown",
                   "filter": ["event.shiftKey"],
                   "markname": "brush_brush"
                 }
@@ -820,16 +823,16 @@
               "events": [
                 {
                   "source": "window",
-                  "type": "mousemove",
+                  "type": "pointermove",
                   "consume": true,
                   "between": [
                     {
                       "source": "scope",
-                      "type": "mousedown",
+                      "type": "pointerdown",
                       "filter": ["event.shiftKey"],
                       "markname": "brush_brush"
                     },
-                    {"source": "window", "type": "mouseup"}
+                    {"source": "window", "type": "pointerup"}
                   ]
                 }
               ],
@@ -941,7 +944,7 @@
               "events": [
                 {
                   "source": "scope",
-                  "type": "mousedown",
+                  "type": "pointerdown",
                   "filter": ["!event.shiftKey"]
                 }
               ],
@@ -957,15 +960,15 @@
               "events": [
                 {
                   "source": "window",
-                  "type": "mousemove",
+                  "type": "pointermove",
                   "consume": true,
                   "between": [
                     {
                       "source": "scope",
-                      "type": "mousedown",
+                      "type": "pointerdown",
                       "filter": ["!event.shiftKey"]
                     },
-                    {"source": "window", "type": "mouseup"}
+                    {"source": "window", "type": "pointerup"}
                   ]
                 }
               ],
@@ -1073,7 +1076,10 @@
           "type": "rect",
           "clip": true,
           "encode": {
-            "enter": {"fill": {"value": "transparent"}},
+            "enter": {
+              "cursor": {"value": "move"},
+              "fill": {"value": "transparent"}
+            },
             "update": {
               "x": {"signal": "brush_x[0]"},
               "y": {"signal": "brush_y[0]"},
@@ -1159,7 +1165,7 @@
             {
               "events": {
                 "source": "scope",
-                "type": "mousedown",
+                "type": "pointerdown",
                 "filter": [
                   "event.shiftKey",
                   "!event.item || event.item.mark.name !== \"brush_brush\""
@@ -1170,18 +1176,18 @@
             {
               "events": {
                 "source": "window",
-                "type": "mousemove",
+                "type": "pointermove",
                 "consume": true,
                 "between": [
                   {
                     "source": "scope",
-                    "type": "mousedown",
+                    "type": "pointerdown",
                     "filter": [
                       "event.shiftKey",
                       "!event.item || event.item.mark.name !== \"brush_brush\""
                     ]
                   },
-                  {"source": "window", "type": "mouseup"}
+                  {"source": "window", "type": "pointerup"}
                 ]
               },
               "update": "[brush_x[0], clamp(x(unit), 0, childWidth)]"
@@ -1244,7 +1250,7 @@
               "events": [
                 {
                   "source": "scope",
-                  "type": "mousedown",
+                  "type": "pointerdown",
                   "filter": ["event.shiftKey"],
                   "markname": "brush_brush"
                 }
@@ -1261,16 +1267,16 @@
               "events": [
                 {
                   "source": "window",
-                  "type": "mousemove",
+                  "type": "pointermove",
                   "consume": true,
                   "between": [
                     {
                       "source": "scope",
-                      "type": "mousedown",
+                      "type": "pointerdown",
                       "filter": ["event.shiftKey"],
                       "markname": "brush_brush"
                     },
-                    {"source": "window", "type": "mouseup"}
+                    {"source": "window", "type": "pointerup"}
                   ]
                 }
               ],
@@ -1361,7 +1367,7 @@
               "events": [
                 {
                   "source": "scope",
-                  "type": "mousedown",
+                  "type": "pointerdown",
                   "filter": ["!event.shiftKey"]
                 }
               ],
@@ -1377,15 +1383,15 @@
               "events": [
                 {
                   "source": "window",
-                  "type": "mousemove",
+                  "type": "pointermove",
                   "consume": true,
                   "between": [
                     {
                       "source": "scope",
-                      "type": "mousedown",
+                      "type": "pointerdown",
                       "filter": ["!event.shiftKey"]
                     },
-                    {"source": "window", "type": "mouseup"}
+                    {"source": "window", "type": "pointerup"}
                   ]
                 }
               ],
@@ -1493,7 +1499,10 @@
           "type": "rect",
           "clip": true,
           "encode": {
-            "enter": {"fill": {"value": "transparent"}},
+            "enter": {
+              "cursor": {"value": "move"},
+              "fill": {"value": "transparent"}
+            },
             "update": {
               "x": {"signal": "brush_x[0]"},
               "y": {"value": 0},
@@ -1576,7 +1585,7 @@
             {
               "events": {
                 "source": "scope",
-                "type": "mousedown",
+                "type": "pointerdown",
                 "filter": [
                   "event.shiftKey",
                   "!event.item || event.item.mark.name !== \"brush_brush\""
@@ -1587,18 +1596,18 @@
             {
               "events": {
                 "source": "window",
-                "type": "mousemove",
+                "type": "pointermove",
                 "consume": true,
                 "between": [
                   {
                     "source": "scope",
-                    "type": "mousedown",
+                    "type": "pointerdown",
                     "filter": [
                       "event.shiftKey",
                       "!event.item || event.item.mark.name !== \"brush_brush\""
                     ]
                   },
-                  {"source": "window", "type": "mouseup"}
+                  {"source": "window", "type": "pointerup"}
                 ]
               },
               "update": "[brush_x[0], clamp(x(unit), 0, childWidth)]"
@@ -1637,7 +1646,7 @@
             {
               "events": {
                 "source": "scope",
-                "type": "mousedown",
+                "type": "pointerdown",
                 "filter": [
                   "event.shiftKey",
                   "!event.item || event.item.mark.name !== \"brush_brush\""
@@ -1648,18 +1657,18 @@
             {
               "events": {
                 "source": "window",
-                "type": "mousemove",
+                "type": "pointermove",
                 "consume": true,
                 "between": [
                   {
                     "source": "scope",
-                    "type": "mousedown",
+                    "type": "pointerdown",
                     "filter": [
                       "event.shiftKey",
                       "!event.item || event.item.mark.name !== \"brush_brush\""
                     ]
                   },
-                  {"source": "window", "type": "mouseup"}
+                  {"source": "window", "type": "pointerup"}
                 ]
               },
               "update": "[brush_y[0], clamp(y(unit), 0, childHeight)]"
@@ -1730,7 +1739,7 @@
               "events": [
                 {
                   "source": "scope",
-                  "type": "mousedown",
+                  "type": "pointerdown",
                   "filter": ["event.shiftKey"],
                   "markname": "brush_brush"
                 }
@@ -1747,16 +1756,16 @@
               "events": [
                 {
                   "source": "window",
-                  "type": "mousemove",
+                  "type": "pointermove",
                   "consume": true,
                   "between": [
                     {
                       "source": "scope",
-                      "type": "mousedown",
+                      "type": "pointerdown",
                       "filter": ["event.shiftKey"],
                       "markname": "brush_brush"
                     },
-                    {"source": "window", "type": "mouseup"}
+                    {"source": "window", "type": "pointerup"}
                   ]
                 }
               ],
@@ -1870,7 +1879,7 @@
               "events": [
                 {
                   "source": "scope",
-                  "type": "mousedown",
+                  "type": "pointerdown",
                   "filter": ["!event.shiftKey"]
                 }
               ],
@@ -1886,15 +1895,15 @@
               "events": [
                 {
                   "source": "window",
-                  "type": "mousemove",
+                  "type": "pointermove",
                   "consume": true,
                   "between": [
                     {
                       "source": "scope",
-                      "type": "mousedown",
+                      "type": "pointerdown",
                       "filter": ["!event.shiftKey"]
                     },
-                    {"source": "window", "type": "mouseup"}
+                    {"source": "window", "type": "pointerup"}
                   ]
                 }
               ],
@@ -2002,7 +2011,10 @@
           "type": "rect",
           "clip": true,
           "encode": {
-            "enter": {"fill": {"value": "transparent"}},
+            "enter": {
+              "cursor": {"value": "move"},
+              "fill": {"value": "transparent"}
+            },
             "update": {
               "x": {"signal": "brush_x[0]"},
               "y": {"signal": "brush_y[0]"},
@@ -2088,7 +2100,7 @@
             {
               "events": {
                 "source": "scope",
-                "type": "mousedown",
+                "type": "pointerdown",
                 "filter": [
                   "event.shiftKey",
                   "!event.item || event.item.mark.name !== \"brush_brush\""
@@ -2099,18 +2111,18 @@
             {
               "events": {
                 "source": "window",
-                "type": "mousemove",
+                "type": "pointermove",
                 "consume": true,
                 "between": [
                   {
                     "source": "scope",
-                    "type": "mousedown",
+                    "type": "pointerdown",
                     "filter": [
                       "event.shiftKey",
                       "!event.item || event.item.mark.name !== \"brush_brush\""
                     ]
                   },
-                  {"source": "window", "type": "mouseup"}
+                  {"source": "window", "type": "pointerup"}
                 ]
               },
               "update": "[brush_x[0], clamp(x(unit), 0, childWidth)]"
@@ -2175,7 +2187,7 @@
               "events": [
                 {
                   "source": "scope",
-                  "type": "mousedown",
+                  "type": "pointerdown",
                   "filter": ["event.shiftKey"],
                   "markname": "brush_brush"
                 }
@@ -2192,16 +2204,16 @@
               "events": [
                 {
                   "source": "window",
-                  "type": "mousemove",
+                  "type": "pointermove",
                   "consume": true,
                   "between": [
                     {
                       "source": "scope",
-                      "type": "mousedown",
+                      "type": "pointerdown",
                       "filter": ["event.shiftKey"],
                       "markname": "brush_brush"
                     },
-                    {"source": "window", "type": "mouseup"}
+                    {"source": "window", "type": "pointerup"}
                   ]
                 }
               ],
@@ -2292,7 +2304,7 @@
               "events": [
                 {
                   "source": "scope",
-                  "type": "mousedown",
+                  "type": "pointerdown",
                   "filter": ["!event.shiftKey"]
                 }
               ],
@@ -2308,15 +2320,15 @@
               "events": [
                 {
                   "source": "window",
-                  "type": "mousemove",
+                  "type": "pointermove",
                   "consume": true,
                   "between": [
                     {
                       "source": "scope",
-                      "type": "mousedown",
+                      "type": "pointerdown",
                       "filter": ["!event.shiftKey"]
                     },
-                    {"source": "window", "type": "mouseup"}
+                    {"source": "window", "type": "pointerup"}
                   ]
                 }
               ],
@@ -2424,7 +2436,10 @@
           "type": "rect",
           "clip": true,
           "encode": {
-            "enter": {"fill": {"value": "transparent"}},
+            "enter": {
+              "cursor": {"value": "move"},
+              "fill": {"value": "transparent"}
+            },
             "update": {
               "x": {"signal": "brush_x[0]"},
               "y": {"value": 0},
@@ -2507,7 +2522,7 @@
             {
               "events": {
                 "source": "scope",
-                "type": "mousedown",
+                "type": "pointerdown",
                 "filter": [
                   "event.shiftKey",
                   "!event.item || event.item.mark.name !== \"brush_brush\""
@@ -2518,18 +2533,18 @@
             {
               "events": {
                 "source": "window",
-                "type": "mousemove",
+                "type": "pointermove",
                 "consume": true,
                 "between": [
                   {
                     "source": "scope",
-                    "type": "mousedown",
+                    "type": "pointerdown",
                     "filter": [
                       "event.shiftKey",
                       "!event.item || event.item.mark.name !== \"brush_brush\""
                     ]
                   },
-                  {"source": "window", "type": "mouseup"}
+                  {"source": "window", "type": "pointerup"}
                 ]
               },
               "update": "[brush_x[0], clamp(x(unit), 0, childWidth)]"
@@ -2568,7 +2583,7 @@
             {
               "events": {
                 "source": "scope",
-                "type": "mousedown",
+                "type": "pointerdown",
                 "filter": [
                   "event.shiftKey",
                   "!event.item || event.item.mark.name !== \"brush_brush\""
@@ -2579,18 +2594,18 @@
             {
               "events": {
                 "source": "window",
-                "type": "mousemove",
+                "type": "pointermove",
                 "consume": true,
                 "between": [
                   {
                     "source": "scope",
-                    "type": "mousedown",
+                    "type": "pointerdown",
                     "filter": [
                       "event.shiftKey",
                       "!event.item || event.item.mark.name !== \"brush_brush\""
                     ]
                   },
-                  {"source": "window", "type": "mouseup"}
+                  {"source": "window", "type": "pointerup"}
                 ]
               },
               "update": "[brush_y[0], clamp(y(unit), 0, childHeight)]"
@@ -2659,7 +2674,7 @@
               "events": [
                 {
                   "source": "scope",
-                  "type": "mousedown",
+                  "type": "pointerdown",
                   "filter": ["event.shiftKey"],
                   "markname": "brush_brush"
                 }
@@ -2676,16 +2691,16 @@
               "events": [
                 {
                   "source": "window",
-                  "type": "mousemove",
+                  "type": "pointermove",
                   "consume": true,
                   "between": [
                     {
                       "source": "scope",
-                      "type": "mousedown",
+                      "type": "pointerdown",
                       "filter": ["event.shiftKey"],
                       "markname": "brush_brush"
                     },
-                    {"source": "window", "type": "mouseup"}
+                    {"source": "window", "type": "pointerup"}
                   ]
                 }
               ],
@@ -2797,7 +2812,7 @@
               "events": [
                 {
                   "source": "scope",
-                  "type": "mousedown",
+                  "type": "pointerdown",
                   "filter": ["!event.shiftKey"]
                 }
               ],
@@ -2813,15 +2828,15 @@
               "events": [
                 {
                   "source": "window",
-                  "type": "mousemove",
+                  "type": "pointermove",
                   "consume": true,
                   "between": [
                     {
                       "source": "scope",
-                      "type": "mousedown",
+                      "type": "pointerdown",
                       "filter": ["!event.shiftKey"]
                     },
-                    {"source": "window", "type": "mouseup"}
+                    {"source": "window", "type": "pointerup"}
                   ]
                 }
               ],
@@ -2929,7 +2944,10 @@
           "type": "rect",
           "clip": true,
           "encode": {
-            "enter": {"fill": {"value": "transparent"}},
+            "enter": {
+              "cursor": {"value": "move"},
+              "fill": {"value": "transparent"}
+            },
             "update": {
               "x": {"signal": "brush_x[0]"},
               "y": {"signal": "brush_y[0]"},
@@ -3015,7 +3033,7 @@
             {
               "events": {
                 "source": "scope",
-                "type": "mousedown",
+                "type": "pointerdown",
                 "filter": [
                   "event.shiftKey",
                   "!event.item || event.item.mark.name !== \"brush_brush\""
@@ -3026,18 +3044,18 @@
             {
               "events": {
                 "source": "window",
-                "type": "mousemove",
+                "type": "pointermove",
                 "consume": true,
                 "between": [
                   {
                     "source": "scope",
-                    "type": "mousedown",
+                    "type": "pointerdown",
                     "filter": [
                       "event.shiftKey",
                       "!event.item || event.item.mark.name !== \"brush_brush\""
                     ]
                   },
-                  {"source": "window", "type": "mouseup"}
+                  {"source": "window", "type": "pointerup"}
                 ]
               },
               "update": "[brush_x[0], clamp(x(unit), 0, childWidth)]"
@@ -3104,7 +3122,7 @@
               "events": [
                 {
                   "source": "scope",
-                  "type": "mousedown",
+                  "type": "pointerdown",
                   "filter": ["event.shiftKey"],
                   "markname": "brush_brush"
                 }
@@ -3121,16 +3139,16 @@
               "events": [
                 {
                   "source": "window",
-                  "type": "mousemove",
+                  "type": "pointermove",
                   "consume": true,
                   "between": [
                     {
                       "source": "scope",
-                      "type": "mousedown",
+                      "type": "pointerdown",
                       "filter": ["event.shiftKey"],
                       "markname": "brush_brush"
                     },
-                    {"source": "window", "type": "mouseup"}
+                    {"source": "window", "type": "pointerup"}
                   ]
                 }
               ],
@@ -3221,7 +3239,7 @@
               "events": [
                 {
                   "source": "scope",
-                  "type": "mousedown",
+                  "type": "pointerdown",
                   "filter": ["!event.shiftKey"]
                 }
               ],
@@ -3237,15 +3255,15 @@
               "events": [
                 {
                   "source": "window",
-                  "type": "mousemove",
+                  "type": "pointermove",
                   "consume": true,
                   "between": [
                     {
                       "source": "scope",
-                      "type": "mousedown",
+                      "type": "pointerdown",
                       "filter": ["!event.shiftKey"]
                     },
-                    {"source": "window", "type": "mouseup"}
+                    {"source": "window", "type": "pointerup"}
                   ]
                 }
               ],
@@ -3353,7 +3371,10 @@
           "type": "rect",
           "clip": true,
           "encode": {
-            "enter": {"fill": {"value": "transparent"}},
+            "enter": {
+              "cursor": {"value": "move"},
+              "fill": {"value": "transparent"}
+            },
             "update": {
               "x": {"signal": "brush_x[0]"},
               "y": {"value": 0},
@@ -3436,7 +3457,7 @@
             {
               "events": {
                 "source": "scope",
-                "type": "mousedown",
+                "type": "pointerdown",
                 "filter": [
                   "event.shiftKey",
                   "!event.item || event.item.mark.name !== \"brush_brush\""
@@ -3447,18 +3468,18 @@
             {
               "events": {
                 "source": "window",
-                "type": "mousemove",
+                "type": "pointermove",
                 "consume": true,
                 "between": [
                   {
                     "source": "scope",
-                    "type": "mousedown",
+                    "type": "pointerdown",
                     "filter": [
                       "event.shiftKey",
                       "!event.item || event.item.mark.name !== \"brush_brush\""
                     ]
                   },
-                  {"source": "window", "type": "mouseup"}
+                  {"source": "window", "type": "pointerup"}
                 ]
               },
               "update": "[brush_x[0], clamp(x(unit), 0, childWidth)]"
@@ -3497,7 +3518,7 @@
             {
               "events": {
                 "source": "scope",
-                "type": "mousedown",
+                "type": "pointerdown",
                 "filter": [
                   "event.shiftKey",
                   "!event.item || event.item.mark.name !== \"brush_brush\""
@@ -3508,18 +3529,18 @@
             {
               "events": {
                 "source": "window",
-                "type": "mousemove",
+                "type": "pointermove",
                 "consume": true,
                 "between": [
                   {
                     "source": "scope",
-                    "type": "mousedown",
+                    "type": "pointerdown",
                     "filter": [
                       "event.shiftKey",
                       "!event.item || event.item.mark.name !== \"brush_brush\""
                     ]
                   },
-                  {"source": "window", "type": "mouseup"}
+                  {"source": "window", "type": "pointerup"}
                 ]
               },
               "update": "[brush_y[0], clamp(y(unit), 0, childHeight)]"
@@ -3590,7 +3611,7 @@
               "events": [
                 {
                   "source": "scope",
-                  "type": "mousedown",
+                  "type": "pointerdown",
                   "filter": ["event.shiftKey"],
                   "markname": "brush_brush"
                 }
@@ -3607,16 +3628,16 @@
               "events": [
                 {
                   "source": "window",
-                  "type": "mousemove",
+                  "type": "pointermove",
                   "consume": true,
                   "between": [
                     {
                       "source": "scope",
-                      "type": "mousedown",
+                      "type": "pointerdown",
                       "filter": ["event.shiftKey"],
                       "markname": "brush_brush"
                     },
-                    {"source": "window", "type": "mouseup"}
+                    {"source": "window", "type": "pointerup"}
                   ]
                 }
               ],
@@ -3730,7 +3751,7 @@
               "events": [
                 {
                   "source": "scope",
-                  "type": "mousedown",
+                  "type": "pointerdown",
                   "filter": ["!event.shiftKey"]
                 }
               ],
@@ -3746,15 +3767,15 @@
               "events": [
                 {
                   "source": "window",
-                  "type": "mousemove",
+                  "type": "pointermove",
                   "consume": true,
                   "between": [
                     {
                       "source": "scope",
-                      "type": "mousedown",
+                      "type": "pointerdown",
                       "filter": ["!event.shiftKey"]
                     },
-                    {"source": "window", "type": "mouseup"}
+                    {"source": "window", "type": "pointerup"}
                   ]
                 }
               ],
@@ -3862,7 +3883,10 @@
           "type": "rect",
           "clip": true,
           "encode": {
-            "enter": {"fill": {"value": "transparent"}},
+            "enter": {
+              "cursor": {"value": "move"},
+              "fill": {"value": "transparent"}
+            },
             "update": {
               "x": {"signal": "brush_x[0]"},
               "y": {"signal": "brush_y[0]"},
@@ -3948,7 +3972,7 @@
             {
               "events": {
                 "source": "scope",
-                "type": "mousedown",
+                "type": "pointerdown",
                 "filter": [
                   "event.shiftKey",
                   "!event.item || event.item.mark.name !== \"brush_brush\""
@@ -3959,18 +3983,18 @@
             {
               "events": {
                 "source": "window",
-                "type": "mousemove",
+                "type": "pointermove",
                 "consume": true,
                 "between": [
                   {
                     "source": "scope",
-                    "type": "mousedown",
+                    "type": "pointerdown",
                     "filter": [
                       "event.shiftKey",
                       "!event.item || event.item.mark.name !== \"brush_brush\""
                     ]
                   },
-                  {"source": "window", "type": "mouseup"}
+                  {"source": "window", "type": "pointerup"}
                 ]
               },
               "update": "[brush_x[0], clamp(x(unit), 0, childWidth)]"
@@ -4009,7 +4033,7 @@
             {
               "events": {
                 "source": "scope",
-                "type": "mousedown",
+                "type": "pointerdown",
                 "filter": [
                   "event.shiftKey",
                   "!event.item || event.item.mark.name !== \"brush_brush\""
@@ -4020,18 +4044,18 @@
             {
               "events": {
                 "source": "window",
-                "type": "mousemove",
+                "type": "pointermove",
                 "consume": true,
                 "between": [
                   {
                     "source": "scope",
-                    "type": "mousedown",
+                    "type": "pointerdown",
                     "filter": [
                       "event.shiftKey",
                       "!event.item || event.item.mark.name !== \"brush_brush\""
                     ]
                   },
-                  {"source": "window", "type": "mouseup"}
+                  {"source": "window", "type": "pointerup"}
                 ]
               },
               "update": "[brush_y[0], clamp(y(unit), 0, childHeight)]"
@@ -4102,7 +4126,7 @@
               "events": [
                 {
                   "source": "scope",
-                  "type": "mousedown",
+                  "type": "pointerdown",
                   "filter": ["event.shiftKey"],
                   "markname": "brush_brush"
                 }
@@ -4119,16 +4143,16 @@
               "events": [
                 {
                   "source": "window",
-                  "type": "mousemove",
+                  "type": "pointermove",
                   "consume": true,
                   "between": [
                     {
                       "source": "scope",
-                      "type": "mousedown",
+                      "type": "pointerdown",
                       "filter": ["event.shiftKey"],
                       "markname": "brush_brush"
                     },
-                    {"source": "window", "type": "mouseup"}
+                    {"source": "window", "type": "pointerup"}
                   ]
                 }
               ],
@@ -4242,7 +4266,7 @@
               "events": [
                 {
                   "source": "scope",
-                  "type": "mousedown",
+                  "type": "pointerdown",
                   "filter": ["!event.shiftKey"]
                 }
               ],
@@ -4258,15 +4282,15 @@
               "events": [
                 {
                   "source": "window",
-                  "type": "mousemove",
+                  "type": "pointermove",
                   "consume": true,
                   "between": [
                     {
                       "source": "scope",
-                      "type": "mousedown",
+                      "type": "pointerdown",
                       "filter": ["!event.shiftKey"]
                     },
-                    {"source": "window", "type": "mouseup"}
+                    {"source": "window", "type": "pointerup"}
                   ]
                 }
               ],
@@ -4374,7 +4398,10 @@
           "type": "rect",
           "clip": true,
           "encode": {
-            "enter": {"fill": {"value": "transparent"}},
+            "enter": {
+              "cursor": {"value": "move"},
+              "fill": {"value": "transparent"}
+            },
             "update": {
               "x": {"signal": "brush_x[0]"},
               "y": {"signal": "brush_y[0]"},

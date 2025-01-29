@@ -438,11 +438,11 @@ describe('Mark', () => {
         }
       });
       expect(getSort(model)).toEqual({
-        field: 'datum["bin_maxbins_10_IMDB_Rating"]'
+        field: 'x'
       });
     });
 
-    it('have no sort if the dimension field has sort:null', () => {
+    it('have order by x if the dimension field has sort:null', () => {
       const model = parseUnitModelWithScale({
         data: {url: 'data/movies.json'},
         mark: 'line',
@@ -462,7 +462,9 @@ describe('Mark', () => {
           }
         }
       });
-      expect(getSort(model)).toBeUndefined();
+      expect(getSort(model)).toEqual({
+        field: 'x'
+      });
     });
 
     it("should order by x's custom sort order by default if x is the dimension", () => {
@@ -479,7 +481,7 @@ describe('Mark', () => {
         }
       });
       expect(getSort(model)).toEqual({
-        field: 'datum["x_Name_sort_index"]'
+        field: 'x'
       });
     });
 
@@ -497,7 +499,7 @@ describe('Mark', () => {
         }
       });
       expect(getSort(model)).toEqual({
-        field: 'datum["Score"]'
+        field: 'x'
       });
     });
 
@@ -575,6 +577,68 @@ describe('Mark', () => {
       model.parse();
       const mark = parseMarkGroupsAndLabels(model).mark;
       expect(mark[0].clip).toBe(true);
+    });
+  });
+
+  describe('signal clipping', () => {
+    it('should pass clip as a signal if clip is an expression', () => {
+      const model = parseUnitModelWithScaleAndLayoutSize({
+        mark: {
+          type: 'bar',
+          clip: {expr: "datum['foo'] > 10"}
+        },
+        encoding: {
+          x: {type: 'quantitative', field: 'foo'}
+        }
+      });
+
+      const markGroup = parseMarkGroups(model);
+      expect(markGroup[0].clip).toEqual({signal: "datum['foo'] > 10"});
+    });
+
+    it('should pass clip as a signal if clip is a signal', () => {
+      const model = parseUnitModelWithScaleAndLayoutSize({
+        mark: {
+          type: 'bar',
+          clip: {signal: "datum['foo'] > 10"}
+        },
+        encoding: {
+          x: {type: 'quantitative', field: 'foo'}
+        }
+      });
+
+      const markGroup = parseMarkGroups(model);
+      expect(markGroup[0].clip).toEqual({signal: "datum['foo'] > 10"});
+    });
+
+    it('should pass clip as a boolean if clip is true', () => {
+      const model = parseUnitModelWithScaleAndLayoutSize({
+        mark: {
+          type: 'bar',
+          clip: true
+        },
+        encoding: {
+          x: {type: 'quantitative', field: 'foo'}
+        }
+      });
+
+      const markGroup = parseMarkGroups(model);
+      expect(markGroup[0].clip).toBe(true);
+    });
+
+    it('should not have clip defined if clip is false', () => {
+      const model = parseUnitModelWithScaleAndLayoutSize({
+        mark: {
+          type: 'bar',
+          clip: false
+        },
+        encoding: {
+          x: {type: 'quantitative', field: 'foo'}
+        }
+      });
+
+      const markGroup = parseMarkGroups(model);
+      expect(markGroup[0].clip).toBeUndefined();
     });
   });
 

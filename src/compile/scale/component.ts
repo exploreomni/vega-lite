@@ -1,9 +1,9 @@
-import {SignalRef} from 'vega';
-import {isArray} from 'vega-util';
+import type {SignalRef} from 'vega';
+import {isArray, isNumber} from 'vega-util';
 import {ScaleChannel} from '../../channel';
 import {Scale, ScaleType} from '../../scale';
 import {ParameterExtent} from '../../selection';
-import {some} from '../../util';
+import {contains} from '../../util';
 import {VgNonUnionDomain, VgScale} from '../../vega.schema';
 import {Explicit, Split} from '../split';
 
@@ -11,7 +11,7 @@ import {Explicit, Split} from '../split';
  * All VgDomain property except domain.
  * (We exclude domain as we have a special "domains" array that allow us merge them all at once in assemble.)
  */
-export type ScaleComponentProps = Omit<VgScale, 'domain' | 'domainRaw' | 'reverse'> & {
+export type ScaleComponentProps = Omit<VgScale, 'domain' | 'reverse'> & {
   domains: VgNonUnionDomain[];
   selectionExtent?: ParameterExtent;
   reverse?: boolean | SignalRef; // Need override since Vega doesn't official support scale reverse yet (though it does in practice)
@@ -31,13 +31,56 @@ export class ScaleComponent extends Split<ScaleComponentProps> {
   }
 
   /**
-   * Whether the scale definitely includes zero in the domain
+   * Whether the scale definitely includes or not include zero in the domain
    */
-  public domainDefinitelyIncludesZero() {
-    if (this.get('zero') !== false) {
-      return true;
+  public domainHasZero(): 'definitely' | 'definitely-not' | 'maybe' {
+    const scaleType = this.get('type');
+    if (contains([ScaleType.LOG, ScaleType.TIME, ScaleType.UTC], scaleType)) {
+      // Log scales cannot have zero.
+      // Zero in time scale is arbitrary, and does not affect ratio.
+      // (Time is an interval level of measurement, not ratio).
+      // See https://en.wikipedia.org/wiki/Level_of_measurement for more info.
+      return 'definitely-not';
     }
-    return some(this.get('domains'), d => isArray(d) && d.length === 2 && d[0] <= 0 && d[1] >= 0);
+
+    const scaleZero = this.get('zero');
+    if (
+      scaleZero === true ||
+      // If zero is undefined, linear/sqrt/pow scales have zero by default.
+      (scaleZero === undefined && contains([ScaleType.LINEAR, ScaleType.SQRT, ScaleType.POW], scaleType))
+    ) {
+      return 'definitely';
+    }
+
+    const domains = this.get('domains');
+
+    if (domains.length > 0) {
+      let hasExplicitDomainWithZero = false;
+      let hasExplicitDomainWithoutZero = false;
+      let hasDomainBasedOnField = false;
+      for (const d of domains) {
+        if (isArray(d)) {
+          const first = d[0];
+          const last = d[d.length - 1];
+          if (isNumber(first) && isNumber(last)) {
+            if (first <= 0 && last >= 0) {
+              hasExplicitDomainWithZero = true;
+              continue;
+            } else {
+              hasExplicitDomainWithoutZero = true;
+              continue;
+            }
+          }
+        }
+        hasDomainBasedOnField = true;
+      }
+      if (hasExplicitDomainWithZero) {
+        return 'definitely';
+      } else if (hasExplicitDomainWithoutZero && !hasDomainBasedOnField) {
+        return 'definitely-not';
+      }
+    }
+    return 'maybe';
   }
 }
 

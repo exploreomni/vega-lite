@@ -13,7 +13,13 @@ export function text(
   expr: 'datum' | 'datum.datum' = 'datum'
 ) {
   const channelDef = model.encoding[channel];
-  return wrapCondition(model, channelDef, channel, cDef => textRef(cDef, model.config, expr));
+  return wrapCondition({
+    model,
+    channelDef,
+    vgChannel: channel,
+    mainRefFn: cDef => textRef(cDef, model.config, expr),
+    invalidValueRef: undefined // text encoding doesn't have continuous scales and thus can't have invalid values
+  });
 }
 
 export function textRef(

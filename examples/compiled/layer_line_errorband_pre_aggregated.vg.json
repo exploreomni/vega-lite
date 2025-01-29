@@ -52,8 +52,8 @@
       "name": "data_1",
       "source": "data_0",
       "transform": [
-        {"type": "formula", "expr": "datum[\"ci0\"]", "as": "upper_ci1"},
-        {"type": "formula", "expr": "datum[\"ci1\"]", "as": "lower_ci1"}
+        {"type": "formula", "expr": "datum['ci0']", "as": "upper_ci1"},
+        {"type": "formula", "expr": "datum['ci1']", "as": "lower_ci1"}
       ]
     }
   ],
@@ -62,7 +62,7 @@
       "name": "layer_0_layer_0_marks",
       "type": "area",
       "style": ["area", "errorband-band"],
-      "sort": {"field": "datum[\"year_Year\"]"},
+      "sort": {"field": "x"},
       "from": {"data": "data_1"},
       "encode": {
         "update": {
@@ -89,7 +89,7 @@
       "name": "layer_1_marks",
       "type": "line",
       "style": ["line"],
-      "sort": {"field": "datum[\"year_Year\"]"},
+      "sort": {"field": "x"},
       "from": {"data": "data_0"},
       "encode": {
         "update": {
@@ -140,6 +140,9 @@
       "gridScale": "y",
       "grid": true,
       "tickCount": {"signal": "ceil(width/40)"},
+      "tickMinStep": {
+        "signal": "datetime(2002, 0, 1, 0, 0, 0, 0) - datetime(2001, 0, 1, 0, 0, 0, 0)"
+      },
       "domain": false,
       "labels": false,
       "aria": false,
@@ -173,6 +176,9 @@
       "labelFlush": true,
       "labelOverlap": true,
       "tickCount": {"signal": "ceil(width/40)"},
+      "tickMinStep": {
+        "signal": "datetime(2002, 0, 1, 0, 0, 0, 0) - datetime(2001, 0, 1, 0, 0, 0, 0)"
+      },
       "zindex": 0
     },
     {

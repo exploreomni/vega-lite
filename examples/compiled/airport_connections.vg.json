@@ -121,7 +121,7 @@
       "name": "unit",
       "value": {},
       "on": [
-        {"events": "mousemove", "update": "isTuple(group()) ? group() : unit"}
+        {"events": "pointermove", "update": "isTuple(group()) ? group() : unit"}
       ]
     },
     {
@@ -135,7 +135,7 @@
           "events": [
             {
               "source": "scope",
-              "type": "mouseover",
+              "type": "pointerover",
               "markname": "layer_2_voronoi"
             }
           ],
@@ -154,7 +154,7 @@
           "events": [
             {
               "source": "scope",
-              "type": "mouseover",
+              "type": "pointerover",
               "markname": "layer_2_voronoi"
             }
           ],
@@ -260,7 +260,7 @@
       "name": "size",
       "type": "linear",
       "domain": {"data": "data_1", "field": "routes"},
-      "range": [0, 1000],
+      "range": [4, 1000],
       "zero": true
     }
   ]

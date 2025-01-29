@@ -56,7 +56,7 @@
       "name": "unit",
       "value": {},
       "on": [
-        {"events": "mousemove", "update": "isTuple(group()) ? group() : unit"}
+        {"events": "pointermove", "update": "isTuple(group()) ? group() : unit"}
       ]
     },
     {
@@ -70,7 +70,7 @@
         {
           "events": {
             "source": "scope",
-            "type": "mousedown",
+            "type": "pointerdown",
             "filter": [
               "!event.item || event.item.mark.name !== \"brush_brush\""
             ]
@@ -80,17 +80,17 @@
         {
           "events": {
             "source": "window",
-            "type": "mousemove",
+            "type": "pointermove",
             "consume": true,
             "between": [
               {
                 "source": "scope",
-                "type": "mousedown",
+                "type": "pointerdown",
                 "filter": [
                   "!event.item || event.item.mark.name !== \"brush_brush\""
                 ]
               },
-              {"source": "window", "type": "mouseup"}
+              {"source": "window", "type": "pointerup"}
             ]
           },
           "update": "[brush_x[0], clamp(x(unit), 0, width)]"
@@ -151,7 +151,11 @@
       "on": [
         {
           "events": [
-            {"source": "scope", "type": "mousedown", "markname": "brush_brush"}
+            {
+              "source": "scope",
+              "type": "pointerdown",
+              "markname": "brush_brush"
+            }
           ],
           "update": "{x: x(unit), y: y(unit), extent_x: slice(brush_x)}"
         }
@@ -165,15 +169,15 @@
           "events": [
             {
               "source": "window",
-              "type": "mousemove",
+              "type": "pointermove",
               "consume": true,
               "between": [
                 {
                   "source": "scope",
-                  "type": "mousedown",
+                  "type": "pointerdown",
                   "markname": "brush_brush"
                 },
-                {"source": "window", "type": "mouseup"}
+                {"source": "window", "type": "pointerup"}
               ]
             }
           ],
@@ -267,7 +271,7 @@
       "name": "layer_0_marks",
       "type": "area",
       "style": ["area"],
-      "sort": {"field": "datum[\"yearmonth_date\"]"},
+      "sort": {"field": "x"},
       "interactive": true,
       "from": {"data": "data_1"},
       "encode": {
@@ -290,7 +294,7 @@
       "name": "layer_1_marks",
       "type": "area",
       "style": ["area"],
-      "sort": {"field": "datum[\"yearmonth_date\"]"},
+      "sort": {"field": "x"},
       "interactive": false,
       "from": {"data": "data_0"},
       "encode": {
@@ -314,7 +318,10 @@
       "type": "rect",
       "clip": true,
       "encode": {
-        "enter": {"fill": {"value": "transparent"}},
+        "enter": {
+          "cursor": {"value": "move"},
+          "fill": {"value": "transparent"}
+        },
         "update": {
           "x": [
             {
@@ -385,6 +392,9 @@
       "gridScale": "y",
       "grid": true,
       "tickCount": {"signal": "ceil(width/40)"},
+      "tickMinStep": {
+        "signal": "datetime(2001, 1, 1, 0, 0, 0, 0) - datetime(2001, 0, 1, 0, 0, 0, 0)"
+      },
       "domain": false,
       "labels": false,
       "aria": false,
@@ -418,6 +428,9 @@
       "labelFlush": true,
       "labelOverlap": true,
       "tickCount": {"signal": "ceil(width/40)"},
+      "tickMinStep": {
+        "signal": "datetime(2001, 1, 1, 0, 0, 0, 0) - datetime(2001, 0, 1, 0, 0, 0, 0)"
+      },
       "zindex": 0
     },
     {

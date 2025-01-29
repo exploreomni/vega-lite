@@ -25,7 +25,7 @@ import {forEach, reduce} from '../encoding';
 import {ExprRef, replaceExprRef} from '../expr';
 import * as log from '../log';
 import {Resolve} from '../resolve';
-import {hasDiscreteDomain} from '../scale';
+import {ScaleType, hasDiscreteDomain} from '../scale';
 import {isFacetSpec} from '../spec';
 import {
   extractCompositionLayout,
@@ -328,7 +328,7 @@ export abstract class Model {
     if (!isTopLevel) {
       // Descriptions are already added to the top-level description so we only need to add them to the inner views.
       if (this.description) {
-        encodeEntry['description'] = signalOrValueRef(this.description);
+        (encodeEntry as any)['description'] = signalOrValueRef(this.description);
       }
 
       // For top-level spec, we can set the global width and height signal to adjust the group size.
@@ -337,7 +337,7 @@ export abstract class Model {
         return {
           width: this.getSizeSignalRef('width'),
           height: this.getSizeSignalRef('height'),
-          ...(encodeEntry ?? {})
+          ...encodeEntry
         };
       }
     }
@@ -599,25 +599,6 @@ export abstract class Model {
   }
 
   /**
-   * Corrects the data references in marks after assemble.
-   */
-  public correctDataNames = (mark: VgMarkGroup) => {
-    // TODO: make this correct
-
-    // for normal data references
-    if (mark.from?.data) {
-      mark.from.data = this.lookupDataSource(mark.from.data);
-    }
-
-    // for access to facet data
-    if (mark.from?.facet?.data) {
-      mark.from.facet.data = this.lookupDataSource(mark.from.facet.data);
-    }
-
-    return mark;
-  };
-
-  /**
    * Traverse a model's hierarchy to get the scale component for a particular channel.
    */
   public getScaleComponent(channel: ScaleChannel): ScaleComponent {
@@ -633,6 +614,11 @@ export abstract class Model {
       return localScaleComponent;
     }
     return this.parent ? this.parent.getScaleComponent(channel) : undefined;
+  }
+
+  public getScaleType(channel: ScaleChannel): ScaleType {
+    const scaleComponent = this.getScaleComponent(channel);
+    return scaleComponent ? scaleComponent.get('type') : undefined;
   }
 
   /**

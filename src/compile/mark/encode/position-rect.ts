@@ -1,4 +1,4 @@
-import {SignalRef} from 'vega';
+import type {SignalRef} from 'vega';
 import {isArray, isNumber} from 'vega-util';
 import {isBinned, isBinning, isBinParams} from '../../../bin';
 import {
@@ -11,14 +11,14 @@ import {
   PolarPositionChannel,
   PositionChannel
 } from '../../../channel';
-import {getBandSize, isFieldDef, isFieldOrDatumDef, TypedFieldDef, vgField} from '../../../channeldef';
+import {getBandPosition, getBandSize, isFieldDef, isFieldOrDatumDef, TypedFieldDef, vgField} from '../../../channeldef';
 import {Config, getViewConfigDiscreteStep} from '../../../config';
 import {Encoding} from '../../../encoding';
 import * as log from '../../../log';
 import {BandSize, isRelativeBandSize} from '../../../mark';
 import {hasDiscreteDomain} from '../../../scale';
 import {isSignalRef, isVgRangeStep, VgEncodeEntry, VgValueRef} from '../../../vega.schema';
-import {getMarkPropOrConfig, signalOrStringValue, signalOrValueRef} from '../../common';
+import {getMarkConfig, getMarkPropOrConfig, signalOrStringValue, signalOrValueRef} from '../../common';
 import {ScaleComponent} from '../../scale/component';
 import {UnitModel} from '../../unit';
 import {nonPosition} from './nonposition';
@@ -27,6 +27,10 @@ import {vgAlignedPositionChannel} from './position-align';
 import {pointPositionDefaultRef} from './position-point';
 import {rangePosition} from './position-range';
 import * as ref from './valueref';
+import {getOffsetScaleChannel} from '../../../channel';
+import {getFirstDefined} from '../../../util';
+import {Mark} from '../../../mark';
+import {OFFSETTED_RECT_END_SUFFIX, OFFSETTED_RECT_START_SUFFIX} from '../../data/timeunit';
 
 export function rectPosition(model: UnitModel, channel: 'x' | 'y' | 'theta' | 'radius'): VgEncodeEntry {
   const {config, encoding, markDef} = model;
@@ -42,15 +46,22 @@ export function rectPosition(model: UnitModel, channel: 'x' | 'y' | 'theta' | 'r
 
   const orient = markDef.orient;
   const hasSizeDef =
-    encoding[sizeChannel] ?? encoding.size ?? getMarkPropOrConfig('size', markDef, config, {vgChannel: sizeChannel});
+    (encoding as any)[sizeChannel] ??
+    encoding.size ??
+    getMarkPropOrConfig('size', markDef, config, {vgChannel: sizeChannel});
 
-  const isBarBand = mark === 'bar' && (channel === 'x' ? orient === 'vertical' : orient === 'horizontal');
+  const offsetScaleChannel = getOffsetChannel(channel);
+
+  const isBarOrTickBand =
+    (mark === 'bar' && (channel === 'x' ? orient === 'vertical' : orient === 'horizontal')) ||
+    (mark === 'tick' && (channel === 'y' ? orient === 'vertical' : orient === 'horizontal'));
 
   // x, x2, and width -- we must specify two of these in all conditions
   if (
     isFieldDef(channelDef) &&
     (isBinning(channelDef.bin) || isBinned(channelDef.bin) || (channelDef.timeUnit && !channelDef2)) &&
     !(hasSizeDef && !isRelativeBandSize(hasSizeDef)) &&
+    !(encoding as any)[offsetScaleChannel] &&
     !hasDiscreteDomain(scaleType)
   ) {
     return rectBinPosition({
@@ -59,7 +70,7 @@ export function rectPosition(model: UnitModel, channel: 'x' | 'y' | 'theta' | 'r
       channel,
       model
     });
-  } else if (((isFieldOrDatumDef(channelDef) && hasDiscreteDomain(scaleType)) || isBarBand) && !channelDef2) {
+  } else if (((isFieldOrDatumDef(channelDef) && hasDiscreteDomain(scaleType)) || isBarOrTickBand) && !channelDef2) {
     return positionAndSize(channelDef, channel, model);
   } else {
     return rangePosition(channel, model, {defaultPos: 'zeroOrMax', defaultPos2: 'zeroOrMin'});
@@ -70,8 +81,10 @@ function defaultSizeRef(
   sizeChannel: 'width' | 'height',
   scaleName: string,
   scale: ScaleComponent,
-  config: Config,
-  bandSize: BandSize
+  config: Config<SignalRef>,
+  bandSize: BandSize,
+  hasFieldDef: boolean,
+  mark: Mark
 ): VgValueRef {
   if (isRelativeBandSize(bandSize)) {
     if (scale) {
@@ -81,8 +94,8 @@ function defaultSizeRef(
         if (bandSize.band !== 1) {
           bandWidth = `${bandSize.band} * ${bandWidth}`;
         }
-        // TODO(#8351): make 0.25 here configurable
-        return {signal: `max(0.25, ${bandWidth})`};
+        const minBandSize = getMarkConfig('minBandSize', {type: mark}, config);
+        return {signal: minBandSize ? `max(${signalOrStringValue(minBandSize)}, ${bandWidth})` : bandWidth};
       } else if (bandSize.band !== 1) {
         log.warn(log.message.cannotUseRelativeBandSizeWithNonBandScale(scaleType));
         bandSize = undefined;
@@ -104,6 +117,18 @@ function defaultSizeRef(
     const scaleRange = scale.get('range');
     if (isVgRangeStep(scaleRange) && isNumber(scaleRange.step)) {
       return {value: scaleRange.step - 2};
+    }
+  }
+  if (!hasFieldDef) {
+    const {bandPaddingInner, barBandPaddingInner, rectBandPaddingInner, tickBandPaddingInner} = config.scale;
+    const padding = getFirstDefined(
+      bandPaddingInner,
+      mark === 'tick' ? tickBandPaddingInner : mark === 'bar' ? barBandPaddingInner : rectBandPaddingInner
+    ); // this part is like paddingInner in scale.ts
+    if (isSignalRef(padding)) {
+      return {signal: `(1 - (${padding.signal})) * ${sizeChannel}`};
+    } else if (isNumber(padding)) {
+      return {signal: `${1 - padding} * ${sizeChannel}`};
     }
   }
   const defaultStep = getViewConfigDiscreteStep(config.view, sizeChannel);
@@ -128,9 +153,14 @@ function positionAndSize(
 
   const offsetScaleChannel = getOffsetChannel(channel);
   const offsetScaleName = model.scaleName(offsetScaleChannel);
+  const offsetScale = model.getScaleComponent(getOffsetScaleChannel(channel));
 
-  // use "size" channel for bars, if there is orient and the channel matches the right orientation
-  const useVlSizeChannel = (orient === 'horizontal' && channel === 'y') || (orient === 'vertical' && channel === 'x');
+  const useVlSizeChannel =
+    // Always uses size channel for ticks, because tick only calls rectPosition() for the size channel
+    markDef.type === 'tick' ||
+    // use "size" channel for bars, if there is orient and the channel matches the right orientation
+    (orient === 'horizontal' && channel === 'y') ||
+    (orient === 'vertical' && channel === 'x');
 
   // Use size encoding / mark property / config if it exists
   let sizeMixins;
@@ -147,10 +177,25 @@ function positionAndSize(
   const hasSizeFromMarkOrEncoding = !!sizeMixins;
 
   // Otherwise, apply default value
-  const bandSize = getBandSize({channel, fieldDef, markDef, config, scaleType: scale?.get('type'), useVlSizeChannel});
+  const bandSize = getBandSize({
+    channel,
+    fieldDef,
+    markDef,
+    config,
+    scaleType: (scale || offsetScale)?.get('type'),
+    useVlSizeChannel
+  });
 
   sizeMixins = sizeMixins || {
-    [vgSizeChannel]: defaultSizeRef(vgSizeChannel, offsetScaleName || scaleName, scale, config, bandSize)
+    [vgSizeChannel]: defaultSizeRef(
+      vgSizeChannel,
+      offsetScaleName || scaleName,
+      offsetScale || scale,
+      config,
+      bandSize,
+      !!fieldDef,
+      markDef.type
+    )
   };
 
   /*
@@ -163,7 +208,9 @@ function positionAndSize(
    */
 
   const defaultBandAlign =
-    scale?.get('type') === 'band' && isRelativeBandSize(bandSize) && !hasSizeFromMarkOrEncoding ? 'top' : 'middle';
+    (scale || offsetScale)?.get('type') === 'band' && isRelativeBandSize(bandSize) && !hasSizeFromMarkOrEncoding
+      ? 'top'
+      : 'middle';
 
   const vgChannel = vgAlignedPositionChannel(channel, markDef, config, defaultBandAlign);
   const center = vgChannel === 'xc' || vgChannel === 'yc';
@@ -184,10 +231,10 @@ function positionAndSize(
         ? 0
         : 0.5
       : isSignalRef(bandSize)
-      ? {signal: `(1-${bandSize})/2`}
-      : isRelativeBandSize(bandSize)
-      ? (1 - bandSize.band) / 2
-      : 0
+        ? {signal: `(1-${bandSize})/2`}
+        : isRelativeBandSize(bandSize)
+          ? (1 - bandSize.band) / 2
+          : 0
   });
 
   if (vgSizeChannel) {
@@ -216,30 +263,41 @@ function getBinSpacing(
   channel: PositionChannel | PolarPositionChannel,
   spacing: number,
   reverse: boolean | SignalRef,
-  translate: number | SignalRef,
-  offset: number | VgValueRef
+  axisTranslate: number | SignalRef,
+  offset: number | VgValueRef,
+  minBandSize: number | SignalRef,
+  bandSizeExpr: string
 ) {
   if (isPolarPositionChannel(channel)) {
     return 0;
   }
 
-  const spacingOffset = channel === 'x' || channel === 'y2' ? -spacing / 2 : spacing / 2;
+  const isEnd = channel === 'x' || channel === 'y2';
 
-  if (isSignalRef(reverse) || isSignalRef(offset) || isSignalRef(translate)) {
+  const spacingOffset = isEnd ? -spacing / 2 : spacing / 2;
+
+  if (isSignalRef(reverse) || isSignalRef(offset) || isSignalRef(axisTranslate) || minBandSize) {
     const reverseExpr = signalOrStringValue(reverse);
     const offsetExpr = signalOrStringValue(offset);
-    const translateExpr = signalOrStringValue(translate);
+    const axisTranslateExpr = signalOrStringValue(axisTranslate);
+    const minBandSizeExpr = signalOrStringValue(minBandSize);
 
-    const t = translateExpr ? `${translateExpr} + ` : '';
+    const sign = isEnd ? '' : '-';
+
+    const spacingAndSizeOffset = minBandSize
+      ? `(${bandSizeExpr} < ${minBandSizeExpr} ? ${sign}0.5 * (${minBandSizeExpr} - (${bandSizeExpr})) : ${spacingOffset})`
+      : spacingOffset;
+
+    const t = axisTranslateExpr ? `${axisTranslateExpr} + ` : '';
     const r = reverseExpr ? `(${reverseExpr} ? -1 : 1) * ` : '';
-    const o = offsetExpr ? `(${offsetExpr} + ${spacingOffset})` : spacingOffset;
+    const o = offsetExpr ? `(${offsetExpr} + ${spacingAndSizeOffset})` : spacingAndSizeOffset;
 
     return {
       signal: t + r + o
     };
   } else {
     offset = offset || 0;
-    return translate + (reverse ? -offset - spacingOffset : +offset + spacingOffset);
+    return axisTranslate + (reverse ? -offset - spacingOffset : +offset + spacingOffset);
   }
 }
 
@@ -263,62 +321,74 @@ function rectBinPosition({
 
   const bandSize = getBandSize({channel, fieldDef, markDef, config, scaleType});
 
-  const axis = model.component.axes[channel]?.[0];
+  const axis = (model.component.axes as any)[channel]?.[0];
   const axisTranslate = axis?.get('translate') ?? 0.5; // vega default is 0.5
 
-  const spacing = isXorY(channel) ? getMarkPropOrConfig('binSpacing', markDef, config) ?? 0 : 0;
+  const spacing = isXorY(channel) ? (getMarkPropOrConfig('binSpacing', markDef, config) ?? 0) : 0;
 
   const channel2 = getSecondaryRangeChannel(channel);
   const vgChannel = getVgPositionChannel(channel);
   const vgChannel2 = getVgPositionChannel(channel2);
+  const minBandSize = getMarkConfig('minBandSize', markDef, config);
 
   const {offset} = positionOffset({channel, markDef, encoding, model, bandPosition: 0});
+  const {offset: offset2} = positionOffset({channel: channel2, markDef, encoding, model, bandPosition: 0});
 
-  const bandPosition = isSignalRef(bandSize)
+  const bandSizeExpr = ref.binSizeExpr({fieldDef, scaleName});
+  const binSpacingOffset = getBinSpacing(channel, spacing, reverse, axisTranslate, offset, minBandSize, bandSizeExpr);
+  const binSpacingOffset2 = getBinSpacing(
+    channel2,
+    spacing,
+    reverse,
+    axisTranslate,
+    offset2 ?? offset,
+    minBandSize,
+    bandSizeExpr
+  );
+
+  const bandPositionForBandSize = isSignalRef(bandSize)
     ? {signal: `(1-${bandSize.signal})/2`}
     : isRelativeBandSize(bandSize)
-    ? (1 - bandSize.band) / 2
-    : 0.5;
+      ? (1 - bandSize.band) / 2
+      : 0.5;
+
+  const bandPosition = getBandPosition({fieldDef, fieldDef2, markDef, config});
 
   if (isBinning(fieldDef.bin) || fieldDef.timeUnit) {
+    const useRectOffsetField = fieldDef.timeUnit && bandPosition !== 0.5;
+
     return {
       [vgChannel2]: rectBinRef({
         fieldDef,
         scaleName,
-        bandPosition,
-        offset: getBinSpacing(channel2, spacing, reverse, axisTranslate, offset)
+        bandPosition: bandPositionForBandSize,
+        offset: binSpacingOffset2,
+        useRectOffsetField
       }),
       [vgChannel]: rectBinRef({
         fieldDef,
         scaleName,
-        bandPosition: isSignalRef(bandPosition) ? {signal: `1-${bandPosition.signal}`} : 1 - bandPosition,
-        offset: getBinSpacing(channel, spacing, reverse, axisTranslate, offset)
+        bandPosition: isSignalRef(bandPositionForBandSize)
+          ? {signal: `1-${bandPositionForBandSize.signal}`}
+          : 1 - bandPositionForBandSize,
+        offset: binSpacingOffset,
+        useRectOffsetField
       })
     };
   } else if (isBinned(fieldDef.bin)) {
-    const startRef = ref.valueRefForFieldOrDatumDef(
-      fieldDef,
-      scaleName,
-      {},
-      {offset: getBinSpacing(channel2, spacing, reverse, axisTranslate, offset)}
-    );
+    const startRef = ref.valueRefForFieldOrDatumDef(fieldDef, scaleName, {}, {offset: binSpacingOffset2});
 
     if (isFieldDef(fieldDef2)) {
       return {
         [vgChannel2]: startRef,
-        [vgChannel]: ref.valueRefForFieldOrDatumDef(
-          fieldDef2,
-          scaleName,
-          {},
-          {offset: getBinSpacing(channel, spacing, reverse, axisTranslate, offset)}
-        )
+        [vgChannel]: ref.valueRefForFieldOrDatumDef(fieldDef2, scaleName, {}, {offset: binSpacingOffset})
       };
     } else if (isBinParams(fieldDef.bin) && fieldDef.bin.step) {
       return {
         [vgChannel2]: startRef,
         [vgChannel]: {
           signal: `scale("${scaleName}", ${vgField(fieldDef, {expr: 'datum'})} + ${fieldDef.bin.step})`,
-          offset: getBinSpacing(channel, spacing, reverse, axisTranslate, offset)
+          offset: binSpacingOffset
         }
       };
     }
@@ -330,21 +400,29 @@ function rectBinPosition({
 /**
  * Value Ref for binned fields
  */
-export function rectBinRef({
+function rectBinRef({
   fieldDef,
   scaleName,
   bandPosition,
-  offset
+  offset,
+  useRectOffsetField
 }: {
   fieldDef: TypedFieldDef<string>;
   scaleName: string;
   bandPosition: number | SignalRef;
   offset?: number | SignalRef;
+  useRectOffsetField: boolean;
 }) {
   return ref.interpolatedSignalRef({
     scaleName,
     fieldOrDatumDef: fieldDef,
     bandPosition,
-    offset
+    offset,
+    ...(useRectOffsetField
+      ? {
+          startSuffix: OFFSETTED_RECT_START_SUFFIX,
+          endSuffix: OFFSETTED_RECT_END_SUFFIX
+        }
+      : {})
   });
 }

@@ -80,11 +80,11 @@ function onDelta(
   const delta = name + DELTA;
   const channel = proj.channel as ScaleChannel;
   const boundScales = scalesCompiler.defined(selCmpt);
-  const signal = signals.filter(s => s.name === proj.signals[boundScales ? 'data' : 'visual'])[0];
+  const signal = signals.find(s => s.name === proj.signals[boundScales ? 'data' : 'visual']);
   const sizeSg = model.getSizeSignalRef(size).signal;
   const scaleCmpt = model.getScaleComponent(channel);
-  const scaleType = scaleCmpt && scaleCmpt.get('type');
-  const reversed = scaleCmpt && scaleCmpt.get('reverse'); // scale parsing sets this flag for fieldDef.sort
+  const scaleType = scaleCmpt?.get('type');
+  const reversed = scaleCmpt?.get('reverse'); // scale parsing sets this flag for fieldDef.sort
   const sign = !boundScales ? '' : channel === X ? (reversed ? '' : '-') : reversed ? '-' : '';
   const extent = `${anchor}.extent_${channel}`;
   const offset = `${sign}${delta}.${channel} / ${boundScales ? `${sizeSg}` : `span(${extent})`}`;
@@ -92,19 +92,19 @@ function onDelta(
     !boundScales || !scaleCmpt
       ? 'panLinear'
       : scaleType === 'log'
-      ? 'panLog'
-      : scaleType === 'symlog'
-      ? 'panSymlog'
-      : scaleType === 'pow'
-      ? 'panPow'
-      : 'panLinear';
+        ? 'panLog'
+        : scaleType === 'symlog'
+          ? 'panSymlog'
+          : scaleType === 'pow'
+            ? 'panPow'
+            : 'panLinear';
   const arg = !boundScales
     ? ''
     : scaleType === 'pow'
-    ? `, ${scaleCmpt.get('exponent') ?? 1}`
-    : scaleType === 'symlog'
-    ? `, ${scaleCmpt.get('constant') ?? 1}`
-    : '';
+      ? `, ${scaleCmpt.get('exponent') ?? 1}`
+      : scaleType === 'symlog'
+        ? `, ${scaleCmpt.get('constant') ?? 1}`
+        : '';
   const update = `${panFn}(${extent}, ${offset}${arg})`;
 
   signal.on.push({

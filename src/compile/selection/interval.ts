@@ -47,7 +47,7 @@ const interval: SelectionCompiler<'interval'> = {
         }
 
         const filters = array((evt.between[0].filter ??= []));
-        if (filters.indexOf(filterExpr) < 0) {
+        if (!filters.includes(filterExpr)) {
           filters.push(filterExpr);
         }
       }
@@ -61,7 +61,7 @@ const interval: SelectionCompiler<'interval'> = {
     const init = selCmpt.init ? selCmpt.init[0] : null;
 
     signals.push(
-      ...channels.reduce((arr, proj) => arr.concat(channelSignals(model, selCmpt, proj, init && init[proj.index])), [])
+      ...channels.reduce((arr, proj) => arr.concat(channelSignals(model, selCmpt, proj, init?.[proj.index])), [])
     );
 
     if (!model.hasProjection) {
@@ -119,10 +119,10 @@ const interval: SelectionCompiler<'interval'> = {
       const projection = stringValue(model.projectionName());
       const centerSg = model.projectionName() + CENTER;
       const {x, y} = selCmpt.project.hasChannel;
-      const xvname = x && x.signals.visual;
-      const yvname = y && y.signals.visual;
-      const xinit = x ? init && init[x.index] : `${centerSg}[0]`;
-      const yinit = y ? init && init[y.index] : `${centerSg}[1]`;
+      const xvname = x?.signals.visual;
+      const yvname = y?.signals.visual;
+      const xinit = x ? init?.[x.index] : `${centerSg}[0]`;
+      const yinit = y ? init?.[y.index] : `${centerSg}[1]`;
       const sizeSg = (layout: keyof LayoutSizeIndex) => model.getSizeSignalRef(layout).signal;
       const bbox =
         `[` +
@@ -235,18 +235,27 @@ const interval: SelectionCompiler<'interval'> = {
     // not interefere with the core marks, but that the brushed region can still
     // be interacted with (e.g., dragging it around).
     const {fill, fillOpacity, cursor, ...stroke} = selCmpt.mark;
-    const vgStroke = keys(stroke).reduce((def, k) => {
-      def[k] = [
-        {
-          test: [x !== undefined && `${xvname}[0] !== ${xvname}[1]`, y !== undefined && `${yvname}[0] !== ${yvname}[1]`]
-            .filter(t => t)
-            .join(' && '),
-          value: stroke[k]
-        },
-        {value: null}
-      ];
-      return def;
-    }, {});
+    const vgStroke = keys(stroke).reduce(
+      (def, k) => {
+        def[k] = [
+          {
+            test: [
+              x !== undefined && `${xvname}[0] !== ${xvname}[1]`,
+              y !== undefined && `${yvname}[0] !== ${yvname}[1]`
+            ]
+              .filter(t => t)
+              .join(' && '),
+            value: stroke[k]
+          },
+          {value: null}
+        ];
+        return def;
+      },
+      {} as Record<keyof typeof stroke, any>
+    );
+
+    // Set cursor to move unless the brush cannot be translated
+    const vgCursor = cursor ?? (selCmpt.translate ? 'move' : null);
 
     return [
       {
@@ -268,7 +277,7 @@ const interval: SelectionCompiler<'interval'> = {
         clip: true,
         encode: {
           enter: {
-            ...(cursor ? {cursor: {value: cursor}} : {}),
+            ...(vgCursor ? {cursor: {value: vgCursor}} : {}),
             fill: {value: 'transparent'}
           },
           update: {...update, ...vgStroke}
