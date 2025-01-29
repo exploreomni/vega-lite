@@ -24,7 +24,7 @@ import {baseEncodeEntry as encodeBaseEncodeEntry, text as encodeText, nonPositio
 import {NormalizedUnitSpec} from '../../spec';
 import * as log from '../../log';
 import {LabelInheritableChannel, supportMark} from '../../channel';
-import {LabelAnchor} from "vega-typings/types/spec/transform";
+import {LabelAnchor} from 'vega-typings/types/spec/transform';
 
 const markCompiler: Record<Mark, MarkCompiler> = {
   arc,
@@ -328,7 +328,6 @@ function getMarkGroup(model: UnitModel, opt: {fromPrefix: string} = {fromPrefix:
   ];
 }
 
-// const LINE_ANCHOR_DEFAULTS: {[key: Orientation]: {anchor: {[key: LineLabelAnchor]: unknown[]}}} = {
 const LINE_ANCHOR_DEFAULTS = {
   horizontal: {
     anchor: {
@@ -402,23 +401,25 @@ export function getLabelMark(model: UnitModel, data: string): LabelMark {
         ...(position
           ? {anchor, offset}
           : stack?.stackBy?.length > 0
-          ? {anchor: ['middle'], offset: [0]}
-          : {
-              anchor: orient === 'horizontal' ? ['right', 'right'] : ['top', 'top'],
-              offset: [2, -2]
-            })
+            ? {anchor: ['middle'], offset: [0]}
+            : {
+                anchor: orient === 'horizontal' ? ['right', 'right'] : ['top', 'top'],
+                offset: [2, -2]
+              })
       };
       break;
     case 'line':
     case 'trail': {
       const _lineAnchor = lineAnchor ?? 'end';
+      console.log('lineAnchor', _lineAnchor, LINE_ANCHOR_DEFAULTS[orient].anchor[_lineAnchor]);
+      const foo = LINE_ANCHOR_DEFAULTS[orient].anchor[_lineAnchor]
       labelTransform = {
         ...common,
         lineAnchor: _lineAnchor,
         ...(position
           ? {anchor, offset}
           : {
-              anchor: [...LINE_ANCHOR_DEFAULTS[orient].anchor[_lineAnchor]],
+              anchor: foo,
               offset: [2, 2, 2]
             }),
         ...(padding === undefined ? {padding: null} : {})
