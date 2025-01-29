@@ -24,6 +24,7 @@ import {baseEncodeEntry as encodeBaseEncodeEntry, text as encodeText, nonPositio
 import {NormalizedUnitSpec} from '../../spec';
 import * as log from '../../log';
 import {LabelInheritableChannel, supportMark} from '../../channel';
+import {LabelAnchor} from "vega-typings/types/spec/transform";
 
 const markCompiler: Record<Mark, MarkCompiler> = {
   arc,
@@ -327,22 +328,23 @@ function getMarkGroup(model: UnitModel, opt: {fromPrefix: string} = {fromPrefix:
   ];
 }
 
+// const LINE_ANCHOR_DEFAULTS: {[key: Orientation]: {anchor: {[key: LineLabelAnchor]: unknown[]}}} = {
 const LINE_ANCHOR_DEFAULTS = {
   horizontal: {
     anchor: {
-      begin: ['bottom-left', 'bottom', 'bottom-right'],
-      end: ['top-left', 'top', 'top-right']
+      start: ['bottom-left', 'bottom', 'bottom-right'] as LabelAnchor[],
+      end: ['top-left', 'top', 'top-right'] as LabelAnchor[]
     },
     padding: 'height * 0.2'
   },
   vertical: {
     anchor: {
-      begin: ['top-left', 'left', 'bottom-left'],
-      end: ['top-right', 'right', 'bottom-right']
+      start: ['top-left', 'left', 'bottom-left'] as LabelAnchor[],
+      end: ['top-right', 'right', 'bottom-right'] as LabelAnchor[]
     },
     padding: 'width * 0.2'
   }
-} as const;
+};
 
 function getLabelInheritableChannels(
   mark: Mark,

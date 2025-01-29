@@ -113,7 +113,6 @@ export const hits = {
       {id: 6, count: 4}
     ],
     circle_clear: [{id: 14}],
-
     polygon: [
       {
         id: 6,
@@ -312,7 +311,12 @@ export function polygonRegion(idx: number, polygon: number[][], parent?: string,
   return `polygonRegion(${idx}, ${JSON.stringify(polygon)}, ${stringValue(parent)}, ${!!targetBrush})`;
 }
 
-export function multiviewRegion(key: string, idx: number, parent?: string, targetBrush?: boolean) {
+export function multiviewRegion(
+  key: 'facet' | 'facet_clear' | 'repeat' | 'repeat_clear',
+  idx: number,
+  parent?: string,
+  targetBrush?: boolean
+) {
   return key.match('_clear')
     ? clearRegion(hits.region[key][idx], parent, targetBrush)
     : circleRegion(hits.region[key][idx], parent, targetBrush, 10);
@@ -324,7 +328,7 @@ export function brush(key: BrushKeys, idx: number, parent?: string, targetBrush?
   return `${fn}(${hits.interval[key][idx].join(', ')}, ${stringValue(parent)}, ${!!targetBrush})`;
 }
 
-export function pt(key: keyof typeof hits.discrete, idx: number, parent?: string) {
+export function pt(key: keyof typeof hits.point, idx: number, parent?: string) {
   const fn = key.match('_clear') ? 'clear' : 'pt';
   return `${fn}(${hits.point[key][idx]}, ${stringValue(parent)})`;
 }

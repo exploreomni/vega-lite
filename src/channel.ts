@@ -416,9 +416,6 @@ export const {
 export const LABEL_INHERITABLE_CHANNEL = keys(LABEL_INHERITABLE_CHANNEL_INDEX);
 export type LabelInheritableChannel = typeof LABEL_INHERITABLE_CHANNEL[number];
 
-export function isLabelInheritableChannel(channel: Channel): channel is LabelInheritableChannel {
-  return !!LABEL_INHERITABLE_CHANNEL[channel];
-}
 
 const {label: __label, tooltip: _tooltip, ...STACKABLE_CHANNEL_INDEX} = NONPOSITION_CHANNEL_INDEX;
 

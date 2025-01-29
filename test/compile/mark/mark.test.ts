@@ -592,7 +592,7 @@ describe('Mark', () => {
         }
       });
 
-      const markGroup = parseMarkGroups(model);
+      const markGroup = parseMarkGroupsAndLabels(model).mark;
       expect(markGroup[0].clip).toEqual({signal: "datum['foo'] > 10"});
     });
 
@@ -607,7 +607,7 @@ describe('Mark', () => {
         }
       });
 
-      const markGroup = parseMarkGroups(model);
+      const markGroup = parseMarkGroupsAndLabels(model).mark;
       expect(markGroup[0].clip).toEqual({signal: "datum['foo'] > 10"});
     });
 
@@ -622,7 +622,7 @@ describe('Mark', () => {
         }
       });
 
-      const markGroup = parseMarkGroups(model);
+      const markGroup = parseMarkGroupsAndLabels(model).mark;
       expect(markGroup[0].clip).toBe(true);
     });
 
@@ -637,7 +637,7 @@ describe('Mark', () => {
         }
       });
 
-      const markGroup = parseMarkGroups(model);
+      const markGroup = parseMarkGroupsAndLabels(model).mark;
       expect(markGroup[0].clip).toBeUndefined();
     });
   });
@@ -836,7 +836,7 @@ describe('Mark', () => {
               x: {type: 'nominal', field: 'col1'},
               y: {type: 'quantitative', field: 'col2'},
               color: {type: 'quantitative', field: 'col3'},
-              label: {type: 'nominal', field: 'col', lineAnchor: 'begin'}
+              label: {type: 'nominal', field: 'col', lineAnchor: 'start'}
             }
           });
 
