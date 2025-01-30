@@ -703,14 +703,12 @@ describe('Mark', () => {
             encoding: {
               x: {type: 'nominal', field: 'col1'},
               y: {type: 'quantitative', field: 'col2'},
-              color: {type: 'quantitative', field: 'col3'},
               fill: {type: 'quantitative', field: 'col4'},
               stroke: {type: 'quantitative', field: 'col5'},
               opacity: {type: 'quantitative', field: 'col6'},
               fillOpacity: {type: 'quantitative', field: 'col7'},
               strokeOpacity: {type: 'quantitative', field: 'col8'},
               strokeWidth: {type: 'quantitative', field: 'col9'},
-              strokeDash: {type: 'quantitative', field: 'col10'},
               tooltip: {type: 'quantitative', field: 'col11'},
               href: {type: 'quantitative', field: 'col12'},
               description: {type: 'quantitative', field: 'col14'},
@@ -723,9 +721,9 @@ describe('Mark', () => {
           expect(label.encode.update).toStrictEqual({
             description: {
               signal:
-                '"col3: " + (format(datum["col3"], "")) + "; col6: " + (format(datum["col6"], "")) + "; col: " + (isValid(datum["col"]) ? datum["col"] : ""+datum["col"])'
+                '"col6: " + (format(datum["col6"], "")) + "; col: " + (isValid(datum["col"]) ? datum["col"] : ""+datum["col"])'
             },
-            fill: {field: 'col3', scale: 'color'},
+            fill: {value: 'black'},
             opacity: {field: 'col6', scale: 'opacity'},
             text: {signal: 'isValid(datum.datum["col"]) ? datum.datum["col"] : ""+datum.datum["col"]'}
           });
@@ -737,14 +735,12 @@ describe('Mark', () => {
             encoding: {
               x: {type: 'nominal', field: 'col1'},
               y: {type: 'quantitative', field: 'col2'},
-              color: {type: 'quantitative', field: 'col3'},
               fill: {type: 'quantitative', field: 'col4'},
               stroke: {type: 'quantitative', field: 'col5'},
               opacity: {type: 'quantitative', field: 'col6'},
               fillOpacity: {type: 'quantitative', field: 'col7'},
               strokeOpacity: {type: 'quantitative', field: 'col8'},
               strokeWidth: {type: 'quantitative', field: 'col9'},
-              strokeDash: {type: 'quantitative', field: 'col10'},
               tooltip: {type: 'quantitative', field: 'col11'},
               href: {type: 'quantitative', field: 'col12'},
               description: {type: 'quantitative', field: 'col14'},
@@ -758,9 +754,9 @@ describe('Mark', () => {
             cursor: {value: 'pointer'},
             description: {
               signal:
-                '"col3: " + (format(datum["col3"], "")) + "; col6: " + (format(datum["col6"], "")) + "; col: " + (isValid(datum["col"]) ? datum["col"] : ""+datum["col"]) + "; col12: " + (format(datum["col12"], ""))'
+                '"col6: " + (format(datum["col6"], "")) + "; col: " + (isValid(datum["col"]) ? datum["col"] : ""+datum["col"]) + "; col12: " + (format(datum["col12"], ""))'
             },
-            fill: {field: 'col3', scale: 'color'},
+            fill: {value: 'black'},
             href: {signal: 'format(datum["col12"], "")'},
             opacity: {field: 'col6', scale: 'opacity'},
             text: {signal: 'isValid(datum.datum["col"]) ? datum.datum["col"] : ""+datum.datum["col"]'}
@@ -784,7 +780,7 @@ describe('Mark', () => {
             type: 'label',
             size: {signal: '[width, height]'},
             padding: null,
-            lineAnchor: 'begin',
+            lineAnchor: 'start',
             anchor: ['top-left', 'left', 'bottom-left'],
             offset: [2, 2, 2]
           });

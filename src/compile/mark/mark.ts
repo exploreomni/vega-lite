@@ -1,4 +1,4 @@
-import { LabelTransform, Mark as VGMark, BaseMark, Encodable, array, LabelAnchor } from "vega";
+import {LabelTransform, Mark as VGMark, BaseMark, Encodable, array, LabelAnchor} from 'vega';
 import {isArray} from 'vega-util';
 import {getAncestorLevel, FieldRefOption, isFieldDef, isValueDef, vgField} from '../../channeldef';
 import {DataSourceType} from '../../data';
@@ -331,14 +331,14 @@ const LINE_ANCHOR_DEFAULTS = {
   horizontal: {
     anchor: {
       start: ['bottom-left', 'bottom', 'bottom-right'] as LabelAnchor[],
-      end: ['top-left', 'top', 'top-right']as LabelAnchor[]
+      end: ['top-left', 'top', 'top-right'] as LabelAnchor[]
     },
     padding: 'height * 0.2'
   },
   vertical: {
     anchor: {
-      start: ['top-left', 'left', 'bottom-left']as LabelAnchor[],
-      end: ['top-right', 'right', 'bottom-right']as LabelAnchor[]
+      start: ['top-left', 'left', 'bottom-left'] as LabelAnchor[],
+      end: ['top-right', 'right', 'bottom-right'] as LabelAnchor[]
     },
     padding: 'width * 0.2'
   }
