@@ -71,8 +71,11 @@
       "format": {
         "signal": "timeUnitSpecifier([\"hours\"], {\"year-month\":\"%b %Y \",\"year-month-date\":\"%b %d, %Y \"})"
       },
-      "formatType": "time",
+      "formatType": "utc",
       "labelOverlap": true,
+      "tickMinStep": {
+        "signal": "datetime(2001, 0, 1, 1, 0, 0, 0) - datetime(2001, 0, 1, 0, 0, 0, 0)"
+      },
       "zindex": 0
     }
   ]

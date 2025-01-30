@@ -63,7 +63,7 @@
       "encode": {
         "update": {
           "x": {"scale": "x", "field": "month_date"},
-          "width": {"scale": "x", "band": 1},
+          "width": {"signal": "max(0.25, bandwidth('x'))"},
           "y": {
             "signal": "min(scale('y',datum[\"min___count_start\"]),scale('y',datum[\"max___count_start\"]),scale('y',datum[\"min___count_end\"]),scale('y',datum[\"max___count_end\"]))"
           },
@@ -160,6 +160,9 @@
       },
       "formatType": "time",
       "labelOverlap": true,
+      "tickMinStep": {
+        "signal": "datetime(2001, 1, 1, 0, 0, 0, 0) - datetime(2001, 0, 1, 0, 0, 0, 0)"
+      },
       "zindex": 0
     },
     {

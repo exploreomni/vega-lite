@@ -63,7 +63,7 @@
       "encode": {
         "update": {
           "y": {"scale": "y", "field": "month_date"},
-          "height": {"scale": "y", "band": 1},
+          "height": {"signal": "max(0.25, bandwidth('y'))"},
           "cornerRadiusTopRight": {"value": 8},
           "cornerRadiusBottomRight": {"value": 8},
           "x": {
@@ -170,6 +170,9 @@
       },
       "formatType": "time",
       "labelOverlap": true,
+      "tickMinStep": {
+        "signal": "datetime(2001, 1, 1, 0, 0, 0, 0) - datetime(2001, 0, 1, 0, 0, 0, 0)"
+      },
       "zindex": 0
     }
   ],

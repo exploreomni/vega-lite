@@ -12,7 +12,7 @@ const hits = {
   composite: [1, 3, 5, 7, 8, 9]
 };
 
-function toggle(key: string, idx: number, shiftKey: boolean, parent?: string) {
+function toggle(key: keyof typeof hits, idx: number, shiftKey: boolean, parent?: string) {
   const fn = key.match('_clear') ? 'clear' : 'pt';
   return `${fn}(${hits[key][idx]}, ${stringValue(parent)}, ${!!shiftKey})`;
 }
@@ -23,7 +23,7 @@ describe('Toggle point selections at runtime', () => {
   let testRender: (filename: string) => Promise<void>;
 
   beforeAll(async () => {
-    page = await (global as any).__BROWSER__.newPage();
+    page = await (global as any).__BROWSER_GLOBAL__.newPage();
     embed = embedFn(page);
     testRender = testRenderFn(page, 'point/toggle');
     await page.goto('http://0.0.0.0:8000/test-runtime/');
@@ -104,7 +104,7 @@ describe('Toggle point selections at runtime', () => {
         const even = i % 2 === 0;
         const parent = parentSelector(specType, ~~(i / 2));
         const store = await page.evaluate(toggle('qq_clear', 0, even, parent));
-        expect(store).toHaveLength(even ? length : (length = length - 2));
+        expect(store).toHaveLength(even ? length : (length -= 2));
         if (!even) {
           await testRender(`${specType}_clear_${i}`);
         }

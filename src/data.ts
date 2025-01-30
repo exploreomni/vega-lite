@@ -4,6 +4,7 @@
 import {Vector2} from 'vega';
 import {FieldName} from './channeldef';
 import {VgData} from './vega.schema';
+import {hasProperty} from './util';
 
 export type ParseValue = null | string | 'string' | 'boolean' | 'date' | 'number';
 
@@ -116,20 +117,22 @@ export interface InlineData extends DataBase {
 export interface NamedData extends DataBase {
   /**
    * Provide a placeholder name and bind data at runtime.
+   *
+   * New data may change the layout but Vega does not always resize the chart. To update the layout when the data updates, set [autosize](https://vega.github.io/vega-lite/docs/size.html#autosize) or explicitly use [view.resize](https://vega.github.io/vega/docs/api/view/#view_resize).
    */
   name: string;
 }
 
 export function isUrlData(data: Partial<Data> | Partial<VgData>): data is UrlData {
-  return 'url' in data;
+  return hasProperty(data, 'url');
 }
 
 export function isInlineData(data: Partial<Data> | Partial<VgData>): data is InlineData {
-  return 'values' in data;
+  return hasProperty(data, 'values');
 }
 
 export function isNamedData(data: Partial<Data> | Partial<VgData>): data is NamedData {
-  return 'name' in data && !isUrlData(data) && !isInlineData(data) && !isGenerator(data);
+  return hasProperty(data, 'name') && !isUrlData(data) && !isInlineData(data) && !isGenerator(data);
 }
 
 export function isGenerator(data: Partial<Data> | Partial<VgData>): data is Generator {
@@ -137,23 +140,29 @@ export function isGenerator(data: Partial<Data> | Partial<VgData>): data is Gene
 }
 
 export function isSequenceGenerator(data: Partial<Data> | Partial<VgData>): data is SequenceGenerator {
-  return 'sequence' in data;
+  return hasProperty(data, 'sequence');
 }
 
 export function isSphereGenerator(data: Partial<Data> | Partial<VgData>): data is SphereGenerator {
-  return 'sphere' in data;
+  return hasProperty(data, 'sphere');
 }
 
 export function isGraticuleGenerator(data: Partial<Data> | Partial<VgData>): data is GraticuleGenerator {
-  return 'graticule' in data;
+  return hasProperty(data, 'graticule');
 }
 
 export enum DataSourceType {
   Raw,
+  /** Main data source for marks */
   Main,
   Row,
   Column,
-  Lookup
+  Lookup,
+  /** Pre-filter-invalid data source for scale domains */
+  PreFilterInvalid,
+
+  /** Post-filter-invalid data source for scale domains */
+  PostFilterInvalid
 }
 
 export type Generator = SequenceGenerator | SphereGenerator | GraticuleGenerator;

@@ -1,4 +1,4 @@
-import {SignalRef} from 'vega';
+import type {SignalRef} from 'vega';
 import {isObject} from 'vega-util';
 import {getAncestorLevel, LabelDef} from '../channeldef';
 import {Config} from '../config';
@@ -10,6 +10,7 @@ import {isUnitSpec} from '../spec/unit';
 import {stack} from '../stack';
 import {keys, omit, pick} from '../util';
 import {NonFacetUnitNormalizer, NormalizeLayerOrUnit, NormalizerParams} from './base';
+import {initMarkdef} from '../compile/mark/init';
 
 type UnitSpecWithPathOverlay = GenericUnitSpec<Encoding<string>, Mark | MarkDef<'line' | 'area' | 'rule' | 'trail'>>;
 
@@ -111,7 +112,7 @@ export class PathOverlayNormalizer implements NonFacetUnitNormalizer<UnitSpecWit
 
   public run(spec: UnitSpecWithPathOverlay, normParams: NormalizerParams, normalize: NormalizeLayerOrUnit) {
     const {config} = normParams;
-    const {params, projection, mark, encoding: e, ...outerSpec} = spec;
+    const {params, projection, mark, name, encoding: e, ...outerSpec} = spec;
 
     // Need to call normalizeEncoding because we need the inferred types to correctly determine stack
     const encoding = normalizeEncoding(e, config);
@@ -122,12 +123,14 @@ export class PathOverlayNormalizer implements NonFacetUnitNormalizer<UnitSpecWit
     const markDef: MarkDef = isMarkDef(mark) ? mark : {type: mark};
 
     const pointOverlay = getPointOverlay(markDef, config[markDef.type], encoding);
+
     const lineOverlay = markDef.type === 'area' && getLineOverlay(markDef, config[markDef.type]);
 
     const isMultiSeriesPath = pathGroupingFields(markDef.type, spec.encoding).length > 0;
 
     const layer: NormalizedUnitSpec[] = [
       {
+        name,
         ...(params ? {params} : {}),
         mark: dropLineAndPoint({
           // TODO: extract this 0.7 to be shared with default opacity for point/tick/...
@@ -145,7 +148,8 @@ export class PathOverlayNormalizer implements NonFacetUnitNormalizer<UnitSpecWit
     // FIXME: determine rules for applying selections.
 
     // Need to copy stack config to overlayed layer
-    const stackProps = stack(markDef, encoding);
+    // FIXME: normalizer shouldn't call `initMarkdef`, a method from an init phase.
+    const stackProps = stack(initMarkdef(markDef, encoding, config), encoding);
 
     let overlayEncoding = encoding;
     if (stackProps) {
@@ -158,6 +162,11 @@ export class PathOverlayNormalizer implements NonFacetUnitNormalizer<UnitSpecWit
         }
       };
     }
+
+    // overlay line layer should be on the edge of area but passing y2/x2 makes
+    // it as "rule" mark so that it draws unwanted vertical/horizontal lines.
+    // point overlay also should not have y2/x2 as it does not support.
+    overlayEncoding = omit(overlayEncoding, ['y2', 'x2']);
 
     if (lineOverlay) {
       layer.push({

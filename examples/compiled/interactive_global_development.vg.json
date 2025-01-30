@@ -5,7 +5,7 @@
   "padding": 5,
   "width": 800,
   "height": 500,
-  "style": "cell",
+  "style": ["view", "cell"],
   "data": [
     {
       "name": "year_store",
@@ -111,7 +111,7 @@
       "name": "unit",
       "value": {},
       "on": [
-        {"events": "mousemove", "update": "isTuple(group()) ? group() : unit"}
+        {"events": "pointermove", "update": "isTuple(group()) ? group() : unit"}
       ]
     },
     {
@@ -155,8 +155,8 @@
       "name": "hovered_tuple",
       "on": [
         {
-          "events": [{"source": "scope", "type": "mouseover"}],
-          "update": "datum && item().mark.marktype !== 'group' ? {unit: \"layer_1_layer_1\", fields: hovered_tuple_fields, values: [(item().isVoronoi ? datum.datum : datum)[\"country\"]]} : null",
+          "events": [{"source": "scope", "type": "pointerover"}],
+          "update": "datum && item().mark.marktype !== 'group' && indexof(item().mark.role, 'legend') < 0 ? {unit: \"layer_1_layer_1\", fields: hovered_tuple_fields, values: [(item().isVoronoi ? datum.datum : datum)[\"country\"]]} : null",
           "force": true
         },
         {"events": [{"source": "view", "type": "dblclick"}], "update": "null"}
@@ -180,7 +180,7 @@
       "on": [
         {
           "events": [{"source": "scope", "type": "click"}],
-          "update": "datum && item().mark.marktype !== 'group' ? {unit: \"layer_1_layer_1\", fields: clicked_tuple_fields, values: [(item().isVoronoi ? datum.datum : datum)[\"country\"]]} : null",
+          "update": "datum && item().mark.marktype !== 'group' && indexof(item().mark.role, 'legend') < 0 ? {unit: \"layer_1_layer_1\", fields: clicked_tuple_fields, values: [(item().isVoronoi ? datum.datum : datum)[\"country\"]]} : null",
           "force": true
         },
         {"events": [{"source": "view", "type": "dblclick"}], "update": "null"}

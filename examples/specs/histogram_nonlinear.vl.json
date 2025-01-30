@@ -45,17 +45,17 @@
       }
     ]
   },
-  "title": "Distribution of Frame Render Time (ms)",
+  "title": "Distribution of Frame Render Time (fps)",
   "width": {"step": 40},
   "height": 100,
-  "mark": {"type": "bar", "cornerRadiusEnd": 0},
+  "mark": {"type": "bar", "cornerRadiusEnd": 0, "orient": "vertical"},
   "encoding": {
     "x": {
       "title": "",
       "field": "startTime",
       "type": "ordinal",
       "scale": {"type": "point", "padding": 0},
-      "axis": {"labelAngle": 0},
+      "axis": {"labelAngle": 0, "labelExpr": "datum.value === '∞' ? '0' : format(1000/datum.value, 'd')"},
       "sort": null
     },
     "x2": {"field": "endTime"},

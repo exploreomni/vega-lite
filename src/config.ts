@@ -1,5 +1,5 @@
-import {Color, InitSignal, Locale, NewSignal, RangeConfig, RangeScheme, SignalRef, writeConfig} from 'vega';
-import {isObject, mergeConfig} from 'vega-util';
+import type {Color, InitSignal, Locale, NewSignal, RangeConfig, RangeScheme, SignalRef} from 'vega';
+import {isObject, mergeConfig, writeConfig} from 'vega-util';
 import {Axis, AxisConfig, AxisConfigMixins, AXIS_CONFIGS, isConditionalAxisValue} from './axis';
 import {signalOrValueRefWithCondition, signalRefOrValue} from './compile/common';
 import {CompositeMarkConfigMixins, getAllCompositeMarks} from './compositemark';
@@ -25,7 +25,7 @@ import {defaultConfig as defaultSelectionConfig, SelectionConfig} from './select
 import {BaseViewBackground, CompositionConfigMixins, DEFAULT_SPACING, isStep} from './spec/base';
 import {TopLevelProperties} from './spec/toplevel';
 import {extractTitleConfig, TitleConfig} from './title';
-import {duplicate, getFirstDefined, isEmpty, keys, omit} from './util';
+import {duplicate, getFirstDefined, hasProperty, isEmpty, keys, omit} from './util';
 
 export interface ViewConfig<ES extends ExprRef | SignalRef> extends BaseViewBackground<ES> {
   /**
@@ -72,7 +72,7 @@ export function getViewConfigContinuousSize<ES extends ExprRef | SignalRef>(
   viewConfig: ViewConfig<ES>,
   channel: 'width' | 'height'
 ) {
-  return viewConfig[channel] ?? viewConfig[channel === 'width' ? 'continuousWidth' : 'continuousHeight']; // get width/height for backwards compatibility
+  return (viewConfig as any)[channel] ?? viewConfig[channel === 'width' ? 'continuousWidth' : 'continuousHeight']; // get width/height for backwards compatibility
 }
 
 export function getViewConfigDiscreteStep<ES extends ExprRef | SignalRef>(
@@ -87,7 +87,7 @@ export function getViewConfigDiscreteSize<ES extends ExprRef | SignalRef>(
   viewConfig: ViewConfig<ES>,
   channel: 'width' | 'height'
 ) {
-  const size = viewConfig[channel] ?? viewConfig[channel === 'width' ? 'discreteWidth' : 'discreteHeight']; // get width/height for backwards compatibility
+  const size = (viewConfig as any)[channel] ?? viewConfig[channel === 'width' ? 'discreteWidth' : 'discreteHeight']; // get width/height for backwards compatibility
   return getFirstDefined(size, {step: viewConfig.step});
 }
 
@@ -100,14 +100,70 @@ export const defaultViewConfig: ViewConfig<SignalRef> = {
 };
 
 export function isVgScheme(rangeScheme: string[] | RangeScheme): rangeScheme is RangeScheme {
-  return rangeScheme && !!rangeScheme['scheme'];
+  return hasProperty(rangeScheme, 'scheme');
 }
 
 export type ColorConfig = Record<string, Color>;
 
 export type FontSizeConfig = Record<string, number>;
 
-export interface VLOnlyConfig<ES extends ExprRef | SignalRef> {
+export interface FormatConfig {
+  /**
+   * If numberFormatType is not specified,
+   * D3 number format for guide labels, text marks, and tooltips of non-normalized fields (fields *without* `stack: "normalize"`). For example `"s"` for SI units.
+   * Use [D3's number format pattern](https://github.com/d3/d3-format#locale_format).
+   *
+   * If `config.numberFormatType` is specified and `config.customFormatTypes` is `true`, this value will be passed as `format` alongside `datum.value` to the `config.numberFormatType` function.
+   */
+  numberFormat?: string;
+
+  /**
+   * [Custom format type](https://vega.github.io/vega-lite/docs/config.html#custom-format-type)
+   * for `config.numberFormat`.
+   *
+   * __Default value:__ `undefined` -- This is equilvalent to call D3-format, which is exposed as [`format` in Vega-Expression](https://vega.github.io/vega/docs/expressions/#format).
+   * __Note:__ You must also set `customFormatTypes` to `true` to use this feature.
+   */
+  numberFormatType?: string;
+
+  /**
+   * If normalizedNumberFormatType is not specified,
+   * D3 number format for axis labels, text marks, and tooltips of normalized stacked fields (fields with `stack: "normalize"`). For example `"s"` for SI units.
+   * Use [D3's number format pattern](https://github.com/d3/d3-format#locale_format).
+   *
+   * If `config.normalizedNumberFormatType` is specified and `config.customFormatTypes` is `true`, this value will be passed as `format` alongside `datum.value` to the `config.numberFormatType` function.
+   * __Default value:__ `%`
+   */
+  normalizedNumberFormat?: string;
+
+  /**
+   * [Custom format type](https://vega.github.io/vega-lite/docs/config.html#custom-format-type)
+   * for `config.normalizedNumberFormat`.
+   *
+   * __Default value:__ `undefined` -- This is equilvalent to call D3-format, which is exposed as [`format` in Vega-Expression](https://vega.github.io/vega/docs/expressions/#format).
+   * __Note:__ You must also set `customFormatTypes` to `true` to use this feature.
+   */
+  normalizedNumberFormatType?: string;
+
+  /**
+   * Default time format for raw time values (without time units) in text marks, legend labels and header labels.
+   *
+   * __Default value:__ `"%b %d, %Y"`
+   * __Note:__ Axes automatically determine the format for each label automatically so this config does not affect axes.
+   */
+  timeFormat?: string;
+
+  /**
+   * [Custom format type](https://vega.github.io/vega-lite/docs/config.html#custom-format-type)
+   * for `config.timeFormat`.
+   *
+   * __Default value:__ `undefined` -- This is equilvalent to call D3-time-format, which is exposed as [`timeFormat` in Vega-Expression](https://vega.github.io/vega/docs/expressions/#timeFormat).
+   * __Note:__ You must also set `customFormatTypes` to `true` and there must *not* be a `timeUnit` defined to use this feature.
+   */
+  timeFormatType?: string;
+}
+
+export interface VLOnlyConfig<ES extends ExprRef | SignalRef> extends FormatConfig {
   /**
    * Default font for all text marks, titles, and labels.
    */
@@ -145,22 +201,14 @@ export interface VLOnlyConfig<ES extends ExprRef | SignalRef> {
   fieldTitle?: 'verbal' | 'functional' | 'plain';
 
   /**
-   * D3 Number format for guide labels and text marks. For example `"s"` for SI units. Use [D3's number format pattern](https://github.com/d3/d3-format#locale_format).
-   */
-  numberFormat?: string;
-
-  /**
-   * Default time format for raw time values (without time units) in text marks, legend labels and header labels.
-   *
-   * __Default value:__ `"%b %d, %Y"`
-   * __Note:__ Axes automatically determine the format for each label automatically so this config does not affect axes.
-   */
-  timeFormat?: string;
-
-  /**
    * Allow the `formatType` property for text marks and guides to accept a custom formatter function [registered as a Vega expression](https://vega.github.io/vega-lite/usage/compile.html#format-type).
    */
   customFormatTypes?: boolean;
+
+  /**
+   * Define [custom format configuration](https://vega.github.io/vega-lite/docs/config.html#format) for tooltips. If unspecified, default format config will be applied.
+   */
+  tooltipFormat?: FormatConfig;
 
   /** Default properties for [single view plots](https://vega.github.io/vega-lite/docs/spec.html#single). */
   view?: ViewConfig<ES>;
@@ -317,7 +365,9 @@ export const defaultConfig: Config<SignalRef> = {
   title: {},
 
   facet: {spacing: DEFAULT_SPACING},
-  concat: {spacing: DEFAULT_SPACING}
+  concat: {spacing: DEFAULT_SPACING},
+
+  normalizedNumberFormat: '.0%'
 };
 
 // Tableau10 color palette, copied from `vegaScale.scheme('tableau10')`
@@ -467,7 +517,7 @@ function getAxisConfigInternal(axisConfig: AxisConfig<ExprRef | SignalRef>) {
   const axisConfigInternal: AxisConfig<SignalRef> = {};
   for (const prop of props) {
     const val = axisConfig[prop];
-    axisConfigInternal[prop as any] = isConditionalAxisValue<any, ExprRef | SignalRef>(val)
+    (axisConfigInternal as any)[prop] = isConditionalAxisValue<any, ExprRef | SignalRef>(val)
       ? signalOrValueRefWithCondition<any>(val)
       : signalRefOrValue(val);
   }
@@ -521,9 +571,9 @@ export function initConfig(specifiedConfig: Config = {}): Config<SignalRef> {
 
   const outputConfig: Config<SignalRef> = omit(mergedConfig, configPropsWithExpr);
 
-  for (const prop of ['background', 'lineBreak', 'padding']) {
+  for (const prop of ['background', 'lineBreak', 'padding'] as const) {
     if (mergedConfig[prop]) {
-      outputConfig[prop] = signalRefOrValue(mergedConfig[prop]);
+      (outputConfig as any)[prop] = signalRefOrValue(mergedConfig[prop]);
     }
   }
 
@@ -551,7 +601,12 @@ export function initConfig(specifiedConfig: Config = {}): Config<SignalRef> {
   }
 
   if (mergedConfig.scale) {
-    outputConfig.scale = replaceExprRef(mergedConfig.scale);
+    const {invalid, ...otherScaleConfig} = mergedConfig.scale;
+    const newScaleInvalid = replaceExprRef(invalid, {level: 1});
+    outputConfig.scale = {
+      ...replaceExprRef(otherScaleConfig),
+      ...(keys(newScaleInvalid).length > 0 ? {invalid: newScaleInvalid} : {})
+    };
   }
 
   if (mergedConfig.style) {
@@ -579,6 +634,9 @@ const VL_ONLY_CONFIG_PROPERTIES: (keyof Config)[] = [
   'facet',
   'concat',
   'numberFormat',
+  'numberFormatType',
+  'normalizedNumberFormat',
+  'normalizedNumberFormatType',
   'timeFormat',
   'countTitle',
   'header',
@@ -620,8 +678,8 @@ export function stripAndRedirectConfig(config: Config<SignalRef>) {
   if (config.axis) {
     // delete condition axis config
     for (const prop in config.axis) {
-      if (isConditionalAxisValue(config.axis[prop])) {
-        delete config.axis[prop];
+      if (isConditionalAxisValue(config.axis[prop as keyof AxisConfig<SignalRef>])) {
+        delete config.axis[prop as keyof AxisConfig<SignalRef>];
       }
     }
   }
@@ -651,14 +709,14 @@ export function stripAndRedirectConfig(config: Config<SignalRef>) {
   for (const markType of MARK_STYLES) {
     // Remove Vega-Lite-only mark config
     for (const prop of VL_ONLY_MARK_CONFIG_PROPERTIES) {
-      delete config[markType][prop];
+      delete (config as any)[markType][prop];
     }
 
     // Remove Vega-Lite only mark-specific config
     const vlOnlyMarkSpecificConfigs = VL_ONLY_ALL_MARK_SPECIFIC_CONFIG_PROPERTY_INDEX[markType];
     if (vlOnlyMarkSpecificConfigs) {
       for (const prop of vlOnlyMarkSpecificConfigs) {
-        delete config[markType][prop];
+        delete (config as any)[markType][prop];
       }
     }
 
@@ -670,14 +728,16 @@ export function stripAndRedirectConfig(config: Config<SignalRef>) {
 
   for (const m of getAllCompositeMarks()) {
     // Clean up the composite mark config as we don't need them in the output specs anymore
-    delete config[m];
+    delete (config as any)[m];
   }
 
   redirectTitleConfig(config);
 
   // Remove empty config objects.
   for (const prop in config) {
+    // @ts-ignore
     if (isObject(config[prop]) && isEmpty(config[prop])) {
+      // @ts-ignore
       delete config[prop];
     }
   }
@@ -723,7 +783,9 @@ function redirectConfigToStyleConfig(
   toProp?: string,
   compositeMarkPart?: string
 ) {
-  const propConfig: MarkConfig<SignalRef> = compositeMarkPart ? config[prop][compositeMarkPart] : config[prop];
+  const propConfig: MarkConfig<SignalRef> = compositeMarkPart
+    ? (config as any)[prop][compositeMarkPart]
+    : config[prop as keyof Config<any>];
 
   if (prop === 'view') {
     toProp = 'cell'; // View's default style is "cell"
@@ -741,6 +803,6 @@ function redirectConfigToStyleConfig(
 
   if (!compositeMarkPart) {
     // For composite mark, so don't delete the whole config yet as we have to do multiple redirections.
-    delete config[prop];
+    delete config[prop as keyof Config<any>];
   }
 }

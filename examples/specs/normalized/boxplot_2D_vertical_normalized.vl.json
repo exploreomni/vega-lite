@@ -25,7 +25,7 @@
         {
           "transform": [
             {
-              "filter": "(datum[\"Body Mass (g)\"] < datum[\"lower_box_Body Mass (g)\"] - 1.5 * (datum[\"upper_box_Body Mass (g)\"] - datum[\"lower_box_Body Mass (g)\"])) || (datum[\"Body Mass (g)\"] > datum[\"upper_box_Body Mass (g)\"] + 1.5 * (datum[\"upper_box_Body Mass (g)\"] - datum[\"lower_box_Body Mass (g)\"]))"
+              "filter": "(datum['Body Mass (g)'] < datum['lower_box_Body Mass (g)'] - 1.5 * (datum['upper_box_Body Mass (g)'] - datum['lower_box_Body Mass (g)'])) || (datum['Body Mass (g)'] > datum['upper_box_Body Mass (g)'] + 1.5 * (datum['upper_box_Body Mass (g)'] - datum['lower_box_Body Mass (g)']))"
             }
           ],
           "mark": {"type": "point", "style": "boxplot-outliers"},
@@ -43,7 +43,7 @@
         {
           "transform": [
             {
-              "filter": "(datum[\"lower_box_Body Mass (g)\"] - 1.5 * (datum[\"upper_box_Body Mass (g)\"] - datum[\"lower_box_Body Mass (g)\"]) <= datum[\"Body Mass (g)\"]) && (datum[\"Body Mass (g)\"] <= datum[\"upper_box_Body Mass (g)\"] + 1.5 * (datum[\"upper_box_Body Mass (g)\"] - datum[\"lower_box_Body Mass (g)\"]))"
+              "filter": "(datum['lower_box_Body Mass (g)'] - 1.5 * (datum['upper_box_Body Mass (g)'] - datum['lower_box_Body Mass (g)']) <= datum['Body Mass (g)']) && (datum['Body Mass (g)'] <= datum['upper_box_Body Mass (g)'] + 1.5 * (datum['upper_box_Body Mass (g)'] - datum['lower_box_Body Mass (g)']))"
             },
             {
               "aggregate": [
@@ -73,12 +73,7 @@
           ],
           "layer": [
             {
-              "mark": {
-                "type": "rule",
-                "invalid": null,
-                "aria": false,
-                "style": "boxplot-rule"
-              },
+              "mark": {"type": "rule", "aria": false, "style": "boxplot-rule"},
               "encoding": {
                 "y": {
                   "field": "lower_whisker_Body Mass (g)",
@@ -104,12 +99,7 @@
               }
             },
             {
-              "mark": {
-                "type": "rule",
-                "invalid": null,
-                "aria": false,
-                "style": "boxplot-rule"
-              },
+              "mark": {"type": "rule", "aria": false, "style": "boxplot-rule"},
               "encoding": {
                 "y": {
                   "field": "upper_box_Body Mass (g)",
@@ -169,7 +159,6 @@
             "type": "bar",
             "size": 14,
             "orient": "vertical",
-            "invalid": null,
             "ariaRoleDescription": "box",
             "style": "boxplot-box"
           },
@@ -217,7 +206,6 @@
           "mark": {
             "color": "white",
             "type": "tick",
-            "invalid": null,
             "size": 14,
             "orient": "horizontal",
             "aria": false,
@@ -231,6 +219,14 @@
               "scale": {"zero": false}
             },
             "x": {"field": "Species", "type": "nominal"},
+            "color": {
+              "condition": {
+                "test": "datum['lower_box_Body Mass (g)'] >= datum['upper_box_Body Mass (g)']",
+                "field": "Species",
+                "type": "nominal",
+                "legend": null
+              }
+            },
             "tooltip": [
               {
                 "field": "max_Body Mass (g)",

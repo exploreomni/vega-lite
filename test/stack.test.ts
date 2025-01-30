@@ -1,5 +1,5 @@
 import {NonArgAggregateOp} from '../src/aggregate';
-import {DETAIL, X, Y} from '../src/channel';
+import {DETAIL, X, Y, YOFFSET} from '../src/channel';
 import * as log from '../src/log';
 import {ARC, AREA, BAR, PRIMITIVE_MARKS, RECT} from '../src/mark';
 import {ScaleType} from '../src/scale';
@@ -37,7 +37,7 @@ describe('stack', () => {
           color: {field: 'site', type: 'nominal'}
         }
       };
-      const stackProps = stack(spec.mark, spec.encoding, undefined);
+      const stackProps = stack(spec.mark, spec.encoding);
       expect(stackProps.fieldChannel).toBe(X);
     }
   });
@@ -51,9 +51,33 @@ describe('stack', () => {
           x: {field: 'yield', type: 'quantitative', bin: true}
         }
       };
-      const stackProps = stack(spec.mark, spec.encoding, undefined);
+      const stackProps = stack(spec.mark, spec.encoding);
       expect(stackProps).toBeNull();
     }
+  });
+
+  it("doesn't stacked the dimension field on a 1D vertical bar with dimension only", () => {
+    const spec: TopLevel<NormalizedUnitSpec> = {
+      data: {url: 'data/barley.json'},
+      mark: {type: 'bar', orient: 'vertical'},
+      encoding: {
+        x: {field: 'yield', type: 'quantitative'}
+      }
+    };
+    const stackProps = stack(spec.mark, spec.encoding);
+    expect(stackProps).toBeNull();
+  });
+
+  it("doesn't stacked the dimension field on a 1D horizontal bar with dimension only", () => {
+    const spec: TopLevel<NormalizedUnitSpec> = {
+      data: {url: 'data/barley.json'},
+      mark: {type: 'bar', orient: 'horizontal'},
+      encoding: {
+        y: {field: 'yield', type: 'quantitative'}
+      }
+    };
+    const stackProps = stack(spec.mark, spec.encoding);
+    expect(stackProps).toBeNull();
   });
 
   it('should be disabled when stack is false', () => {
@@ -67,7 +91,7 @@ describe('stack', () => {
           color: {field: 'site', type: 'nominal'}
         }
       };
-      const stackProps = stack(spec.mark, spec.encoding, undefined);
+      const stackProps = stack(spec.mark, spec.encoding);
       expect(stackProps).toBeNull();
     }
   });
@@ -82,7 +106,7 @@ describe('stack', () => {
           y: {field: 'variety', type: 'nominal'}
         }
       };
-      const stackProps = stack(spec.mark, spec.encoding, undefined);
+      const stackProps = stack(spec.mark, spec.encoding);
       expect(stackProps.fieldChannel).toBe(X);
     }
   });
@@ -98,7 +122,7 @@ describe('stack', () => {
           color: {field: 'site', type: 'nominal'}
         }
       };
-      const stackProps = stack(spec.mark, spec.encoding, undefined);
+      const stackProps = stack(spec.mark, spec.encoding);
       expect(stackProps.fieldChannel).toBe(X);
     }
   });
@@ -137,7 +161,7 @@ describe('stack', () => {
           }
         };
 
-        const _stack = stack(spec.mark, spec.encoding, undefined);
+        const _stack = stack(spec.mark, spec.encoding);
         expect(_stack).toBeTruthy();
 
         expect(_stack.stackBy[0].channel).toEqual(DETAIL);
@@ -158,7 +182,7 @@ describe('stack', () => {
       }
     };
 
-    const _stack = stack(spec.mark, spec.encoding, undefined);
+    const _stack = stack(spec.mark, spec.encoding);
     expect(_stack).toBeTruthy();
 
     for (const stackBy of _stack.stackBy) {
@@ -234,7 +258,7 @@ describe('stack', () => {
   });
 
   it(
-    'should always warn if the aggregated axis has non-linear scale',
+    'should always return stack and only warn for non-undefined stack if the aggregated axis has non-linear scale',
     log.wrap(localLogger => {
       for (const s of [undefined, 'center', 'zero', 'normalize'] as const) {
         for (const scaleType of [ScaleType.LOG, ScaleType.POW, ScaleType.SQRT]) {
@@ -249,35 +273,19 @@ describe('stack', () => {
                 color: {field: 'site', type: 'nominal'}
               }
             };
-            expect(stack(spec.mark, spec.encoding)).not.toBeNull();
-
+            expect(stack(spec.mark, spec.encoding)).toBeTruthy();
             const warns = localLogger.warns;
-            expect(warns[warns.length - 1]).toEqual(log.message.cannotStackNonLinearScale(scaleType));
+
+            if (s !== undefined) {
+              expect(warns[warns.length - 1]).toEqual(log.message.stackNonLinearScale(scaleType));
+            } else {
+              expect(warns).toHaveLength(0);
+            }
           }
         }
       }
     })
   );
-
-  it('returns null if the aggregated axis has non-linear scale and disallowNonLinearStack = true', () => {
-    for (const stacked of [undefined, 'center', 'zero', 'normalize'] as const) {
-      for (const scaleType of [ScaleType.LOG, ScaleType.POW, ScaleType.SQRT]) {
-        const marks = stacked === undefined ? STACK_BY_DEFAULT_NON_POLAR_MARKS : STACKABLE_NON_POLAR_MARKS;
-        for (const mark of marks) {
-          const spec: TopLevel<NormalizedUnitSpec> = {
-            data: {url: 'data/barley.json'},
-            mark,
-            encoding: {
-              x: {field: 'a', type: 'quantitative', aggregate: 'sum', scale: {type: scaleType}},
-              y: {field: 'variety', type: 'nominal'},
-              color: {field: 'site', type: 'nominal'}
-            }
-          };
-          expect(stack(spec.mark, spec.encoding, {disallowNonLinearStack: true})).toBeNull();
-        }
-      }
-    }
-  });
 
   it(
     'should throw warning if the aggregated axis has a non-summative aggregate',
@@ -301,7 +309,7 @@ describe('stack', () => {
               }
             };
 
-            stack(spec.mark, spec.encoding, undefined);
+            stack(spec.mark, spec.encoding);
 
             const warns = localLogger.warns;
             expect(warns[warns.length - 1]).toEqual(log.message.stackNonSummativeAggregate(aggregate));
@@ -323,9 +331,59 @@ describe('stack', () => {
             color: {field: 'site', type: 'nominal'}
           }
         };
-        const _stack = stack(spec.mark, spec.encoding, undefined);
+        const _stack = stack(spec.mark, spec.encoding);
         expect(_stack.fieldChannel).toBe(X);
         expect(_stack.groupbyChannels).toEqual([Y]);
+      }
+    });
+
+    it('should be correct for grouped bar', () => {
+      for (const stackableMark of [BAR, AREA]) {
+        const spec: TopLevel<NormalizedUnitSpec> = {
+          data: {url: 'data/barley.json'},
+          mark: stackableMark,
+          encoding: {
+            x: {field: 'yield', type: 'quantitative'},
+            y: {field: 'variety', type: 'nominal'},
+            yOffset: {field: 'site', type: 'nominal'},
+            color: {field: 'site', type: 'nominal'}
+          }
+        };
+        const _stack = stack(spec.mark, spec.encoding);
+        expect(_stack.fieldChannel).toBe(X);
+        expect(_stack.groupbyChannels).toEqual([Y, YOFFSET]);
+      }
+    });
+
+    it('should be correct for grouped bar without nesting', () => {
+      for (const stackableMark of [BAR, AREA]) {
+        const spec: TopLevel<NormalizedUnitSpec> = {
+          data: {url: 'data/barley.json'},
+          mark: stackableMark,
+          encoding: {
+            x: {field: 'yield', type: 'quantitative'},
+            yOffset: {field: 'site', type: 'nominal'},
+            color: {field: 'site', type: 'nominal'}
+          }
+        };
+        const _stack = stack(spec.mark, spec.encoding);
+        expect(_stack.fieldChannel).toBe(X);
+        expect(_stack.groupbyChannels).toEqual([YOFFSET]);
+      }
+    });
+
+    it('should stack even for two plain quantitatives with the orient on the axes', () => {
+      for (const mark of [BAR, AREA]) {
+        const spec: TopLevel<NormalizedUnitSpec> = {
+          data: {url: 'data/movies.json'},
+          mark: {type: mark, orient: 'vertical'}, // orient also can be inferred by init.ts
+          encoding: {
+            x: {field: 'IMDB Rating', type: 'quantitative'},
+            y: {field: 'Rotten Tomatoes Rating', type: 'quantitative'}
+          }
+        };
+        const stackProps = stack(spec.mark, spec.encoding);
+        expect(stackProps.fieldChannel).toBe(Y);
       }
     });
 
@@ -339,7 +397,7 @@ describe('stack', () => {
             color: {field: 'site', type: 'nominal'}
           }
         };
-        const _stack = stack(spec.mark, spec.encoding, undefined);
+        const _stack = stack(spec.mark, spec.encoding);
         expect(_stack.fieldChannel).toBe(X);
         expect(_stack.groupbyChannels).toEqual([]);
       }
@@ -356,7 +414,7 @@ describe('stack', () => {
             color: {field: 'site', type: 'nominal'}
           }
         };
-        const _stack = stack(spec.mark, spec.encoding, undefined);
+        const _stack = stack(spec.mark, spec.encoding);
         expect(_stack.fieldChannel).toBe(Y);
         expect(_stack.groupbyChannels).toEqual([X]);
       }
@@ -372,7 +430,7 @@ describe('stack', () => {
             color: {field: 'site', type: 'nominal'}
           }
         };
-        const _stack = stack(spec.mark, spec.encoding, undefined);
+        const _stack = stack(spec.mark, spec.encoding);
         expect(_stack.fieldChannel).toBe(Y);
         expect(_stack.groupbyChannels).toEqual([]);
       }
@@ -387,7 +445,7 @@ describe('stack', () => {
           color: {field: 'id', type: 'nominal'}
         }
       };
-      const _stack = stack(spec.mark, spec.encoding, undefined);
+      const _stack = stack(spec.mark, spec.encoding);
       expect(_stack.fieldChannel).toBe('theta');
       expect(_stack.stackBy[0].channel).toBe('color');
     });
@@ -405,7 +463,7 @@ describe('stack', () => {
           }
         }
       };
-      const _stack = stack(spec.mark, spec.encoding, undefined);
+      const _stack = stack(spec.mark, spec.encoding);
       expect(_stack.fieldChannel).toBe('theta');
     });
   });
@@ -423,7 +481,7 @@ describe('stack', () => {
               color: {field: 'site', type: 'nominal'}
             }
           };
-          expect(stack(spec.mark, spec.encoding, undefined).offset).toBe('zero');
+          expect(stack(spec.mark, spec.encoding).offset).toBe('zero');
         }
       }
     });

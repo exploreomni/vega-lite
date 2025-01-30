@@ -5,6 +5,7 @@
   "padding": 5,
   "width": 900,
   "height": 500,
+  "style": "view",
   "data": [
     {"name": "org_store"},
     {
@@ -120,7 +121,7 @@
       "name": "unit",
       "value": {},
       "on": [
-        {"events": "mousemove", "update": "isTuple(group()) ? group() : unit"}
+        {"events": "pointermove", "update": "isTuple(group()) ? group() : unit"}
       ]
     },
     {
@@ -134,11 +135,11 @@
           "events": [
             {
               "source": "scope",
-              "type": "mouseover",
+              "type": "pointerover",
               "markname": "layer_2_voronoi"
             }
           ],
-          "update": "datum && item().mark.marktype !== 'group' ? {unit: \"layer_2\", fields: org_tuple_fields, values: [(item().isVoronoi ? datum.datum : datum)[\"origin\"]]} : null",
+          "update": "datum && item().mark.marktype !== 'group' && indexof(item().mark.role, 'legend') < 0 ? {unit: \"layer_2\", fields: org_tuple_fields, values: [(item().isVoronoi ? datum.datum : datum)[\"origin\"]]} : null",
           "force": true
         },
         {"events": [{"source": "view", "type": "dblclick"}], "update": "null"}
@@ -153,7 +154,7 @@
           "events": [
             {
               "source": "scope",
-              "type": "mouseover",
+              "type": "pointerover",
               "markname": "layer_2_voronoi"
             }
           ],
@@ -177,7 +178,7 @@
       "name": "layer_0_marks",
       "type": "shape",
       "style": ["geoshape"],
-      "interactive": false,
+      "interactive": true,
       "from": {"data": "source_0"},
       "encode": {
         "update": {
@@ -259,7 +260,7 @@
       "name": "size",
       "type": "linear",
       "domain": {"data": "data_1", "field": "routes"},
-      "range": [0, 1000],
+      "range": [4, 1000],
       "zero": true
     }
   ]

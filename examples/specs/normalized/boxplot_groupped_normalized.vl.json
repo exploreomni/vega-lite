@@ -25,7 +25,7 @@
         {
           "transform": [
             {
-              "filter": "(datum[\"Acceleration\"] < datum[\"lower_box_Acceleration\"] - 1.5 * (datum[\"upper_box_Acceleration\"] - datum[\"lower_box_Acceleration\"])) || (datum[\"Acceleration\"] > datum[\"upper_box_Acceleration\"] + 1.5 * (datum[\"upper_box_Acceleration\"] - datum[\"lower_box_Acceleration\"]))"
+              "filter": "(datum['Acceleration'] < datum['lower_box_Acceleration'] - 1.5 * (datum['upper_box_Acceleration'] - datum['lower_box_Acceleration'])) || (datum['Acceleration'] > datum['upper_box_Acceleration'] + 1.5 * (datum['upper_box_Acceleration'] - datum['lower_box_Acceleration']))"
             }
           ],
           "mark": {"type": "point", "style": "boxplot-outliers"},
@@ -43,7 +43,7 @@
         {
           "transform": [
             {
-              "filter": "(datum[\"lower_box_Acceleration\"] - 1.5 * (datum[\"upper_box_Acceleration\"] - datum[\"lower_box_Acceleration\"]) <= datum[\"Acceleration\"]) && (datum[\"Acceleration\"] <= datum[\"upper_box_Acceleration\"] + 1.5 * (datum[\"upper_box_Acceleration\"] - datum[\"lower_box_Acceleration\"]))"
+              "filter": "(datum['lower_box_Acceleration'] - 1.5 * (datum['upper_box_Acceleration'] - datum['lower_box_Acceleration']) <= datum['Acceleration']) && (datum['Acceleration'] <= datum['upper_box_Acceleration'] + 1.5 * (datum['upper_box_Acceleration'] - datum['lower_box_Acceleration']))"
             },
             {
               "aggregate": [
@@ -73,12 +73,7 @@
           ],
           "layer": [
             {
-              "mark": {
-                "type": "rule",
-                "invalid": null,
-                "aria": false,
-                "style": "boxplot-rule"
-              },
+              "mark": {"type": "rule", "aria": false, "style": "boxplot-rule"},
               "encoding": {
                 "y": {
                   "field": "lower_whisker_Acceleration",
@@ -105,12 +100,7 @@
               }
             },
             {
-              "mark": {
-                "type": "rule",
-                "invalid": null,
-                "aria": false,
-                "style": "boxplot-rule"
-              },
+              "mark": {"type": "rule", "aria": false, "style": "boxplot-rule"},
               "encoding": {
                 "y": {
                   "field": "upper_box_Acceleration",
@@ -171,7 +161,6 @@
             "type": "bar",
             "size": 14,
             "orient": "vertical",
-            "invalid": null,
             "ariaRoleDescription": "box",
             "style": "boxplot-box"
           },
@@ -220,7 +209,6 @@
           "mark": {
             "color": "white",
             "type": "tick",
-            "invalid": null,
             "size": 14,
             "orient": "horizontal",
             "aria": false,
@@ -234,6 +222,13 @@
             },
             "x": {"field": "Cylinders", "type": "nominal"},
             "xOffset": {"field": "Origin", "type": "nominal"},
+            "color": {
+              "condition": {
+                "test": "datum['lower_box_Acceleration'] >= datum['upper_box_Acceleration']",
+                "field": "Origin",
+                "type": "nominal"
+              }
+            },
             "tooltip": [
               {
                 "field": "max_Acceleration",

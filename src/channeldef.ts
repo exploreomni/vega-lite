@@ -42,6 +42,7 @@ import {
   TEXT,
   THETA,
   THETA2,
+  TIME,
   TOOLTIP,
   URL,
   X,
@@ -70,7 +71,9 @@ import {isSortByChannel, Sort, SortOrder} from './sort';
 import {isFacetFieldDef} from './spec/facet';
 import {StackOffset} from './stack';
 import {
+  BinnedTimeUnit,
   getTimeUnitParts,
+  isBinnedTimeUnit,
   isLocalSingleTimeUnit,
   normalizeTimeUnit,
   TimeUnit,
@@ -83,6 +86,7 @@ import {
   Dict,
   flatAccessWithDatum,
   getFirstDefined,
+  hasProperty,
   internalField,
   omit,
   removePathFromField,
@@ -143,22 +147,21 @@ export type StringValueDefWithCondition<F extends Field, T extends Type = Standa
 >;
 export type TypeForShape = 'nominal' | 'ordinal' | 'geojson';
 
-export type Conditional<CD extends FieldDef<any> | DatumDef | ValueDef<any> | ExprRef | SignalRef> =
-  | ConditionalPredicate<CD>
-  | ConditionalParameter<CD>;
+export type ConditionalTemplate = FieldDef<any> | DatumDef | ValueDef<any> | ExprRef | SignalRef;
 
-export type ConditionalPredicate<CD extends FieldDef<any> | DatumDef | ValueDef<any> | ExprRef | SignalRef> = {
+export type Conditional<CD extends ConditionalTemplate> = ConditionalPredicate<CD> | ConditionalParameter<CD>;
+
+export type ConditionalPredicate<CD extends ConditionalTemplate> = {
   /**
    * Predicate for triggering the condition
    */
   test: LogicalComposition<Predicate>;
 } & CD;
 
-export type ConditionalParameter<CD extends FieldDef<any> | DatumDef | ValueDef<any> | ExprRef | SignalRef> =
-  ParameterPredicate & CD;
+export type ConditionalParameter<CD extends ConditionalTemplate> = ParameterPredicate & CD;
 
-export function isConditionalParameter<T>(c: Conditional<T>): c is ConditionalParameter<T> {
-  return c['param'];
+export function isConditionalParameter<T extends ConditionalTemplate>(c: Conditional<T>): c is ConditionalParameter<T> {
+  return hasProperty(c, 'param');
 }
 
 export interface ConditionValueDefMixins<V extends Value = Value> {
@@ -381,7 +384,7 @@ export type FieldName = string;
 export type Field = FieldName | RepeatRef;
 
 export function isRepeatRef(field: Field | any): field is RepeatRef {
-  return field && !isString(field) && 'repeat' in field;
+  return !isString(field) && hasProperty(field, 'repeat');
 }
 
 /** @@hidden */
@@ -412,7 +415,7 @@ export interface FieldDefBase<F, B extends Bin = Bin> extends BandMixins {
    *
    * __See also:__ [`timeUnit`](https://vega.github.io/vega-lite/docs/timeunit.html) documentation.
    */
-  timeUnit?: TimeUnit | TimeUnitParams;
+  timeUnit?: TimeUnit | BinnedTimeUnit | TimeUnitParams;
 
   /**
    * Aggregation function for the field
@@ -425,9 +428,9 @@ export interface FieldDefBase<F, B extends Bin = Bin> extends BandMixins {
   aggregate?: Aggregate | HiddenCompositeAggregate;
 
   /**
-   * A flag for binning a `quantitative` field, [an object defining binning parameters](https://vega.github.io/vega-lite/docs/bin.html#params), or indicating that the data for `x` or `y` channel are binned before they are imported into Vega-Lite (`"binned"`).
+   * A flag for binning a `quantitative` field, [an object defining binning parameters](https://vega.github.io/vega-lite/docs/bin.html#bin-parameters), or indicating that the data for `x` or `y` channel are binned before they are imported into Vega-Lite (`"binned"`).
    *
-   * - If `true`, default [binning parameters](https://vega.github.io/vega-lite/docs/bin.html) will be applied.
+   * - If `true`, default [binning parameters](https://vega.github.io/vega-lite/docs/bin.html#bin-parameters) will be applied.
    *
    * - If `"binned"`, this indicates that the data for the `x` (or `y`) channel are already binned. You can map the bin-start field to `x` (or `y`) and the bin-end field to `x2` (or `y2`). The scale and axis will be formatted similar to binning in Vega-Lite.  To adjust the axis ticks based on the bin step, you can also set the axis's [`tickMinStep`](https://vega.github.io/vega-lite/docs/axis.html#ticks) property.
    *
@@ -462,7 +465,7 @@ export interface TypeMixins<T extends Type> {
    * 1) For a data `field`, `"nominal"` is the default data type unless the field encoding has `aggregate`, `channel`, `bin`, scale type, `sort`, or `timeUnit` that satisfies the following criteria:
    * - `"quantitative"` is the default type if (1) the encoded field contains `bin` or `aggregate` except `"argmin"` and `"argmax"`, (2) the encoding channel is `latitude` or `longitude` channel or (3) if the specified scale type is [a quantitative scale](https://vega.github.io/vega-lite/docs/scale.html#type).
    * - `"temporal"` is the default type if (1) the encoded field contains `timeUnit` or (2) the specified scale type is a time or utc scale
-   * - `ordinal""` is the default type if (1) the encoded field contains a [custom `sort` order](https://vega.github.io/vega-lite/docs/sort.html#specifying-custom-sort-order), (2) the specified scale type is an ordinal/point/band scale, or (3) the encoding channel is `order`.
+   * - `"ordinal"` is the default type if (1) the encoded field contains a [custom `sort` order](https://vega.github.io/vega-lite/docs/sort.html#specifying-custom-sort-order), (2) the specified scale type is an ordinal/point/band scale, or (3) the encoding channel is `order`.
    *
    * 2) For a constant value in data domain (`datum`):
    * - `"quantitative"` if the datum is a number
@@ -518,7 +521,7 @@ export interface SortableFieldDef<
 }
 
 export function isSortableFieldDef<F extends Field>(fieldDef: FieldDef<F>): fieldDef is SortableFieldDef<F> {
-  return 'sort' in fieldDef;
+  return hasProperty(fieldDef, 'sort');
 }
 
 export type ScaleFieldDef<
@@ -626,7 +629,7 @@ export interface PositionBaseMixins {
    *
    * `stack` can be one of the following values:
    * - `"zero"` or `true`: stacking with baseline offset at zero value of the scale (for creating typical stacked [bar](https://vega.github.io/vega-lite/docs/stack.html#bar) and [area](https://vega.github.io/vega-lite/docs/stack.html#area) chart).
-   * - `"normalize"` - stacking with normalized domain (for creating [normalized stacked bar and area charts](https://vega.github.io/vega-lite/docs/stack.html#normalized). <br/>
+   * - `"normalize"` - stacking with normalized domain (for creating [normalized stacked bar and area charts](https://vega.github.io/vega-lite/docs/stack.html#normalized) and pie charts [with percentage tooltip](https://vega.github.io/vega-lite/docs/arc.html#tooltip)). <br/>
    * -`"center"` - stacking with center baseline (for [streamgraph](https://vega.github.io/vega-lite/docs/stack.html#streamgraph)).
    * - `null` or `false` - No-stacking. This will produce layered [bar](https://vega.github.io/vega-lite/docs/stack.html#layered-bar-chart) and area chart.
    *
@@ -679,6 +682,12 @@ export interface PositionMixins {
 
 export type PolarDef<F extends Field> = PositionFieldDefBase<F> | PositionDatumDefBase<F> | PositionValueDef;
 
+export type TimeDef<F extends Field> = TimeFieldDef<F>;
+export interface TimeMixins {
+  rescale?: boolean;
+}
+export type TimeFieldDef<F extends Field> = ScaleFieldDef<F, StandardType> & TimeMixins;
+
 export function getBandPosition({
   fieldDef,
   fieldDef2,
@@ -696,7 +705,7 @@ export function getBandPosition({
   if (isFieldDef(fieldDef)) {
     const {timeUnit, bin} = fieldDef;
     if (timeUnit && !fieldDef2) {
-      return isRectBasedMark(mark.type) ? 0 : getMarkConfig('timeUnitBandPosition', mark, config);
+      return getMarkConfig('timeUnitBandPosition', mark, config);
     } else if (isBinning(bin)) {
       return 0.5;
     }
@@ -797,11 +806,19 @@ export interface LegendMixins {
 
 // Order Path have no scale
 
-export interface OrderFieldDef<F extends Field> extends FieldDefWithoutScale<F> {
+export type OrderFieldDef<F extends Field> = FieldDefWithoutScale<F> & OrderOnlyDef;
+
+export interface OrderOnlyDef {
   /**
    * The sort order. One of `"ascending"` (default) or `"descending"`.
    */
   sort?: SortOrder;
+}
+
+export function isOrderOnlyDef<F extends Field>(
+  orderDef: OrderFieldDef<F> | OrderFieldDef<F>[] | OrderValueDef | OrderOnlyDef
+): orderDef is OrderOnlyDef {
+  return hasProperty(orderDef, 'sort') && !hasProperty(orderDef, 'field');
 }
 
 export type OrderValueDef = ConditionValueDefMixins<number> & NumericValueDef;
@@ -814,7 +831,7 @@ export type ChannelDef<F extends Field = string> = Encoding<F>[keyof Encoding<F>
 export function isConditionalDef<CD extends ChannelDef<any> | GuideEncodingConditionalValueDef | ExprRef | SignalRef>(
   channelDef: CD
 ): channelDef is CD & {condition: Conditional<any>} {
-  return channelDef && 'condition' in channelDef;
+  return hasProperty(channelDef, 'condition');
 }
 
 /**
@@ -823,39 +840,38 @@ export function isConditionalDef<CD extends ChannelDef<any> | GuideEncodingCondi
 export function hasConditionalFieldDef<F extends Field>(
   channelDef: Partial<ChannelDef<F>>
 ): channelDef is {condition: Conditional<TypedFieldDef<F>>} {
-  const condition = channelDef && channelDef['condition'];
+  const condition = (channelDef as any)?.['condition'];
   return !!condition && !isArray(condition) && isFieldDef(condition);
 }
 
 export function hasConditionalFieldOrDatumDef<F extends Field>(
   channelDef: ChannelDef<F>
 ): channelDef is {condition: Conditional<TypedFieldDef<F>>} {
-  const condition = channelDef && channelDef['condition'];
+  const condition = (channelDef as any)?.['condition'];
   return !!condition && !isArray(condition) && isFieldOrDatumDef(condition);
 }
 
 export function hasConditionalValueDef<F extends Field>(
   channelDef: ChannelDef<F>
 ): channelDef is ValueDef<any> & {condition: Conditional<ValueDef<any>> | Conditional<ValueDef<any>>[]} {
-  const condition = channelDef && channelDef['condition'];
+  const condition = (channelDef as any)?.['condition'];
   return !!condition && (isArray(condition) || isValueDef(condition));
 }
 
 export function isFieldDef<F extends Field>(
   channelDef: Partial<ChannelDef<F>> | FieldDefBase<F> | DatumDef<F, any>
 ): channelDef is FieldDefBase<F> | TypedFieldDef<F> | SecondaryFieldDef<F> {
-  // TODO: we can't use field in channelDef here as it's somehow failing runtime test
-  return channelDef && (!!channelDef['field'] || channelDef['aggregate'] === 'count');
+  return hasProperty(channelDef, 'field') || (channelDef as any)?.aggregate === 'count';
 }
 
 export function channelDefType<F extends Field>(channelDef: ChannelDef<F>): Type | undefined {
-  return channelDef && channelDef['type'];
+  return (channelDef as any)?.['type'];
 }
 
 export function isDatumDef<F extends Field>(
   channelDef: Partial<ChannelDef<F>> | FieldDefBase<F> | DatumDef<F, any>
 ): channelDef is DatumDef<F, any> {
-  return channelDef && 'datum' in channelDef;
+  return hasProperty(channelDef, 'datum');
 }
 
 export function isContinuousFieldOrDatumDef<F extends Field>(
@@ -865,9 +881,9 @@ export function isContinuousFieldOrDatumDef<F extends Field>(
   return (isTypedFieldDef(cd) && !isDiscrete(cd)) || isNumericDataDef(cd);
 }
 
-export function isQuantitativeFieldOrDatumDef<F extends Field>(cd: ChannelDef<F>) {
+export function isUnbinnedQuantitativeFieldOrDatumDef<F extends Field>(cd: ChannelDef<F>) {
   // TODO: make datum support DateTime object
-  return channelDefType(cd) === 'quantitative' || isNumericDataDef(cd);
+  return (isTypedFieldDef(cd) && cd.type === 'quantitative' && !cd.bin) || isNumericDataDef(cd);
 }
 
 export function isNumericDataDef<F extends Field>(cd: ChannelDef<F>): cd is DatumDef<F, number> {
@@ -881,33 +897,37 @@ export function isFieldOrDatumDef<F extends Field>(
 }
 
 export function isTypedFieldDef<F extends Field>(channelDef: ChannelDef<F>): channelDef is TypedFieldDef<F> {
-  return channelDef && ('field' in channelDef || channelDef['aggregate'] === 'count') && 'type' in channelDef;
+  return (
+    channelDef &&
+    (hasProperty(channelDef, 'field') || (channelDef as any)['aggregate'] === 'count') &&
+    hasProperty(channelDef, 'type')
+  );
 }
 
 export function isValueDef<F extends Field>(channelDef: Partial<ChannelDef<F>>): channelDef is ValueDef<any> {
-  return channelDef && 'value' in channelDef && 'value' in channelDef;
+  return hasProperty(channelDef, 'value');
 }
 
 export function isScaleFieldDef<F extends Field>(channelDef: ChannelDef<F>): channelDef is ScaleFieldDef<F> {
-  return channelDef && ('scale' in channelDef || 'sort' in channelDef);
+  return hasProperty(channelDef, 'scale') || hasProperty(channelDef, 'sort');
 }
 
 export function isPositionFieldOrDatumDef<F extends Field>(
   channelDef: ChannelDef<F>
 ): channelDef is PositionFieldDef<F> | PositionDatumDef<F> {
-  return channelDef && ('axis' in channelDef || 'stack' in channelDef || 'impute' in channelDef);
+  return hasProperty(channelDef, 'axis') || hasProperty(channelDef, 'stack') || hasProperty(channelDef, 'impute');
 }
 
 export function isMarkPropFieldOrDatumDef<F extends Field>(
   channelDef: ChannelDef<F>
 ): channelDef is MarkPropFieldDef<F, any> | MarkPropDatumDef<F> {
-  return channelDef && 'legend' in channelDef;
+  return hasProperty(channelDef, 'legend');
 }
 
 export function isStringFieldOrDatumDef<F extends Field>(
   channelDef: ChannelDef<F>
 ): channelDef is StringFieldDef<F> | StringDatumDef<F> {
-  return channelDef && ('format' in channelDef || 'formatType' in channelDef);
+  return hasProperty(channelDef, 'format') || hasProperty(channelDef, 'formatType');
 }
 
 export function toStringFieldDef<F extends Field>(fieldDef: FieldDef<F>): StringFieldDef<F> {
@@ -936,7 +956,7 @@ export interface FieldRefOption {
 function isOpFieldDef(
   fieldDef: FieldDefBase<string> | WindowFieldDef | AggregatedFieldDef
 ): fieldDef is WindowFieldDef | AggregatedFieldDef {
-  return 'op' in fieldDef;
+  return hasProperty(fieldDef, 'op');
 }
 
 /**
@@ -975,7 +995,7 @@ export function vgField(
           } else {
             fn = String(aggregate);
           }
-        } else if (timeUnit) {
+        } else if (timeUnit && !isBinnedTimeUnit(timeUnit)) {
           fn = timeUnitToString(timeUnit);
           suffix = ((!['range', 'mid'].includes(opt.binSuffix) && opt.binSuffix) || '') + (opt.suffix ?? '');
         }
@@ -1036,7 +1056,7 @@ export function verbalTitleFormatter(fieldDef: FieldDefBase<string>, config: Con
     return config.countTitle;
   } else if (isBinning(bin)) {
     return `${field} (binned)`;
-  } else if (timeUnit) {
+  } else if (timeUnit && !isBinnedTimeUnit(timeUnit)) {
     const unit = normalizeTimeUnit(timeUnit)?.unit;
     if (unit) {
       return `${field} (${getTimeUnitParts(unit).join('-')})`;
@@ -1061,14 +1081,10 @@ export function functionalTitleFormatter(fieldDef: FieldDefBase<string>) {
     return `${field} for argmin(${aggregate.argmin})`;
   }
 
-  const timeUnitParams = normalizeTimeUnit(timeUnit);
+  const timeUnitParams = timeUnit && !isBinnedTimeUnit(timeUnit) ? normalizeTimeUnit(timeUnit) : undefined;
 
   const fn = aggregate || timeUnitParams?.unit || (timeUnitParams?.maxbins && 'timeunit') || (isBinning(bin) && 'bin');
-  if (fn) {
-    return `${fn.toUpperCase()}(${field})`;
-  } else {
-    return field;
-  }
+  return fn ? `${fn.toUpperCase()}(${field})` : field;
 }
 
 export const defaultTitleFormatter: FieldTitleFormatter = (fieldDef: FieldDefBase<string>, config: Config) => {
@@ -1251,12 +1267,12 @@ export function initFieldOrDatumDef(
     const guideType = isPositionFieldOrDatumDef(fd)
       ? 'axis'
       : isMarkPropFieldOrDatumDef(fd)
-      ? 'legend'
-      : isFacetFieldDef(fd)
-      ? 'header'
-      : null;
-    if (guideType && fd[guideType]) {
-      const {format, formatType, ...newGuide} = fd[guideType];
+        ? 'legend'
+        : isFacetFieldDef(fd)
+          ? 'header'
+          : null;
+    if (guideType && (fd as any)[guideType]) {
+      const {format, formatType, ...newGuide} = (fd as any)[guideType];
       if (isCustomFormatType(formatType) && !config.customFormatTypes) {
         log.warn(log.message.customFormatTypeNotAllowed(channel));
         return initFieldOrDatumDef({...fd, [guideType]: newGuide}, channel, config, opt);
@@ -1330,7 +1346,7 @@ export function initFieldDef(
   } else if (!isSecondaryRangeChannel(channel)) {
     // If type is empty / invalid, then augment with default type
     const newType = defaultType(fieldDef as TypedFieldDef<any>, channel);
-    fieldDef['type'] = newType;
+    (fieldDef as any)['type'] = newType;
   }
 
   if (isTypedFieldDef(fieldDef)) {
@@ -1348,7 +1364,7 @@ export function initFieldDef(
         sort: {encoding: sort}
       };
     }
-    const sub = sort.substr(1);
+    const sub = sort.substring(1);
     if (sort.charAt(0) === '-' && isSortByChannel(sub)) {
       return {
         ...fieldDef,
@@ -1458,7 +1474,8 @@ export function channelCompatibility(
     case RADIUS2:
     case X2:
     case Y2:
-      if (type === 'nominal' && !fieldDef['sort']) {
+    case TIME:
+      if (type === 'nominal' && !(fieldDef as any)['sort']) {
         return {
           compatible: false,
           warning: `Channel ${channel} should not be used with an unsorted discrete field.`
@@ -1493,14 +1510,14 @@ export function channelCompatibility(
  */
 export function isFieldOrDatumDefForTimeFormat(fieldOrDatumDef: FieldDef<string> | DatumDef): boolean {
   const {formatType} = getFormatMixins(fieldOrDatumDef);
-  return formatType === 'time' || (!formatType && isTimeFieldDef(fieldOrDatumDef));
+  return formatType === 'time' || (!formatType && isTemporalFieldDef(fieldOrDatumDef));
 }
 
 /**
- * Check if field def has type `temporal`. If you want to also cover field defs that use a time format, use `isTimeFormatFieldDef`.
+ * Check if field def has type `temporal`. If you want to also cover field defs that use a time format, use `isFieldOrDatumDefForTimeFormat`.
  */
-export function isTimeFieldDef(def: FieldDef<any> | DatumDef): boolean {
-  return def && (def['type'] === 'temporal' || (isFieldDef(def) && !!def.timeUnit));
+export function isTemporalFieldDef(def: FieldDef<any> | DatumDef): boolean {
+  return def && ((def as any)['type'] === 'temporal' || (isFieldDef(def) && !!def.timeUnit));
 }
 
 /**
@@ -1560,8 +1577,10 @@ export function valueArray(
 ) {
   const {type} = fieldOrDatumDef;
   return values.map(v => {
+    const timeUnit =
+      isFieldDef(fieldOrDatumDef) && !isBinnedTimeUnit(fieldOrDatumDef.timeUnit) ? fieldOrDatumDef.timeUnit : undefined;
     const expr = valueExpr(v, {
-      timeUnit: isFieldDef(fieldOrDatumDef) ? fieldOrDatumDef.timeUnit : undefined,
+      timeUnit,
       type,
       undefinedIfExprNotRequired: true
     });

@@ -1,12 +1,11 @@
-import {LabelTransform, Mark as VGMark, BaseMark, Encodable, array} from 'vega';
+import { LabelTransform, Mark as VGMark, BaseMark, Encodable, array, LabelAnchor } from "vega";
 import {isArray} from 'vega-util';
 import {getAncestorLevel, FieldRefOption, isFieldDef, isValueDef, vgField} from '../../channeldef';
 import {DataSourceType} from '../../data';
-import {Encoding, isAggregate, pathGroupingFields} from '../../encoding';
-import {AREA, BAR, isPathMark, LINE, Mark, TRAIL} from '../../mark';
-import {isSortByEncoding, isSortField} from '../../sort';
+import {Encoding, pathGroupingFields} from '../../encoding';
+import {AREA, BAR, LINE, Mark, TRAIL, isPathMark} from '../../mark';
 import {contains, getFirstDefined, isNullOrFalse, keys, omit, pick} from '../../util';
-import {VgCompare, VgEncodeEntry, VG_CORNERRADIUS_CHANNELS} from '../../vega.schema';
+import {VG_CORNERRADIUS_CHANNELS, VgCompare, VgEncodeEntry} from '../../vega.schema';
 import {getMarkConfig, getMarkPropOrConfig, getStyles, signalOrValueRef, sortParams} from '../common';
 import {UnitModel} from '../unit';
 import {arc} from './arc';
@@ -285,43 +284,8 @@ export function getSort(model: UnitModel): VgCompare {
     const dimensionChannel = markDef.orient === 'horizontal' ? 'y' : 'x';
     const dimensionChannelDef = encoding[dimensionChannel];
     if (isFieldDef(dimensionChannelDef)) {
-      const s = dimensionChannelDef.sort;
-
-      if (isArray(s)) {
-        return {
-          field: vgField(dimensionChannelDef, {prefix: dimensionChannel, suffix: 'sort_index', expr: 'datum'})
-        };
-      } else if (isSortField(s)) {
-        return {
-          field: vgField(
-            {
-              // FIXME: this op might not already exist?
-              // FIXME: what if dimensionChannel (x or y) contains custom domain?
-              aggregate: isAggregate(model.encoding) ? s.op : undefined,
-              field: s.field
-            },
-            {expr: 'datum'}
-          )
-        };
-      } else if (isSortByEncoding(s)) {
-        const fieldDefToSort = model.fieldDef(s.encoding);
-        return {
-          field: vgField(fieldDefToSort, {expr: 'datum'}),
-          order: s.order
-        };
-      } else if (s === null) {
-        return undefined;
-      } else {
-        return {
-          field: vgField(dimensionChannelDef, {
-            // For stack with imputation, we only have bin_mid
-            binSuffix: model.stack?.impute ? 'mid' : undefined,
-            expr: 'datum'
-          })
-        };
-      }
+      return {field: dimensionChannel};
     }
-    return undefined;
   }
   return undefined;
 }
@@ -344,7 +308,7 @@ function getMarkGroup(model: UnitModel, opt: {fromPrefix: string} = {fromPrefix:
     {
       name: model.getName('marks'),
       type: markCompiler[mark].vgMark,
-      ...(clip ? {clip: true} : {}),
+      ...(clip ? {clip} : {}),
       ...(style ? {style} : {}),
       ...(key ? {key: key.field} : {}),
       ...(sort ? {sort} : {}),
@@ -366,19 +330,19 @@ function getMarkGroup(model: UnitModel, opt: {fromPrefix: string} = {fromPrefix:
 const LINE_ANCHOR_DEFAULTS = {
   horizontal: {
     anchor: {
-      begin: ['bottom-left', 'bottom', 'bottom-right'],
-      end: ['top-left', 'top', 'top-right']
+      start: ['bottom-left', 'bottom', 'bottom-right'] as LabelAnchor[],
+      end: ['top-left', 'top', 'top-right']as LabelAnchor[]
     },
     padding: 'height * 0.2'
   },
   vertical: {
     anchor: {
-      begin: ['top-left', 'left', 'bottom-left'],
-      end: ['top-right', 'right', 'bottom-right']
+      start: ['top-left', 'left', 'bottom-left']as LabelAnchor[],
+      end: ['top-right', 'right', 'bottom-right']as LabelAnchor[]
     },
     padding: 'width * 0.2'
   }
-} as const;
+};
 
 function getLabelInheritableChannels(
   mark: Mark,
@@ -436,11 +400,11 @@ export function getLabelMark(model: UnitModel, data: string): LabelMark {
         ...(position
           ? {anchor, offset}
           : stack?.stackBy?.length > 0
-          ? {anchor: ['middle'], offset: [0]}
-          : {
-              anchor: orient === 'horizontal' ? ['right', 'right'] : ['top', 'top'],
-              offset: [2, -2]
-            })
+            ? {anchor: ['middle'], offset: [0]}
+            : {
+                anchor: orient === 'horizontal' ? ['right', 'right'] : ['top', 'top'],
+                offset: [2, -2]
+              })
       };
       break;
     case 'line':
@@ -556,7 +520,7 @@ function interactiveFlag(model: UnitModel) {
   }
   return parentCount
     ? {
-        interactive: unitCount > 0 || !!model.encoding.tooltip
+        interactive: unitCount > 0 || model.mark === 'geoshape' || !!model.encoding.tooltip || !!model.markDef.tooltip
       }
     : null;
 }

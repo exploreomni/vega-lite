@@ -4,6 +4,7 @@
   "padding": 5,
   "width": 200,
   "height": 200,
+  "style": "view",
   "data": [
     {
       "name": "source_0",
@@ -57,7 +58,7 @@
           "endAngle": {
             "scale": "theta",
             "field": "dir",
-            "offset": {"scale": "theta", "band": 1}
+            "offset": {"signal": "bandwidth('theta')"}
           }
         }
       }

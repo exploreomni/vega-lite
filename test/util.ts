@@ -1,4 +1,4 @@
-import {SignalRef} from 'vega';
+import type {SignalRef} from 'vega';
 import {Field} from '../src/channeldef';
 import {buildModel} from '../src/compile/buildmodel';
 import {ConcatModel} from '../src/compile/concat';
@@ -106,4 +106,8 @@ export function assertIsLayerSpec(spec: BaseSpec): asserts spec is GenericLayerS
 /** Returns the array without the elements in excludedItems */
 export function without<T>(array: readonly T[], excludedItems: readonly T[]) {
   return array.filter(item => !contains(excludedItems, item));
+}
+
+export function range(start: number, stop: number, step: number) {
+  return Array.from({length: (stop - start) / step}, (_, i) => start + step * i);
 }

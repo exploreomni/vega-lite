@@ -42,8 +42,8 @@
             "signal": "\"Mean of data: \" + (format(datum[\"mean_data\"], \"\")) + \"; data: \" + (isValid(datum[\"data\"]) ? datum[\"data\"] : \"\"+datum[\"data\"])"
           },
           "xc": {"signal": "width", "mult": 0.5},
+          "width": {"signal": "0.75 * width"},
           "yc": {"scale": "y", "field": "mean_data"},
-          "width": {"value": 15},
           "height": {"value": 1}
         }
       }

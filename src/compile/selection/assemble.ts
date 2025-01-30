@@ -1,11 +1,11 @@
 import {Signal, SignalRef} from 'vega';
 import {parseSelector} from 'vega-event-selector';
 import {identity, isArray, stringValue} from 'vega-util';
-import {MODIFY, STORE, unitName, VL_SELECTION_RESOLVE, TUPLE, selectionCompilers} from '.';
+import {MODIFY, STORE, unitName, VL_SELECTION_RESOLVE, TUPLE, selectionCompilers, isTimerSelection} from '.';
 import {dateTimeToExpr, isDateTime, dateTimeToTimestamp} from '../../datetime';
 import {hasContinuousDomain} from '../../scale';
-import {SelectionInit, SelectionInitInterval, ParameterExtent} from '../../selection';
-import {keys, stringify, vals} from '../../util';
+import {SelectionInit, SelectionInitInterval, ParameterExtent, SELECTION_ID} from '../../selection';
+import {keys, replacePathInField, stringify, vals} from '../../util';
 import {VgData, VgDomain} from '../../vega.schema';
 import {FacetModel} from '../facet';
 import {LayerModel} from '../layer';
@@ -13,6 +13,15 @@ import {isUnitModel, Model} from '../model';
 import {ScaleComponent} from '../scale/component';
 import {UnitModel} from '../unit';
 import {parseSelectionExtent} from './parse';
+import {SelectionProjection} from './project';
+import {CURR} from './point';
+import {DataSourceType} from '../../data';
+
+export function assembleProjection(proj: SelectionProjection) {
+  const {signals, hasLegend, index, ...rest} = proj;
+  rest.field = replacePathInField(rest.field);
+  return rest;
+}
 
 export function assembleInit(
   init: readonly (SelectionInit | readonly SelectionInit[] | SelectionInitInterval)[] | SelectionInit,
@@ -65,7 +74,7 @@ export function assembleFacetSignals(model: FacetModel, signals: Signal[]) {
       value: {},
       on: [
         {
-          events: parseSelector('mousemove', 'scope'),
+          events: parseSelector('pointermove', 'scope'),
           update: `isTuple(facet) ? facet : group(${name}).datum`
         }
       ]
@@ -104,7 +113,7 @@ export function assembleTopLevelSignals(model: UnitModel, signals: Signal[]) {
       signals.unshift({
         name: 'unit',
         value: {},
-        on: [{events: 'mousemove', update: 'isTuple(group()) ? group() : unit'}]
+        on: [{events: 'pointermove', update: 'isTuple(group()) ? group() : unit'}]
       });
     }
   }
@@ -113,28 +122,61 @@ export function assembleTopLevelSignals(model: UnitModel, signals: Signal[]) {
 }
 
 export function assembleUnitSelectionData(model: UnitModel, data: readonly VgData[]): VgData[] {
-  const dataCopy = [...data];
-  for (const selCmpt of vals(model.component.selection ?? {})) {
-    const init: VgData = {name: selCmpt.name + STORE};
-    if (selCmpt.init) {
-      const fields = selCmpt.project.items.map(proj => {
-        const {signals, ...rest} = proj;
-        return rest;
-      });
+  const selectionData = [];
+  const animationData = [];
+  const unit = unitName(model, {escape: false});
 
-      init.values = selCmpt.init.map(i => ({
-        unit: unitName(model, {escape: false}),
-        fields,
-        values: assembleInit(i, false)
-      }));
+  for (const selCmpt of vals(model.component.selection ?? {})) {
+    const store: VgData = {name: selCmpt.name + STORE};
+
+    if (selCmpt.project.hasSelectionId) {
+      store.transform = [{type: 'collect', sort: {field: SELECTION_ID}}];
     }
-    const contains = dataCopy.filter(d => d.name === selCmpt.name + STORE);
+
+    if (selCmpt.init) {
+      const fields = selCmpt.project.items.map(assembleProjection);
+
+      store.values = selCmpt.project.hasSelectionId
+        ? selCmpt.init.map(i => ({unit, [SELECTION_ID]: assembleInit(i, false)[0]}))
+        : selCmpt.init.map(i => ({unit, fields, values: assembleInit(i, false)}));
+    }
+
+    const contains = [...selectionData, ...data].filter(d => d.name === selCmpt.name + STORE);
     if (!contains.length) {
-      dataCopy.push(init);
+      selectionData.push(store);
+    }
+
+    if (isTimerSelection(selCmpt) && data.length) {
+      // TODO(jzong): eventually uncomment this stuff when we want to support multi-view
+      // const sourceName =
+      //   model.parent && model.parent.type !== 'unit' // facet, layer, or concat
+      //     ? model.parent.lookupDataSource(model.parent.getDataName(DataSourceType.Main))
+      //     : model.lookupDataSource(model.getDataName(DataSourceType.Main));
+      const sourceName = model.lookupDataSource(model.getDataName(DataSourceType.Main));
+      const sourceData = data.find(d => d.name === sourceName);
+
+      // find the filter transform for the current selection
+      const sourceDataFilter = sourceData.transform.find(
+        t => t.type === 'filter' && t.expr.includes('vlSelectionTest')
+      );
+
+      if (sourceDataFilter) {
+        // remove it from the original dataset
+        sourceData.transform = sourceData.transform.filter(t => t !== sourceDataFilter);
+
+        // create dataset to hold current animation frame
+        const currentFrame: VgData = {
+          name: sourceData.name + CURR,
+          source: sourceData.name,
+          transform: [sourceDataFilter] // add the selection filter to the animation dataset
+        };
+
+        animationData.push(currentFrame);
+      }
     }
   }
 
-  return dataCopy;
+  return selectionData.concat(data, animationData);
 }
 
 export function assembleUnitSelectionMarks(model: UnitModel, marks: any[]): any[] {

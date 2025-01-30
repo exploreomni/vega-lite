@@ -44,21 +44,23 @@ The rest of this page outlines different types of config properties:
 
 A Vega-Lite `config` object can have the following top-level properties:
 
-{% include table.html props="autosize,background,countTitle,fieldTitle,font,lineBreak,padding" source="Config" %}
+{% include table.html props="autosize,background,countTitle,fieldTitle,font,lineBreak,padding,tooltipFormat" source="Config" %}
 
 {:#format}
 
 ## Format Configuration
 
-These two config properties define the default number and time formats for text marks as well as axes, headers, and legends:
+These config properties define the default number and time formats for text marks as well as axes, headers, tooltip, and legends:
 
-{% include table.html props="numberFormat,timeFormat,customFormatTypes" source="Config" %}
+{% include table.html props="numberFormat,numberFormatType,normalizedNumberFormat,normalizedNumberFormatType,timeFormat,timeFormatType,customFormatTypes" source="Config" %}
 
 {:#custom-format-type}
 
 ### Providing Custom Formatters
 
-To customize how Vega-Lite formats numbers or text, you can register a new formatter by (1) registering [an expression function](https://vega.github.io/vega/docs/api/extensibility/#expressions) that takes a data point and an optional format property and (2) setting the `customFormatTypes` config to `true`. For example, to register `customFormatA`, you run need to register the function:
+To customize how Vega-Lite formats numbers or text, you can register a custom formatter by
+
+(1) Registering [an expression function](https://vega.github.io/vega/docs/api/extensibility/#expressions) that takes a data point and an optional format property. For example, to register `customFormatA`, you need to register the function:
 
 ```js
 vega.expressionFunction('customFormatA', function(datum, params) {
@@ -67,14 +69,29 @@ vega.expressionFunction('customFormatA', function(datum, params) {
 });
 ```
 
-You can then use this custom format function with `format` and `formatType` properties in text encodings and guides (axis/legend/header).
+(2) Setting the `customFormatTypes` config to `true`.
 
-```json
+```js
+{
+  ...,
+  "config": {"customFormatTypes": true}
+}
+```
+
+(3) You can then use this custom format function with `format` and `formatType` properties in text encodings and guides (axis/legend/header).
+
+```js
 {
   "format": <params>,
   "formatType": "customFormatA"
 }
 ```
+
+### Customize Formatter for Tooltips only
+
+Since tooltips have more screen estate and less chance of collisions, sometimes it is desirable to have a truncated format in a visualization, with a longer format in the tooltip. For example, in the visualization below, we want the y-axis to have the format `d` so it does not have a decimal point, so as not to have incredibly long labels, but on the tooltip it has the longer `.8f`. To achieve this specificity, one can add a `tooltipFormat` prop to their config that conforms to the [FormatConfig](#format) type.
+
+<span class="vl-example" data-name="config_numberFormatType_tooltip"></span>
 
 {:#axis-config}
 

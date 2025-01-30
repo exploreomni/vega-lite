@@ -30,9 +30,17 @@
       ]
     },
     {
-      "name": "data_0",
+      "name": "data_1",
       "source": "source_0",
       "transform": [
+        {
+          "type": "stack",
+          "groupby": ["year", "year"],
+          "field": "wheat",
+          "sort": {"field": [], "order": []},
+          "as": ["wheat_start", "wheat_end"],
+          "offset": "zero"
+        },
         {
           "type": "filter",
           "expr": "isValid(datum[\"year\"]) && isFinite(+datum[\"year\"]) && isValid(datum[\"wheat\"]) && isFinite(+datum[\"wheat\"])"
@@ -40,7 +48,29 @@
       ]
     },
     {
-      "name": "data_1",
+      "name": "data_2",
+      "source": "source_0",
+      "transform": [
+        {
+          "type": "impute",
+          "field": "wages",
+          "groupby": [],
+          "key": "year",
+          "method": "value",
+          "value": 0
+        },
+        {
+          "type": "stack",
+          "groupby": ["year"],
+          "field": "wages",
+          "sort": {"field": [], "order": []},
+          "as": ["wages_start", "wages_end"],
+          "offset": "zero"
+        }
+      ]
+    },
+    {
+      "name": "data_3",
       "source": "source_1",
       "transform": [
         {
@@ -50,7 +80,7 @@
       ]
     },
     {
-      "name": "data_2",
+      "name": "data_4",
       "source": "source_2",
       "transform": [
         {
@@ -66,7 +96,7 @@
       ]
     },
     {
-      "name": "data_3",
+      "name": "data_5",
       "source": "source_2",
       "transform": [
         {
@@ -91,19 +121,31 @@
       "name": "layer_0_marks",
       "type": "rect",
       "style": ["bar"],
-      "from": {"data": "data_0"},
+      "from": {"data": "data_1"},
       "encode": {
         "update": {
           "fill": {"value": "#aaa"},
           "stroke": {"value": "#999"},
           "ariaRoleDescription": {"value": "bar"},
           "description": {
-            "signal": "\"year: \" + (format(datum[\"year\"], \"d\")) + \"; wheat: \" + (format(datum[\"wheat\"], \"\")) + \"; year_end: \" + (format(datum[\"year_end\"], \"\"))"
+            "signal": "\"year: \" + (!isValid(datum[\"year\"]) || !isFinite(+datum[\"year\"]) ? \"null\" : format(datum[\"year\"], \"d\") + \" – \" + format(datum[\"year_end\"], \"d\")) + \"; wheat: \" + (format(datum[\"wheat\"], \"\"))"
           },
-          "x": {"scale": "x", "field": "year"},
-          "x2": {"scale": "x", "field": "year_end"},
-          "y": {"scale": "y", "field": "wheat"},
-          "y2": {"scale": "y", "value": 0}
+          "x2": {
+            "scale": "x",
+            "field": "year",
+            "offset": {
+              "signal": "0.5 + (abs(scale(\"x\", datum[\"year_end\"]) - scale(\"x\", datum[\"year\"])) < 0.25 ? -0.5 * (0.25 - (abs(scale(\"x\", datum[\"year_end\"]) - scale(\"x\", datum[\"year\"])))) : 0.5)"
+            }
+          },
+          "x": {
+            "scale": "x",
+            "field": "year_end",
+            "offset": {
+              "signal": "0.5 + (abs(scale(\"x\", datum[\"year_end\"]) - scale(\"x\", datum[\"year\"])) < 0.25 ? 0.5 * (0.25 - (abs(scale(\"x\", datum[\"year_end\"]) - scale(\"x\", datum[\"year\"])))) : -0.5)"
+            }
+          },
+          "y": {"scale": "y", "field": "wheat_end"},
+          "y2": {"scale": "y", "field": "wheat_start"}
         }
       }
     },
@@ -111,7 +153,7 @@
       "name": "layer_1_marks",
       "type": "rule",
       "style": ["rule"],
-      "from": {"data": "data_1"},
+      "from": {"data": "data_3"},
       "encode": {
         "update": {
           "opacity": {"value": 0.5},
@@ -130,8 +172,8 @@
       "name": "layer_2_marks",
       "type": "area",
       "style": ["area"],
-      "sort": {"field": "datum[\"year\"]"},
-      "from": {"data": "source_0"},
+      "sort": {"field": "x"},
+      "from": {"data": "data_2"},
       "encode": {
         "update": {
           "opacity": {"value": 0.7},
@@ -141,8 +183,8 @@
             "signal": "\"year: \" + (format(datum[\"year\"], \"d\")) + \"; wages: \" + (format(datum[\"wages\"], \"\"))"
           },
           "x": {"scale": "x", "field": "year"},
-          "y": {"scale": "y", "field": "wages"},
-          "y2": {"scale": "y", "value": 0},
+          "y": {"scale": "y", "field": "wages_end"},
+          "y2": {"scale": "y", "field": "wages_start"},
           "defined": {
             "signal": "isValid(datum[\"year\"]) && isFinite(+datum[\"year\"]) && isValid(datum[\"wages\"]) && isFinite(+datum[\"wages\"])"
           }
@@ -153,7 +195,7 @@
       "name": "layer_3_marks",
       "type": "line",
       "style": ["line"],
-      "sort": {"field": "datum[\"year\"]"},
+      "sort": {"field": "x"},
       "from": {"data": "source_0"},
       "encode": {
         "update": {
@@ -174,7 +216,7 @@
       "name": "layer_4_marks",
       "type": "line",
       "style": ["line"],
-      "sort": {"field": "datum[\"year\"]"},
+      "sort": {"field": "x"},
       "from": {"data": "source_0"},
       "encode": {
         "update": {
@@ -193,13 +235,12 @@
     {
       "name": "layer_5_marks",
       "type": "rect",
-      "style": ["bar"],
-      "from": {"data": "data_2"},
+      "style": ["rect"],
+      "from": {"data": "data_4"},
       "encode": {
         "update": {
           "stroke": {"value": "#000"},
           "fill": {"scale": "fill", "field": "commonwealth"},
-          "ariaRoleDescription": {"value": "bar"},
           "description": {
             "signal": "\"start: \" + (format(datum[\"start\"], \"d\")) + \"; y: \" + (format(datum[\"y\"], \"\")) + \"; end: \" + (format(datum[\"end\"], \"\")) + \"; offset: \" + (format(datum[\"offset\"], \"\")) + \"; commonwealth: \" + (isValid(datum[\"commonwealth\"]) ? datum[\"commonwealth\"] : \"\"+datum[\"commonwealth\"])"
           },
@@ -214,7 +255,7 @@
       "name": "layer_6_marks",
       "type": "text",
       "style": ["text"],
-      "from": {"data": "data_3"},
+      "from": {"data": "data_5"},
       "encode": {
         "update": {
           "baseline": {"value": "bottom"},
@@ -240,30 +281,33 @@
       "type": "linear",
       "domain": {
         "fields": [
-          {"data": "data_0", "field": "year"},
-          {"data": "data_0", "field": "year_end"},
           {"data": "data_1", "field": "year"},
+          {"data": "data_1", "field": "year_end"},
+          {"data": "data_3", "field": "year"},
+          {"data": "data_2", "field": "year"},
           {"data": "source_0", "field": "year"},
-          {"data": "data_2", "field": "start"},
-          {"data": "data_2", "field": "end"},
-          {"data": "data_3", "field": "x"}
+          {"data": "data_4", "field": "start"},
+          {"data": "data_4", "field": "end"},
+          {"data": "data_5", "field": "x"}
         ]
       },
       "range": [0, {"signal": "width"}],
       "nice": true,
-      "zero": false,
-      "padding": 5
+      "zero": false
     },
     {
       "name": "y",
       "type": "linear",
       "domain": {
         "fields": [
-          {"data": "data_0", "field": "wheat"},
+          {"data": "data_1", "field": "wheat_start"},
+          {"data": "data_1", "field": "wheat_end"},
+          {"data": "data_2", "field": "wages_start"},
+          {"data": "data_2", "field": "wages_end"},
           {"data": "source_0", "field": "wages"},
-          {"data": "data_2", "field": "y"},
-          {"data": "data_2", "field": "offset"},
-          {"data": "data_3", "field": "off2"}
+          {"data": "data_4", "field": "y"},
+          {"data": "data_4", "field": "offset"},
+          {"data": "data_5", "field": "off2"}
         ]
       },
       "range": [{"signal": "height"}, 0],
@@ -273,25 +317,11 @@
     {
       "name": "fill",
       "type": "ordinal",
-      "domain": {"data": "data_2", "field": "commonwealth", "sort": true},
+      "domain": {"data": "data_4", "field": "commonwealth", "sort": true},
       "range": ["black", "white"]
     }
   ],
   "axes": [
-    {
-      "scale": "x",
-      "orient": "bottom",
-      "tickCount": 5,
-      "gridScale": "y",
-      "grid": true,
-      "domain": false,
-      "labels": false,
-      "aria": false,
-      "maxExtent": 0,
-      "minExtent": 0,
-      "ticks": false,
-      "zindex": 0
-    },
     {
       "scale": "y",
       "orient": "left",
@@ -314,6 +344,7 @@
       "tickCount": 5,
       "labelFlush": true,
       "labelOverlap": true,
+      "tickMinStep": 1,
       "zindex": 0
     },
     {

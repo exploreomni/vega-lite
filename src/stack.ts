@@ -1,4 +1,4 @@
-import {array, isBoolean} from 'vega-util';
+import {array, hasOwnProperty, isBoolean} from 'vega-util';
 import {Aggregate, SUM_OPS} from './aggregate';
 import {getSecondaryRangeChannel, NonPositionChannel, STACKABLE_CHANNELS} from './channel';
 import {
@@ -43,7 +43,7 @@ const STACK_OFFSET_INDEX = {
 export type StackOffset = keyof typeof STACK_OFFSET_INDEX;
 
 export function isStackOffset(s: string): s is StackOffset {
-  return s in STACK_OFFSET_INDEX;
+  return hasOwnProperty(STACK_OFFSET_INDEX, s);
 }
 
 export interface StackProperties {
@@ -82,9 +82,12 @@ function isUnbinnedQuantitative(channelDef: PositionDef<string>) {
 
 function potentialStackedChannel(
   encoding: Encoding<string>,
-  x: 'x' | 'theta'
+  x: 'x' | 'theta',
+  {orient, type: mark}: MarkDef
 ): 'x' | 'y' | 'theta' | 'radius' | undefined {
   const y = x === 'x' ? 'y' : 'radius';
+
+  const isCartesianBarOrArea = x === 'x' && ['bar', 'area'].includes(mark);
 
   const xDef = encoding[x];
   const yDef = encoding[y];
@@ -101,13 +104,12 @@ function potentialStackedChannel(
       // if there is no explicit stacking, only apply stack if there is only one aggregate for x or y
       if (xAggregate !== yAggregate) {
         return xAggregate ? x : y;
-      } else {
-        const xScale = xDef.scale?.type;
-        const yScale = yDef.scale?.type;
+      }
 
-        if (xScale && xScale !== 'linear') {
+      if (isCartesianBarOrArea) {
+        if (orient === 'vertical') {
           return y;
-        } else if (yScale && yScale !== 'linear') {
+        } else if (orient === 'horizontal') {
           return x;
         }
       }
@@ -117,8 +119,14 @@ function potentialStackedChannel(
       return y;
     }
   } else if (isUnbinnedQuantitative(xDef)) {
+    if (isCartesianBarOrArea && orient === 'vertical') {
+      return undefined;
+    }
     return x;
   } else if (isUnbinnedQuantitative(yDef)) {
+    if (isCartesianBarOrArea && orient === 'horizontal') {
+      return undefined;
+    }
     return y;
   }
   return undefined;
@@ -137,16 +145,10 @@ function getDimensionChannel(channel: 'x' | 'y' | 'theta' | 'radius') {
   }
 }
 
-// Note: CompassQL uses this method and only pass in required properties of each argument object.
-// If required properties change, make sure to update CompassQL.
-export function stack(
-  m: Mark | MarkDef,
-  encoding: Encoding<string>,
-  opt: {
-    disallowNonLinearStack?: boolean; // This option is for CompassQL
-  } = {}
-): StackProperties {
-  const mark = isMarkDef(m) ? m.type : m;
+export function stack(m: Mark | MarkDef, encoding: Encoding<string>): StackProperties {
+  const markDef = isMarkDef(m) ? m : {type: m};
+  const mark = markDef.type;
+
   // Should have stackable mark
   if (!STACKABLE_MARKS.has(mark)) {
     return null;
@@ -157,7 +159,8 @@ export function stack(
 
   // Note: The logic here is not perfectly correct.  If we want to support stacked dot plots where each dot is a pie chart with label, we have to change the stack logic here to separate Cartesian stacking for polar stacking.
   // However, since we probably never want to do that, let's just note the limitation here.
-  const fieldChannel = potentialStackedChannel(encoding, 'x') || potentialStackedChannel(encoding, 'theta');
+  const fieldChannel =
+    potentialStackedChannel(encoding, 'x', markDef) || potentialStackedChannel(encoding, 'theta', markDef);
 
   if (!fieldChannel) {
     return null;
@@ -179,16 +182,16 @@ export function stack(
       groupbyChannels.push(dimensionChannel);
       groupbyFields.add(dimensionField);
     }
+  }
 
-    const dimensionOffsetChannel = dimensionChannel === 'x' ? 'xOffset' : 'yOffset';
-    const dimensionOffsetDef = encoding[dimensionOffsetChannel];
-    const dimensionOffsetField = isFieldDef(dimensionOffsetDef) ? vgField(dimensionOffsetDef, {}) : undefined;
+  const dimensionOffsetChannel = dimensionChannel === 'x' ? 'xOffset' : 'yOffset';
+  const dimensionOffsetDef = encoding[dimensionOffsetChannel];
+  const dimensionOffsetField = isFieldDef(dimensionOffsetDef) ? vgField(dimensionOffsetDef, {}) : undefined;
 
-    if (dimensionOffsetField && dimensionOffsetField !== stackedField) {
-      // avoid grouping by the stacked field
-      groupbyChannels.push(dimensionOffsetChannel);
-      groupbyFields.add(dimensionOffsetField);
-    }
+  if (dimensionOffsetField && dimensionOffsetField !== stackedField) {
+    // avoid grouping by the stacked field
+    groupbyChannels.push(dimensionOffsetChannel);
+    groupbyFields.add(dimensionOffsetField);
   }
 
   // If the dimension has offset, don't stack anymore
@@ -241,10 +244,8 @@ export function stack(
 
   // warn when stacking non-linear
   if (stackedFieldDef?.scale?.type && stackedFieldDef?.scale?.type !== ScaleType.LINEAR) {
-    if (opt.disallowNonLinearStack) {
-      return null;
-    } else {
-      log.warn(log.message.cannotStackNonLinearScale(stackedFieldDef.scale.type));
+    if (stackedFieldDef?.stack) {
+      log.warn(log.message.stackNonLinearScale(stackedFieldDef.scale.type));
     }
   }
 

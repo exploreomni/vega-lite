@@ -38,7 +38,7 @@ import {LayoutSizeMixins, NormalizedUnitSpec} from '../spec';
 import {isFrameMixins} from '../spec/base';
 import {stack, StackProperties} from '../stack';
 import {keys, unique} from '../util';
-import {VgData, VgLayout} from '../vega.schema';
+import {VgData, VgLayout, VgMarkGroup} from '../vega.schema';
 import {assembleAxisSignals} from './axis/assemble';
 import {AxisInternalIndex} from './axis/component';
 import {parseUnitAxes} from './axis/parse';
@@ -59,6 +59,7 @@ import {
   assembleUnitSelectionSignals
 } from './selection/assemble';
 import {parseUnitSelection} from './selection/parse';
+import {CURR} from './selection/point';
 
 /**
  * Internal model of Vega-Lite specification for the compiler.
@@ -122,7 +123,7 @@ export class UnitModel extends ModelWithField {
     });
 
     // calculate stack properties
-    this.stack = stack(mark, encoding);
+    this.stack = stack(this.markDef, encoding);
     this.specifiedScales = this.initScales(mark, encoding);
 
     this.specifiedAxes = this.initAxes(encoding);
@@ -150,7 +151,7 @@ export class UnitModel extends ModelWithField {
   }
 
   public axis(channel: PositionChannel): AxisInternal {
-    return this.specifiedAxes[channel];
+    return (this.specifiedAxes as any)[channel];
   }
 
   public legend(channel: NonPositionScaleChannel): LegendInternal {
@@ -200,15 +201,15 @@ export class UnitModel extends ModelWithField {
           : axisSpec;
       }
       return _axis;
-    }, {});
+    }, {} as any);
   }
 
   private initAxis(axis: Axis<ExprRef | SignalRef>): Axis<SignalRef> {
     const props = keys(axis);
-    const axisInternal = {};
+    const axisInternal: any = {};
     for (const prop of props) {
       const val = axis[prop];
-      axisInternal[prop as any] = isConditionalAxisValue<any, ExprRef | SignalRef>(val)
+      axisInternal[prop] = isConditionalAxisValue<any, ExprRef | SignalRef>(val)
         ? signalOrValueRefWithCondition<any>(val)
         : signalRefOrValue(val);
     }
@@ -227,7 +228,7 @@ export class UnitModel extends ModelWithField {
       }
 
       return _legend;
-    }, {});
+    }, {} as any);
   }
 
   public parseData() {
@@ -274,6 +275,30 @@ export class UnitModel extends ModelWithField {
     return assembleLayoutSignals(this);
   }
 
+  /**
+   * Corrects the data references in marks after assemble.
+   */
+  public correctDataNames = (mark: VgMarkGroup) => {
+    // for normal data references
+    if (mark.from?.data) {
+      mark.from.data = this.lookupDataSource(mark.from.data);
+      if ('time' in this.encoding) {
+        mark.from.data = mark.from.data + CURR;
+      }
+    }
+
+    // for access to facet data
+    if (mark.from?.facet?.data) {
+      mark.from.facet.data = this.lookupDataSource(mark.from.facet.data);
+      // TOOD(jzong) uncomment this when it's time to implement facet animation
+      // if ('time' in this.encoding) {
+      //   mark.from.facet.data = mark.from.facet.data + CURR;
+      // }
+    }
+
+    return mark;
+  };
+
   public assembleMarks() {
     if (this.labelMark) {
       const {transform} = this.labelMark;
@@ -304,7 +329,7 @@ export class UnitModel extends ModelWithField {
     if (this.encoding.x || this.encoding.y) {
       return 'cell';
     } else {
-      return undefined;
+      return 'view';
     }
   }
 
@@ -337,7 +362,7 @@ export class UnitModel extends ModelWithField {
   }
 
   public fieldDef(channel: SingleDefChannel) {
-    const channelDef = this.encoding[channel];
+    const channelDef = (this.encoding as any)[channel];
     return getFieldDef<string>(channelDef);
   }
 

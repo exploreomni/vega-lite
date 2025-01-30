@@ -1,114 +1,61 @@
 /**
  * Utility files for producing Vega ValueRef for marks
  */
-import {SignalRef} from 'vega';
-import {isFunction, isString} from 'vega-util';
-import {isCountingAggregateOp} from '../../../aggregate';
+import type {SignalRef} from 'vega';
+import {isFunction} from 'vega-util';
 import {isBinned, isBinning} from '../../../bin';
-import {Channel, getMainRangeChannel, PolarPositionChannel, PositionChannel, X, X2, Y2} from '../../../channel';
+import {Channel, PolarPositionChannel, PositionChannel, X, X2, Y2, getMainRangeChannel} from '../../../channel';
 import {
-  binRequiresRange,
   ChannelDef,
   DatumDef,
-  FieldDef,
   FieldDefBase,
-  FieldName,
   FieldRefOption,
+  SecondaryChannelDef,
+  SecondaryFieldDef,
+  TypedFieldDef,
+  Value,
+  binRequiresRange,
   getBandPosition,
   isDatumDef,
   isFieldDef,
   isFieldOrDatumDef,
   isTypedFieldDef,
   isValueDef,
-  SecondaryChannelDef,
-  SecondaryFieldDef,
-  TypedFieldDef,
-  Value,
   vgField
 } from '../../../channeldef';
 import {Config} from '../../../config';
 import {dateTimeToExpr, isDateTime} from '../../../datetime';
 import {isExprRef} from '../../../expr';
 import * as log from '../../../log';
-import {isPathMark, Mark, MarkDef} from '../../../mark';
-import {fieldValidPredicate} from '../../../predicate';
-import {hasDiscreteDomain, isContinuousToContinuous} from '../../../scale';
+import {Mark, MarkDef} from '../../../mark';
+import {hasDiscreteDomain} from '../../../scale';
 import {StackProperties} from '../../../stack';
 import {TEMPORAL} from '../../../type';
 import {contains, stringify} from '../../../util';
-import {isSignalRef, VgValueRef} from '../../../vega.schema';
-import {getMarkPropOrConfig, signalOrValueRef} from '../../common';
+import {VgValueRef, isSignalRef} from '../../../vega.schema';
+import {signalOrValueRef} from '../../common';
 import {ScaleComponent} from '../../scale/component';
+import {getConditionalValueRefForIncludingInvalidValue} from './invalid';
 
 export function midPointRefWithPositionInvalidTest(
   params: MidPointParams & {
     channel: PositionChannel | PolarPositionChannel;
   }
-) {
-  const {channel, channelDef, markDef, scale, config} = params;
-  const ref = midPoint(params);
+): VgValueRef | VgValueRef[] {
+  const {channel, channelDef, markDef, scale, scaleName, config} = params;
+  const scaleChannel = getMainRangeChannel(channel);
+  const mainRef = midPoint(params);
 
-  // Wrap to check if the positional value is invalid, if so, plot the point on the min value
-  if (
-    // Only this for field def without counting aggregate (as count wouldn't be null)
-    isFieldDef(channelDef) &&
-    !isCountingAggregateOp(channelDef.aggregate) &&
-    // and only for continuous scale
-    scale &&
-    isContinuousToContinuous(scale.get('type'))
-  ) {
-    return wrapPositionInvalidTest({
-      fieldDef: channelDef,
-      channel,
-      markDef,
-      ref,
-      config
-    });
-  }
-  return ref;
-}
+  const valueRefForIncludingInvalid = getConditionalValueRefForIncludingInvalidValue({
+    scaleChannel,
+    channelDef,
+    scale,
+    scaleName,
+    markDef,
+    config
+  });
 
-export function wrapPositionInvalidTest({
-  fieldDef,
-  channel,
-  markDef,
-  ref,
-  config
-}: {
-  fieldDef: FieldDef<string>;
-  channel: PositionChannel | PolarPositionChannel;
-  markDef: MarkDef<Mark>;
-  ref: VgValueRef;
-  config: Config<SignalRef>;
-}): VgValueRef | VgValueRef[] {
-  if (isPathMark(markDef.type)) {
-    // path mark already use defined to skip points, no need to do it here.
-    return ref;
-  }
-
-  const invalid = getMarkPropOrConfig('invalid', markDef, config);
-  if (invalid === null) {
-    // if there is no invalid filter, don't do the invalid test
-    return [fieldInvalidTestValueRef(fieldDef, channel), ref];
-  }
-  return ref;
-}
-
-export function fieldInvalidTestValueRef(fieldDef: FieldDef<string>, channel: PositionChannel | PolarPositionChannel) {
-  const test = fieldInvalidPredicate(fieldDef, true);
-
-  const mainChannel = getMainRangeChannel(channel) as PositionChannel | PolarPositionChannel; // we can cast here as the output can't be other things.
-  const zeroValueRef =
-    mainChannel === 'y'
-      ? {field: {group: 'height'}}
-      : // x / angle / radius can all use 0
-        {value: 0};
-
-  return {test, ...zeroValueRef};
-}
-
-export function fieldInvalidPredicate(field: FieldName | FieldDef<string>, invalid = true) {
-  return fieldValidPredicate(isString(field) ? field : vgField(field, {expr: 'datum'}), !invalid);
+  return valueRefForIncludingInvalid !== undefined ? [valueRefForIncludingInvalid, mainRef] : mainRef;
 }
 
 export function datumDefToExpr(datumDef: DatumDef<string>) {
@@ -167,32 +114,34 @@ export function interpolatedSignalRef({
   fieldOrDatumDef2,
   offset,
   startSuffix,
+  endSuffix = 'end',
   bandPosition = 0.5
 }: {
   scaleName: string;
   fieldOrDatumDef: TypedFieldDef<string>;
   fieldOrDatumDef2?: SecondaryFieldDef<string>;
   startSuffix?: string;
+  endSuffix?: string;
   offset: number | SignalRef | VgValueRef;
   bandPosition: number | SignalRef;
 }): VgValueRef {
-  const expr = 0 < bandPosition && bandPosition < 1 ? 'datum' : undefined;
+  const expr = !isSignalRef(bandPosition) && 0 < bandPosition && bandPosition < 1 ? 'datum' : undefined;
   const start = vgField(fieldOrDatumDef, {expr, suffix: startSuffix});
   const end =
     fieldOrDatumDef2 !== undefined
       ? vgField(fieldOrDatumDef2, {expr})
-      : vgField(fieldOrDatumDef, {suffix: 'end', expr});
+      : vgField(fieldOrDatumDef, {suffix: endSuffix, expr});
 
   const ref: VgValueRef = {};
 
   if (bandPosition === 0 || bandPosition === 1) {
     ref.scale = scaleName;
-    const val = bandPosition === 0 ? start : end;
-    ref.field = val;
+    const field = bandPosition === 0 ? start : end;
+    ref.field = field;
   } else {
     const datum = isSignalRef(bandPosition)
-      ? `${bandPosition.signal} * ${start} + (1-${bandPosition.signal}) * ${end}`
-      : `${bandPosition} * ${start} + ${1 - bandPosition} * ${end}`;
+      ? `(1-${bandPosition.signal}) * ${start} + ${bandPosition.signal} * ${end}`
+      : `${1 - bandPosition} * ${start} + ${bandPosition} * ${end}`;
     ref.signal = `scale("${scaleName}", ${datum})`;
   }
 
@@ -200,6 +149,12 @@ export function interpolatedSignalRef({
     ref.offset = offset;
   }
   return ref;
+}
+
+export function binSizeExpr({scaleName, fieldDef}: {scaleName: string; fieldDef: TypedFieldDef<string>}) {
+  const start = vgField(fieldDef, {expr: 'datum'});
+  const end = vgField(fieldDef, {expr: 'datum', suffix: 'end'});
+  return `abs(scale("${scaleName}", ${end}) - scale("${scaleName}", ${start}))`;
 }
 
 export interface MidPointParams {
@@ -294,7 +249,7 @@ export function midPoint({
         {
           offset,
           // For band, to get mid point, need to offset by half of the band
-          band: scaleType === 'band' ? bandPosition ?? channelDef.bandPosition ?? 0.5 : undefined
+          band: scaleType === 'band' ? (bandPosition ?? channelDef.bandPosition ?? 0.5) : undefined
         }
       );
     } else if (isValueDef(channelDef)) {

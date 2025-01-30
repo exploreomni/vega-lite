@@ -1,7 +1,7 @@
 /**
  * Collection of all Vega-Lite Error Messages
  */
-import {AggregateOp, SignalRef} from 'vega';
+import {AggregateOp, SignalRef, stringValue} from 'vega';
 import {Aggregate} from '../aggregate';
 import {
   Channel,
@@ -10,7 +10,8 @@ import {
   getSizeChannel,
   OffsetScaleChannel,
   PositionScaleChannel,
-  ScaleChannel
+  ScaleChannel,
+  SingleDefUnitChannel
 } from '../channel';
 import {HiddenCompositeAggregate, TypedFieldDef, Value} from '../channeldef';
 import {SplitParentProperty} from '../compile/split';
@@ -25,6 +26,8 @@ import {GenericSpec} from '../spec';
 import {Type} from '../type';
 import {stringify} from '../util';
 import {VgSortField} from '../vega.schema';
+import {SelectionProjection} from '../compile/selection/project';
+import {ParameterExtent} from '../selection';
 
 export const ROUNDED_CORNERS_STACKED_BAR_WITH_AVOID =
   'Labels on stacked bar chart with rounded corners can only avoid the base mark (stacked bars)';
@@ -85,6 +88,9 @@ export function selectionNotFound(name: string) {
 export const SCALE_BINDINGS_CONTINUOUS =
   'Scale bindings are currently only supported for scales with unbinned, continuous domains.';
 
+export const SEQUENTIAL_SCALE_DEPRECATED =
+  'Sequntial scales are deprecated. The available quantitative scale type values are linear, log, pow, sqrt, symlog, time and utc';
+
 export const LEGEND_BINDINGS_MUST_HAVE_PROJECTION =
   'Legend bindings are only supported for selections over an individual field or encoding channel.';
 export function cannotLookupVariableParameter(name: string) {
@@ -100,7 +106,8 @@ export function noSameUnitLookup(name: string) {
 
 export const NEEDS_SAME_SELECTION = 'The same selection must be used to override scale domains in a layered view.';
 
-export const INTERVAL_INITIALIZED_WITH_X_Y = 'Interval selections should be initialized using "x" and/or "y" keys.';
+export const INTERVAL_INITIALIZED_WITH_POS =
+  'Interval selections should be initialized using "x", "y", "longitude", or "latitude" keys.';
 
 // REPEAT
 export function noSuchRepeatedValue(field: string) {
@@ -109,6 +116,31 @@ export function noSuchRepeatedValue(field: string) {
 
 export function columnsNotSupportByRowCol(type: 'facet' | 'repeat') {
   return `The "columns" property cannot be used when "${type}" has nested row/column.`;
+}
+
+export const MULTIPLE_TIMER_ANIMATION_SELECTION =
+  'Multiple timer selections in one unit spec are not supported. Ignoring all but the first.';
+
+export const MULTI_VIEW_ANIMATION_UNSUPPORTED = 'Animation involving facet, layer, or concat is currently unsupported.';
+
+export function selectionAsScaleDomainWithoutField(field: string) {
+  return (
+    'A "field" or "encoding" must be specified when using a selection as a scale domain. ' +
+    `Using "field": ${stringValue(field)}.`
+  );
+}
+
+export function selectionAsScaleDomainWrongEncodings(
+  encodings: SelectionProjection[],
+  encoding: SingleDefUnitChannel,
+  extent: ParameterExtent,
+  field: string
+) {
+  return (
+    (!encodings.length ? 'No ' : 'Multiple ') +
+    `matching ${stringValue(encoding)} encoding found for selection ${stringValue(extent.param)}. ` +
+    `Using "field": ${stringValue(field)}.`
+  );
 }
 
 // CONCAT / REPEAT
@@ -154,10 +186,6 @@ export const REPLACE_ANGLE_WITH_THETA = 'Arc marks uses theta channel rather tha
 
 export function offsetNestedInsideContinuousPositionScaleDropped(mainChannel: PositionScaleChannel) {
   return `${mainChannel}Offset dropped because ${mainChannel} is continuous`;
-}
-
-export function replaceOffsetWithMainChannel(mainChannel: PositionScaleChannel) {
-  return `There is no ${mainChannel} encoding. Replacing ${mainChannel}Offset encoding as ${mainChannel}.`;
 }
 
 export function primitiveChannelDef(
@@ -347,8 +375,8 @@ export function cannotStackRangedMark(channel: Channel) {
   return `Cannot stack "${channel}" if there is already "${channel}2".`;
 }
 
-export function cannotStackNonLinearScale(scaleType: ScaleType) {
-  return `Cannot stack non-linear scale (${scaleType}).`;
+export function stackNonLinearScale(scaleType: ScaleType) {
+  return `Stack is applied to a non-linear scale (${scaleType}).`;
 }
 
 export function stackNonSummativeAggregate(aggregate: Aggregate | string) {

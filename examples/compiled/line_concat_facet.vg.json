@@ -122,6 +122,9 @@
               },
               "formatType": "time",
               "labelOverlap": true,
+              "tickMinStep": {
+                "signal": "datetime(2001, 1, 1, 0, 0, 0, 0) - datetime(2001, 0, 1, 0, 0, 0, 0)"
+              },
               "zindex": 0
             }
           ]
@@ -149,7 +152,7 @@
               "name": "concat_0_child_marks",
               "type": "line",
               "style": ["line"],
-              "sort": {"field": "datum[\"month_date\"]"},
+              "sort": {"field": "x"},
               "from": {"data": "concat_0_facet"},
               "encode": {
                 "update": {
@@ -200,7 +203,7 @@
           "name": "concat_1_marks",
           "type": "line",
           "style": ["line"],
-          "sort": {"field": "datum[\"month_date\"]"},
+          "sort": {"field": "x"},
           "from": {"data": "data_0"},
           "encode": {
             "update": {
@@ -242,6 +245,9 @@
           },
           "formatType": "time",
           "labelOverlap": true,
+          "tickMinStep": {
+            "signal": "datetime(2001, 1, 1, 0, 0, 0, 0) - datetime(2001, 0, 1, 0, 0, 0, 0)"
+          },
           "zindex": 0
         },
         {

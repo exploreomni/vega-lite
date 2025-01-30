@@ -1,4 +1,4 @@
-import {SignalRef} from 'vega';
+import type {SignalRef} from 'vega';
 import {isString} from 'vega-util';
 import {Field} from '../channeldef';
 import {Config, initConfig} from '../config';
@@ -48,7 +48,7 @@ const topLevelSelectionNormalizer = new TopLevelSelectionsNormalizer();
  * And push top-level selection definitions down to unit specs.
  */
 function normalizeGenericSpec(
-  spec: NonNormalizedSpec | FacetedUnitSpec<Field> | RepeatSpec,
+  spec: NonNormalizedSpec | FacetedUnitSpec<Field, any> | RepeatSpec,
   config: Config<SignalRef> = {}
 ) {
   const normParams = {config};
@@ -59,7 +59,7 @@ function normalizeGenericSpec(
 }
 
 function _normalizeAutoSize(autosize: AutosizeType | AutoSizeParams) {
-  return isString(autosize) ? {type: autosize} : autosize ?? {};
+  return isString(autosize) ? {type: autosize} : (autosize ?? {});
 }
 
 /**

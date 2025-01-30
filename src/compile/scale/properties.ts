@@ -1,9 +1,10 @@
 import {SignalRef, TimeInterval} from 'vega';
-import {isArray} from 'vega-util';
+import {isArray, isNumber} from 'vega-util';
 import {isBinned, isBinning, isBinParams} from '../../bin';
 import {
   COLOR,
   FILL,
+  getSecondaryRangeChannel,
   isXorY,
   isXorYOffset,
   POLAR_POSITION_SCALE_CHANNELS,
@@ -86,7 +87,7 @@ function parseUnitScaleProperty(model: UnitModel, property: Exclude<keyof (Scale
     }
     if (supportedByScaleType && channelIncompatability === undefined) {
       if (specifiedValue !== undefined) {
-        const timeUnit = fieldOrDatumDef['timeUnit'];
+        const timeUnit = (fieldOrDatumDef as any).timeUnit;
         const type = fieldOrDatumDef.type;
 
         switch (property) {
@@ -106,25 +107,25 @@ function parseUnitScaleProperty(model: UnitModel, property: Exclude<keyof (Scale
             );
         }
       } else {
-        const value =
-          property in scaleRules
-            ? scaleRules[property]({
-                model,
-                channel,
-                fieldOrDatumDef,
-                scaleType,
-                scalePadding,
-                scalePaddingInner,
-                domain: specifiedScale.domain,
-                domainMin: specifiedScale.domainMin,
-                domainMax: specifiedScale.domainMax,
-                markDef,
-                config,
-                hasNestedOffsetScale: channelHasNestedOffsetScale(encoding, channel)
-              })
-            : config.scale[property];
+        const value = util.hasProperty(scaleRules, property)
+          ? scaleRules[property]({
+              model,
+              channel,
+              fieldOrDatumDef,
+              scaleType,
+              scalePadding,
+              scalePaddingInner,
+              domain: specifiedScale.domain,
+              domainMin: specifiedScale.domainMin,
+              domainMax: specifiedScale.domainMax,
+              markDef,
+              config,
+              hasNestedOffsetScale: channelHasNestedOffsetScale(encoding, channel),
+              hasSecondaryRangeChannel: !!encoding[getSecondaryRangeChannel(channel)]
+            })
+          : config.scale[property];
         if (value !== undefined) {
-          localScaleCmpt.set(property, value, false);
+          localScaleCmpt.set(property, value as any, false);
         }
       }
     }
@@ -144,6 +145,7 @@ export interface ScaleRuleParams {
   domainMax: Scale['domainMax'];
   markDef: MarkDef<Mark, SignalRef>;
   config: Config<SignalRef>;
+  hasSecondaryRangeChannel: boolean;
 }
 
 export const scaleRules: {
@@ -169,8 +171,8 @@ export const scaleRules: {
     const sort = isFieldDef(fieldOrDatumDef) ? fieldOrDatumDef.sort : undefined;
     return reverse(scaleType, sort, channel, config.scale);
   },
-  zero: ({channel, fieldOrDatumDef, domain, markDef, scaleType}) =>
-    zero(channel, fieldOrDatumDef, domain, markDef, scaleType)
+  zero: ({channel, fieldOrDatumDef, domain, markDef, scaleType, config, hasSecondaryRangeChannel}) =>
+    zero(channel, fieldOrDatumDef, domain, markDef, scaleType, config.scale, hasSecondaryRangeChannel)
 };
 
 // This method is here rather than in range.ts to avoid circular dependency.
@@ -314,13 +316,22 @@ export function paddingInner(
     // Basically it doesn't make sense to add padding for color and size.
 
     // paddingOuter would only be called if it's a band scale, just return the default for bandScale.
-    const {bandPaddingInner, barBandPaddingInner, rectBandPaddingInner, bandWithNestedOffsetPaddingInner} = scaleConfig;
+    const {
+      bandPaddingInner,
+      barBandPaddingInner,
+      rectBandPaddingInner,
+      tickBandPaddingInner,
+      bandWithNestedOffsetPaddingInner
+    } = scaleConfig;
 
     if (hasNestedOffsetScale) {
       return bandWithNestedOffsetPaddingInner;
     }
 
-    return getFirstDefined(bandPaddingInner, mark === 'bar' ? barBandPaddingInner : rectBandPaddingInner);
+    return getFirstDefined(
+      bandPaddingInner,
+      mark === 'bar' ? barBandPaddingInner : mark === 'tick' ? tickBandPaddingInner : rectBandPaddingInner
+    );
   } else if (isXorYOffset(channel)) {
     if (scaleType === ScaleType.BAND) {
       return scaleConfig.offsetBandPaddingInner;
@@ -399,7 +410,9 @@ export function zero(
   fieldDef: TypedFieldDef<string> | ScaleDatumDef,
   specifiedDomain: Domain,
   markDef: MarkDef,
-  scaleType: ScaleType
+  scaleType: ScaleType,
+  scaleConfig: ScaleConfig<SignalRef>,
+  hasSecondaryRangeChannel: boolean
 ) {
   // If users explicitly provide a domain, we should not augment zero as that will be unexpected.
   const hasCustomDomain = !!specifiedDomain && specifiedDomain !== 'unaggregated';
@@ -409,8 +422,8 @@ export function zero(
         const first = specifiedDomain[0];
         const last = specifiedDomain[specifiedDomain.length - 1];
 
-        if (first <= 0 && last >= 0) {
-          // if the domain includes zero, make zero remains true
+        if (isNumber(first) && first <= 0 && isNumber(last) && last >= 0) {
+          // if the domain includes zero, make zero remain true
           return true;
         }
       }
@@ -418,7 +431,7 @@ export function zero(
     }
   }
 
-  // If there is no custom domain, return true only for the following cases:
+  // If there is no custom domain, return configZero value (=`true` as default) only for the following cases:
 
   // 1) using quantitative field with size
   // While this can be either ratio or interval fields, our assumption is that
@@ -430,6 +443,7 @@ export function zero(
 
   // 2) non-binned, quantitative x-scale or y-scale
   // (For binning, we should not include zero by default because binning are calculated without zero.)
+  // (For area/bar charts with ratio scale chart, we should always include zero.)
   if (
     !(isFieldDef(fieldDef) && fieldDef.bin) &&
     util.contains([...POSITION_SCALE_CHANNELS, ...POLAR_POSITION_SCALE_CHANNELS], channel)
@@ -441,7 +455,12 @@ export function zero(
       }
     }
 
-    return true;
+    if (contains(['bar', 'area'], type) && !hasSecondaryRangeChannel) {
+      return true;
+    }
+
+    return scaleConfig?.zero;
   }
+
   return false;
 }

@@ -1,6 +1,6 @@
 import {Transforms as VgTransform} from 'vega';
 import {isArray, isString} from 'vega-util';
-import {FieldDef, FieldName, getFieldDef, isFieldDef, vgField} from '../../channeldef';
+import {FieldDef, FieldName, getFieldDef, isFieldDef, isOrderOnlyDef, vgField} from '../../channeldef';
 import {SortFields, SortOrder} from '../../sort';
 import {StackOffset} from '../../stack';
 import {StackTransform} from '../../transform';
@@ -8,6 +8,7 @@ import {duplicate, getFirstDefined, hash} from '../../util';
 import {sortParams} from '../common';
 import {UnitModel} from '../unit';
 import {DataFlowNode} from './dataflow';
+import {isValidFiniteNumberExpr} from './filterinvalid';
 
 function getStackByFields(model: UnitModel): string[] {
   return model.stack.stackBy.reduce((fields, by) => {
@@ -141,12 +142,15 @@ export class StackNode extends DataFlowNode {
     if (isArray(orderDef) || isFieldDef(orderDef)) {
       sort = sortParams(orderDef);
     } else {
+      const sortOrder = isOrderOnlyDef(orderDef) ? orderDef.sort : fieldChannel === 'y' ? 'descending' : 'ascending';
       // default = descending by stackFields
       // FIXME is the default here correct for binned fields?
       sort = stackby.reduce(
         (s, field) => {
-          s.field.push(field);
-          s.order.push(fieldChannel === 'y' ? 'descending' : 'ascending');
+          if (!s.field.includes(field)) {
+            s.field.push(field);
+            s.order.push(sortOrder);
+          }
           return s;
         },
         {field: [], order: []}
@@ -237,7 +241,7 @@ export class StackNode extends DataFlowNode {
           const binEnd = vgField(dimensionFieldDef, {expr: 'datum', binSuffix: 'end'});
           transform.push({
             type: 'formula',
-            expr: `${bandPosition}*${binStart}+${1 - bandPosition}*${binEnd}`,
+            expr: `${isValidFiniteNumberExpr(binStart)} ? ${bandPosition}*${binStart}+${1 - bandPosition}*${binEnd} : ${binStart}`,
             as: vgField(dimensionFieldDef, {binSuffix: 'mid', forAs: true})
           });
         }

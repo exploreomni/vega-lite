@@ -2,7 +2,8 @@ import {isArray} from 'vega-util';
 import {LayerSpec, NonNormalizedSpec} from '.';
 import {Field} from '../channeldef';
 import {BaseSpec, GenericCompositionLayoutWithColumns, ResolveMixins} from './base';
-import {UnitSpec} from './unit';
+import {UnitSpecWithFrame} from './unit';
+import {hasProperty} from '../util';
 
 export interface RepeatMapping {
   /**
@@ -53,13 +54,13 @@ export interface LayerRepeatSpec extends BaseSpec, GenericCompositionLayoutWithC
   /**
    * A specification of the view that gets repeated.
    */
-  spec: LayerSpec<Field> | UnitSpec<Field>;
+  spec: LayerSpec<Field> | UnitSpecWithFrame<Field>;
 }
 
 export function isRepeatSpec(spec: BaseSpec): spec is RepeatSpec {
-  return 'repeat' in spec;
+  return hasProperty(spec, 'repeat');
 }
 
 export function isLayerRepeatSpec(spec: RepeatSpec): spec is LayerRepeatSpec {
-  return !isArray(spec.repeat) && spec.repeat['layer'];
+  return !isArray(spec.repeat) && hasProperty(spec.repeat, 'layer');
 }

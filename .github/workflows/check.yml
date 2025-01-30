@@ -1,9 +1,8 @@
 name: Check
 
 on:
+  workflow_dispatch:
   push:
-    branches:
-      - '**'
 
 jobs:
   check:
@@ -11,14 +10,16 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
         with:
           token: ${{ secrets.GH_PAT || github.token }}
+          ref: ${{ github.ref }}
 
       - name: Setup Node
-        uses: actions/setup-node@v2.4.1
+        uses: actions/setup-node@v4
         with:
           cache: 'yarn'
+          node-version: 20
 
       - name: Install Node dependencies
         run: yarn --frozen-lockfile
@@ -35,60 +36,16 @@ jobs:
           sudo mv parallel sem /usr/local/bin
 
       - name: Format
-        if: github.ref != 'refs/heads/master'
         run: yarn format
 
       - name: Build Schema
         run: yarn schema
 
       - name: Check Schema
-        run: ./scripts/check-schema.sh
+        run: scripts/check-schema.sh
 
       - name: Setup Git remote
-        run: ./scripts/setup-git-ci.sh
+        run: scripts/setup-git-ci.sh
 
       - name: Check and Commit
-        run: ./scripts/check-and-commit.sh
-
-  toc:
-    name: TOC
-    if: "!contains(github.event.head_commit.message, '[CI]')"
-    runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/checkout@v2
-        with:
-          token: ${{ secrets.GH_PAT || github.token }}
-
-      - name: Setup Node
-        uses: actions/setup-node@v2.4.1
-        with:
-          cache: 'yarn'
-
-      - name: Install Node dependencies
-        run: yarn --frozen-lockfile
-
-      - name: Setup Ruby
-        uses: actions/setup-ruby@v1
-        with:
-          ruby-version: '2.x'
-
-      - name: Setup data
-        run: yarn data
-
-      - name: Build Jekyll
-        run: |
-          gem install bundler
-          pushd site
-          bundle install
-          bundle exec jekyll build -q
-          popd
-
-      - name: Build TOC
-        run: scripts/generate-toc
-
-      - name: Setup Git remote
-        run: ./scripts/setup-git-ci.sh
-
-      - name: Check and Commit
-        run: ./scripts/check-and-commit-toc.sh
+        run: scripts/check-and-commit.sh

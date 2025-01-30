@@ -56,13 +56,13 @@ A [selection's type](parameter.html#select) determines which data values fall wi
 
 ### Selection Projection with `encodings` and `fields`
 
-In the scatterplot example below, highlight <select name="point" onchange="buildProjection('point')"><option value="multi">multiple</option><option value="single">a single</option></select>: <label onclick="buildProjection('point')"><input type="checkbox" name="point" value="cylinders" />Cylinder(s)</label> <label onclick="buildProjection('point')"><input type="checkbox" name="point" value="origin" />Origin(s)</label>.
+In the scatterplot example below, highlight <select name="point_vis" onchange="buildProjection('point_vis')"><option value="multi">multiple</option><option value="single">a single</option></select>: <label onclick="buildProjection('point_vis')"><input type="checkbox" name="point_vis" value="cylinders" />Cylinder(s)</label> <label onclick="buildProjection('point_vis')"><input type="checkbox" name="point_vis" value="origin" />Origin(s)</label>.
 
-<div id="point" class="vl-example" data-name="selection_project_multi"></div>
+<div id="point_vis" class="vl-example" data-name="selection_project_multi"></div>
 
-With interval selections, we can use the projection to restrict the region to just the <label onclick="buildProjection('interval')"><input type="checkbox" name="interval" value="x" />horizontal (`x`)</label> and/or <label onclick="buildProjection('interval')"><input type="checkbox" name="interval" value="y" />vertical (`y`)</label> dimensions.
+With interval selections, we can use the projection to restrict the region to just the <label onclick="buildProjection('interval_vis')"><input type="checkbox" name="interval_vis" value="x" />horizontal (`x`)</label> and/or <label onclick="buildProjection('interval_vis')"><input type="checkbox" name="interval_vis" value="y" />vertical (`y`)</label> dimensions.
 
-<div id="interval" class="vl-example" data-name="selection_project_interval"></div>
+<div id="interval_vis" class="vl-example" data-name="selection_project_interval"></div>
 
 #### Current Limitations
 
@@ -82,7 +82,7 @@ The `on` property modifies the event that triggers the selection.
 
 For instance, a single rectangle in the heatmap below can now be selected on mouse hover instead.
 
-<div class="vl-example" data-name="selection_type_single_mouseover"></div>
+<div class="vl-example" data-name="selection_type_single_pointerover"></div>
 
 ### `clear`
 
@@ -126,33 +126,15 @@ In addition to all [common selection properties](#selection-props), point select
 
 The `toggle` property customizes how user interaction can insert or remove data values from a point selection if they are or are not already members of the selection, respectively.
 
-For example, you can highlight points in the scatterplot below by <select name="toggle" onchange="buildToggle(true)"><option value="toggle">toggling</option><option value="insert">inserting</option></select> into the `paintbrush` selection when clicking<span id="toggle-expl"> with: <br> <label onclick="buildToggle()"><input type="checkbox" name="toggle" value="shiftKey" checked="checked" />`event.shiftKey`</label> <label onclick="buildToggle()"><input type="checkbox" name="toggle" value="altKey" />`event.altKey`</label></span>.
+For example, you can highlight points in the scatterplot below by toggling them into the `paintbrush` selection when clicking<span id="toggle-expl"> with: <br> <label onclick="buildToggle()"><input type="checkbox" name="toggle" value="shiftKey" checked="checked" />`event.shiftKey`</label> <label onclick="buildToggle()"><input type="checkbox" name="toggle" value="altKey" />`event.altKey`</label></span>.
 
-<div id="toggle" class="vl-example" data-name="selection_toggle_shiftKey"></div>
+<div id="paintbrush_toggle" class="vl-example" data-name="selection_toggle_shiftKey"></div>
 
 <script type="text/javascript">
-function buildToggle(changeType) {
-  const type = document.querySelector('select[name=toggle]');
-  const expl = document.getElementById('toggle-expl');
-  const inputs = document.querySelectorAll('input[name=toggle]');
-
-  if (!changeType && !inputs[0].checked && !inputs[1].checked) {
-    type.value = 'insert';
-    changeType = true;
-  }
-
-  if (changeType) {
-    if (type.value === 'toggle') {
-      expl.style.display = 'inline';
-      inputs[0].checked = true;
-      inputs[1].checked = false;
-    } else {
-      expl.style.display = 'none';
-      inputs[0].checked = inputs[1].checked = false;
-    }
-  }
-
-  buildSpecOpts('toggle', 'selection_');
+function buildToggle() {
+  const inputs = document.querySelectorAll('input[name=toggle]:checked');
+  const values = Array.from(inputs).map(n => n.value).sort().join('_');
+  changeSpec('paintbrush_toggle', `selection_toggle_${values}` );
 }
 </script>
 

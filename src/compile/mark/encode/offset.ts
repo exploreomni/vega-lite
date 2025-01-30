@@ -1,7 +1,7 @@
 /**
  * Utility files for producing Vega ValueRef for marks
  */
-import {SignalRef} from 'vega';
+import type {SignalRef} from 'vega';
 import {PolarPositionChannel, PositionChannel} from '../../../channel';
 import {Encoding} from '../../../encoding';
 import {Mark, MarkDef} from '../../../mark';
@@ -39,7 +39,8 @@ export function positionOffset({
     | 'radius2Offset'; // Need to cast as the type can't be inferred automatically
 
   const defaultValue = markDef[channel];
-  const channelDef = encoding[channel];
+  // FIXME: remove as any
+  const channelDef = (encoding as any)[channel];
 
   if ((channel === 'xOffset' || channel === 'yOffset') && channelDef) {
     const ref = midPoint({

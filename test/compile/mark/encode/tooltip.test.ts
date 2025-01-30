@@ -152,6 +152,19 @@ describe('compile/mark/encode/tooltip', () => {
         signal: '{"baz": isValid(datum["Foobar"]) ? datum["Foobar"] : ""+datum["Foobar"]}'
       });
     });
+
+    it('generates correct keys and values for channels with title with quotes', () => {
+      const model = parseUnitModelWithScaleAndLayoutSize({
+        mark: {type: 'point', tooltip: true},
+        encoding: {
+          color: {field: 'Foobar', type: 'nominal', title: '"baz"'}
+        }
+      });
+      const props = tooltip(model);
+      expect(props.tooltip).toEqual({
+        signal: '{"\\"baz\\"": isValid(datum["Foobar"]) ? datum["Foobar"] : ""+datum["Foobar"]}'
+      });
+    });
   });
 
   describe('tooltipForEncoding', () => {
@@ -173,7 +186,7 @@ describe('compile/mark/encode/tooltip', () => {
       });
     });
 
-    it('returns correct tooltip signal for normalized stacked field', () => {
+    it('returns correct tooltip signal for normalized x|y stacked field', () => {
       expect(
         tooltipRefForEncoding(
           {
@@ -194,7 +207,112 @@ describe('compile/mark/encode/tooltip', () => {
           defaultConfig
         )
       ).toEqual({
-        signal: `{"Sum of IMDB_Rating": format(datum["sum_IMDB_Rating_end"]-datum["sum_IMDB_Rating_start"], "")}`
+        signal: `{"Sum of IMDB_Rating": format(datum["sum_IMDB_Rating_end"]-datum["sum_IMDB_Rating_start"], ".0%")}`
+      });
+    });
+
+    it('returns correct tooltip signal for normalized theta stacked field', () => {
+      expect(
+        tooltipRefForEncoding(
+          {
+            theta: {
+              aggregate: 'sum',
+              field: 'IMDB_Rating',
+              type: 'quantitative'
+            }
+          },
+          {
+            fieldChannel: 'theta',
+            groupbyChannels: [],
+            groupbyFields: new Set(),
+            offset: 'normalize',
+            impute: false,
+            stackBy: []
+          },
+          defaultConfig
+        )
+      ).toEqual({
+        signal: `{"Sum of IMDB_Rating": format(datum["sum_IMDB_Rating_end"]-datum["sum_IMDB_Rating_start"], ".0%")}`
+      });
+    });
+
+    it('returns correct tooltip signal for formatted normalized stacked field', () => {
+      expect(
+        tooltipRefForEncoding(
+          {
+            x: {
+              aggregate: 'sum',
+              field: 'IMDB_Rating',
+              type: 'quantitative'
+            }
+          },
+          {
+            fieldChannel: 'x',
+            groupbyChannels: [],
+            groupbyFields: new Set(),
+            offset: 'normalize',
+            impute: false,
+            stackBy: []
+          },
+          {...defaultConfig, normalizedNumberFormat: '.4%', customFormatTypes: true}
+        )
+      ).toEqual({
+        signal: `{"Sum of IMDB_Rating": format(datum["sum_IMDB_Rating_end"]-datum["sum_IMDB_Rating_start"], ".4%")}`
+      });
+    });
+
+    it('returns correct tooltip signal for formatted normalized stacked field using tooltipFormat', () => {
+      expect(
+        tooltipRefForEncoding(
+          {
+            x: {
+              aggregate: 'sum',
+              field: 'IMDB_Rating',
+              type: 'quantitative'
+            }
+          },
+          {
+            fieldChannel: 'x',
+            groupbyChannels: [],
+            groupbyFields: new Set(),
+            offset: 'normalize',
+            impute: false,
+            stackBy: []
+          },
+          {...defaultConfig, tooltipFormat: {normalizedNumberFormat: '.4%'}, customFormatTypes: true}
+        )
+      ).toEqual({
+        signal: `{"Sum of IMDB_Rating": format(datum["sum_IMDB_Rating_end"]-datum["sum_IMDB_Rating_start"], ".4%")}`
+      });
+    });
+
+    it('returns correct tooltip signal for formatted normalized stacked field preferring tooltipFormat', () => {
+      expect(
+        tooltipRefForEncoding(
+          {
+            x: {
+              aggregate: 'sum',
+              field: 'IMDB_Rating',
+              type: 'quantitative'
+            }
+          },
+          {
+            fieldChannel: 'x',
+            groupbyChannels: [],
+            groupbyFields: new Set(),
+            offset: 'normalize',
+            impute: false,
+            stackBy: []
+          },
+          {
+            ...defaultConfig,
+            tooltipFormat: {normalizedNumberFormat: '.4%'},
+            normalizedNumberFormat: '.2%',
+            customFormatTypes: true
+          }
+        )
+      ).toEqual({
+        signal: `{"Sum of IMDB_Rating": format(datum["sum_IMDB_Rating_end"]-datum["sum_IMDB_Rating_start"], ".4%")}`
       });
     });
 

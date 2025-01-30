@@ -1,4 +1,4 @@
-import {AutoSizeType, LoggerInterface, Spec as VgSpec} from 'vega';
+import type {AutoSizeType, LoggerInterface, Spec as VgSpec} from 'vega';
 import {isString, mergeConfig} from 'vega-util';
 import {getPositionScaleChannel} from '../channel';
 import * as vlFieldDef from '../channeldef';
@@ -202,11 +202,8 @@ function assembleTopLevelModel(
   // Config with Vega-Lite only config removed.
   const vgConfig = model.config ? stripAndRedirectConfig(model.config) : undefined;
 
-  const data = [].concat(
-    model.assembleSelectionData([]),
-    // only assemble data in the root
-    assembleRootData(model.component.data, datasets)
-  );
+  const rootData = assembleRootData(model.component.data, datasets);
+  const data = model.assembleSelectionData(rootData);
 
   const projections = model.assembleProjections();
   const title = model.assembleTitle();

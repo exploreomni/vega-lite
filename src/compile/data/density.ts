@@ -11,11 +11,16 @@ export class DensityTransformNode extends DataFlowNode {
     return new DensityTransformNode(null, duplicate(this.transform));
   }
 
-  constructor(parent: DataFlowNode, private transform: DensityTransform) {
+  constructor(
+    parent: DataFlowNode,
+    private transform: DensityTransform
+  ) {
     super(parent);
     this.transform = duplicate(transform); // duplicate to prevent side effects
     const specifiedAs = this.transform.as ?? [undefined, undefined];
     this.transform.as = [specifiedAs[0] ?? 'value', specifiedAs[1] ?? 'density'];
+    const resolve = this.transform.resolve ?? 'shared';
+    this.transform.resolve = resolve;
   }
 
   public dependentFields() {
@@ -37,6 +42,7 @@ export class DensityTransformNode extends DataFlowNode {
       field: density,
       ...rest
     };
+    result.resolve = this.transform.resolve;
     return result;
   }
 }

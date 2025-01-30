@@ -1,5 +1,5 @@
-import {
-  isObject,
+import type {
+  ColorScheme,
   RangeEnum,
   ScaleBins,
   ScaleInterpolateEnum,
@@ -8,15 +8,16 @@ import {
   TimeInterval,
   TimeIntervalStep
 } from 'vega';
-import {isString} from 'vega-util';
+import {isString, isObject} from 'vega-util';
 import * as CHANNEL from './channel';
 import {Channel, isColorChannel} from './channel';
 import {DateTime} from './datetime';
 import {ExprRef} from './expr';
+import {ScaleInvalidDataConfigMixins} from './invalid';
 import * as log from './log';
 import {ParameterExtent} from './selection';
 import {NOMINAL, ORDINAL, QUANTITATIVE, TEMPORAL, Type} from './type';
-import {contains, Flag, keys} from './util';
+import {contains, Flag, hasProperty, keys} from './util';
 
 export const ScaleType = {
   // Continuous - Quantitative
@@ -179,7 +180,7 @@ export function isContinuousToDiscrete(type: ScaleType): type is 'quantile' | 'q
   return CONTINUOUS_TO_DISCRETE_SCALES.has(type);
 }
 
-export interface ScaleConfig<ES extends ExprRef | SignalRef> {
+export interface ScaleConfig<ES extends ExprRef | SignalRef> extends ScaleInvalidDataConfigMixins {
   /**
    * If true, rounds numeric output values to integers.
    * This can be helpful for snapping to the pixel grid.
@@ -257,6 +258,16 @@ export interface ScaleConfig<ES extends ExprRef | SignalRef> {
   rectBandPaddingInner?: number | ES;
 
   /**
+   * Default inner padding for `x` and `y` band-ordinal scales of `"tick"` marks.
+   *
+   * __Default value:__ `0.25`
+   *
+   * @minimum 0
+   * @maximum 1
+   */
+  tickBandPaddingInner?: number | ES;
+
+  /**
    * Default padding inner for xOffset/yOffset's band scales.
    *
    * __Default Value:__ `0`
@@ -314,7 +325,7 @@ export interface ScaleConfig<ES extends ExprRef | SignalRef> {
   maxBandSize?: number;
 
   /**
-   * The default min value for mapping quantitative fields to bar and tick's size/bandSize scale with zero=false.
+   * The default min value for mapping quantitative fields to bar and tick's size/bandSize scale.
    *
    * __Default value:__ `2`
    *
@@ -323,7 +334,7 @@ export interface ScaleConfig<ES extends ExprRef | SignalRef> {
   minBandSize?: number;
 
   /**
-   * The default max value for mapping quantitative fields to text's size/fontSize.
+   * The default max value for mapping quantitative fields to text's size/fontSize scale.
    *
    * __Default value:__ `40`
    *
@@ -332,7 +343,7 @@ export interface ScaleConfig<ES extends ExprRef | SignalRef> {
   maxFontSize?: number;
 
   /**
-   * The default min value for mapping quantitative fields to tick's size/fontSize scale with zero=false
+   * The default min value for mapping quantitative fields to text's size/fontSize scale.
    *
    * __Default value:__ `8`
    *
@@ -361,7 +372,7 @@ export interface ScaleConfig<ES extends ExprRef | SignalRef> {
   maxOpacity?: number;
 
   /**
-   * Default minimum value for point size scale with zero=false.
+   * Default minimum value for point size scale.
    *
    * __Default value:__ `9`
    *
@@ -376,7 +387,7 @@ export interface ScaleConfig<ES extends ExprRef | SignalRef> {
   maxSize?: number;
 
   /**
-   * Default minimum strokeWidth for the scale of strokeWidth for rule and line marks and of size for trail marks with zero=false.
+   * Default minimum strokeWidth for the scale of strokeWidth for rule and line marks and of size for trail marks.
    *
    * __Default value:__ `1`
    *
@@ -415,6 +426,30 @@ export interface ScaleConfig<ES extends ExprRef | SignalRef> {
    * Reverse x-scale by default (useful for right-to-left charts).
    */
   xReverse?: boolean | ES;
+
+  /**
+   * Default `scale.zero` for [`continuous`](https://vega.github.io/vega-lite/docs/scale.html#continuous) scales except for (1) x/y-scales of non-ranged bar or area charts and (2) size scales.
+   *
+   * __Default value:__ `true`
+   *
+   */
+  zero?: boolean;
+
+  /**
+   * Default framerate (frames per second) for time [`band`](https://vega.github.io/vega-lite/docs/scale.html#band) scales.
+   *
+   * __Default value:__ `2`
+   *
+   */
+  framesPerSecond?: number;
+
+  /**
+   * Default animation duration (in seconds) for time encodings, except for [`band`](https://vega.github.io/vega-lite/docs/scale.html#band) scales.
+   *
+   * __Default value:__ `5`
+   *
+   */
+  animationDuration?: number;
 }
 
 export const defaultScaleConfig: ScaleConfig<SignalRef> = {
@@ -422,6 +457,8 @@ export const defaultScaleConfig: ScaleConfig<SignalRef> = {
 
   barBandPaddingInner: 0.1,
   rectBandPaddingInner: 0,
+  tickBandPaddingInner: 0.25,
+
   bandWithNestedOffsetPaddingInner: 0.2,
   bandWithNestedOffsetPaddingOuter: 0.2,
 
@@ -434,12 +471,17 @@ export const defaultScaleConfig: ScaleConfig<SignalRef> = {
   maxOpacity: 0.8,
 
   // FIXME: revise if these *can* become ratios of width/height step
-  minSize: 9, // Point size is area. For square point, 9 = 3 pixel ^ 2, not too small!
+  minSize: 4, // Point size is area. For square point, 9 = 3 pixel ^ 2, not too small!
 
   minStrokeWidth: 1,
   maxStrokeWidth: 4,
   quantileCount: 4,
-  quantizeCount: 4
+  quantizeCount: 4,
+
+  zero: true,
+
+  framesPerSecond: 2,
+  animationDuration: 5
 };
 
 export interface SchemeParams {
@@ -448,7 +490,7 @@ export interface SchemeParams {
    *
    * For the full list of supported schemes, please refer to the [Vega Scheme](https://vega.github.io/vega/docs/schemes/#reference) reference.
    */
-  name: string | SignalRef;
+  name: ColorScheme | SignalRef;
 
   /**
    * The extent of the color range to use. For example `[0.2, 1]` will rescale the color scheme such that color values in the range _[0, 0.2)_ are excluded from the scheme.
@@ -471,11 +513,11 @@ export type Domain =
 export type Scheme = string | SchemeParams;
 
 export function isExtendedScheme(scheme: Scheme | SignalRef): scheme is SchemeParams {
-  return !isString(scheme) && !!scheme['name'];
+  return !isString(scheme) && hasProperty(scheme, 'name');
 }
 
 export function isParameterDomain(domain: Domain): domain is ParameterExtent {
-  return domain?.['param'];
+  return hasProperty(domain, 'param');
 }
 
 export interface DomainUnionWith {
@@ -483,11 +525,11 @@ export interface DomainUnionWith {
    * Customized domain values to be union with the field's values or explicitly defined domain.
    * Should be an array of valid scale domain values.
    */
-  unionWith: number[] | string[] | boolean[] | DateTime[];
+  unionWith: (number | string | boolean | DateTime)[];
 }
 
 export function isDomainUnionWith(domain: Domain): domain is DomainUnionWith {
-  return domain && domain['unionWith'];
+  return hasProperty(domain, 'unionWith');
 }
 
 export interface FieldRange {
@@ -535,6 +577,13 @@ export interface Scale<ES extends ExprRef | SignalRef = ExprRef | SignalRef> {
     | ParameterExtent
     | DomainUnionWith
     | ES;
+
+  /**
+   * An expression for an array of raw values that, if non-null, directly overrides the _domain_ property.
+   * This is useful for supporting interactions such as panning or zooming a scale.
+   * The scale may be initially determined using a data-driven domain, then modified in response to user input by setting the rawDomain value.
+   */
+  domainRaw?: ES;
 
   /**
    * Inserts a single mid-point value into a two-element domain. The mid-point value must lie between the domain minimum and maximum values. This property can be useful for setting a midpoint for [diverging color scales](https://vega.github.io/vega-lite/docs/scale.html#piecewise). The domainMid property is only intended for use with scales supporting continuous, piecewise domains.
@@ -591,9 +640,11 @@ export interface Scale<ES extends ExprRef | SignalRef = ExprRef | SignalRef> {
    *
    * Discrete color schemes may be used with [discrete](https://vega.github.io/vega-lite/docs/scale.html#discrete) or [discretizing](https://vega.github.io/vega-lite/docs/scale.html#discretizing) scales. Continuous color schemes are intended for use with color scales.
    *
+   * To set a custom scheme, instead set the list of values [as the scale range](https://vega.github.io/vega-lite/docs/scale.html#2-setting-the-range-property-to-an-array-of-valid-css-color-strings).
+   *
    * For the full list of supported schemes, please refer to the [Vega Scheme](https://vega.github.io/vega/docs/schemes/#reference) reference.
    */
-  scheme?: string | SchemeParams | ES;
+  scheme?: ColorScheme | SchemeParams | ES;
 
   /**
    * The alignment of the steps within the scale range.
@@ -718,6 +769,7 @@ const SCALE_PROPERTY_INDEX: Flag<keyof Scale<any>> = {
   domainMax: 1,
   domainMin: 1,
   domainMid: 1,
+  domainRaw: 1,
   align: 1,
   range: 1,
   rangeMax: 1,
@@ -775,6 +827,7 @@ export function scaleTypeSupportProperty(scaleType: ScaleType, propName: keyof S
     case 'domainMax':
     case 'domainMid':
     case 'domainMin':
+    case 'domainRaw':
     case 'clamp':
       return isContinuousToContinuous(scaleType);
     case 'nice':
@@ -811,7 +864,7 @@ export function channelScalePropertyIncompatability(channel: Channel, propName: 
     case 'scheme':
     case 'domainMid':
       if (!isColorChannel(channel)) {
-        return log.message.cannotUseScalePropertyWithNonColor(channel);
+        return log.message.cannotUseScalePropertyWithNonColor(propName);
       }
       return undefined;
     case 'align':
@@ -820,6 +873,7 @@ export function channelScalePropertyIncompatability(channel: Channel, propName: 
     case 'domain':
     case 'domainMax':
     case 'domainMin':
+    case 'domainRaw':
     case 'range':
     case 'base':
     case 'exponent':
@@ -873,6 +927,8 @@ export function channelSupportScaleType(channel: Channel, scaleType: ScaleType, 
         return !hasNestedOffsetScale;
       }
       return false;
+    case CHANNEL.TIME:
+      return contains(['linear', 'band'], scaleType);
     case CHANNEL.SIZE: // TODO: size and opacity can support ordinal with more modification
     case CHANNEL.STROKEWIDTH:
     case CHANNEL.OPACITY:

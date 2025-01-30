@@ -1,23 +1,25 @@
 name: Test
 
 on:
+  workflow_dispatch:
+  pull_request:
   push:
     branches:
-      - master
-  pull_request:
+      - main
 
 jobs:
-  test-matrix:
+  test:
     name: Node
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
 
       - name: Setup Node
-        uses: actions/setup-node@v2.4.1
+        uses: actions/setup-node@v4
         with:
           cache: 'yarn'
+          node-version: 20
 
       - name: Install Node dependencies
         run: yarn --frozen-lockfile
@@ -31,38 +33,21 @@ jobs:
       - name: Build
         run: yarn build
 
-  build-site:
-    name: Build Site
-    runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/checkout@v2
-
-      - name: Setup Node
-        uses: actions/setup-node@v2.4.1
-        with:
-          cache: 'yarn'
-
-      - name: Install Node dependencies
-        run: yarn --frozen-lockfile
-
-      - name: Build
-        run: yarn build:site
-
   runtime-lint-coverage:
     name: Runtime, Linting, and Coverage
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          cache: 'yarn'
+          node-version: 20
 
       - name: Install Node dependencies
         run: yarn --frozen-lockfile
-
-      - name: Setup Node
-        uses: actions/setup-node@v2.4.1
-        with:
-          cache: 'yarn'
 
       - name: Install extra dependencies for Puppeteer
         run: sudo apt-get install libgbm1
@@ -83,25 +68,30 @@ jobs:
         run: yarn jest test/ --collectCoverage=true
 
       - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v2.1.0
+        uses: codecov/codecov-action@v5.1.2
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
   test-cli:
     name: CLI
-    runs-on: ${{ matrix.os }}
+
     strategy:
       matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
+        os: [ubuntu-latest, macos-13, windows-latest]
+
+    runs-on: ${{ matrix.os }}
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          cache: 'yarn'
+          node-version: 20
 
       - name: Install Node dependencies
         run: yarn --frozen-lockfile
-
-      - name: Setup Node
-        uses: actions/setup-node@v2.4.1
-        with:
-          cache: 'yarn'
 
       - name: Build
         run: yarn build:only

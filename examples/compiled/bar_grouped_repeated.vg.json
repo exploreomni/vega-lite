@@ -48,11 +48,12 @@
             "field": "Major Genre",
             "offset": {"scale": "xOffset", "value": "Worldwide Gross"}
           },
-          "width": {"scale": "xOffset", "band": 1},
+          "width": {"signal": "max(0.25, bandwidth('xOffset'))"},
           "y": [
             {
               "test": "!isValid(datum[\"sum_Worldwide Gross\"]) || !isFinite(+datum[\"sum_Worldwide Gross\"])",
-              "field": {"group": "height"}
+              "scale": "y",
+              "value": 0
             },
             {"scale": "y", "field": "sum_Worldwide Gross"}
           ],
@@ -77,11 +78,12 @@
             "field": "Major Genre",
             "offset": {"scale": "xOffset", "value": "US Gross"}
           },
-          "width": {"scale": "xOffset", "band": 1},
+          "width": {"signal": "max(0.25, bandwidth('xOffset'))"},
           "y": [
             {
               "test": "!isValid(datum[\"sum_US Gross\"]) || !isFinite(+datum[\"sum_US Gross\"])",
-              "field": {"group": "height"}
+              "scale": "y",
+              "value": 0
             },
             {"scale": "y", "field": "sum_US Gross"}
           ],

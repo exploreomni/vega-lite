@@ -1,3 +1,4 @@
+import {OFFSETTED_RECT_END_SUFFIX, OFFSETTED_RECT_START_SUFFIX} from '../../../../src/compile/data/timeunit';
 import {rectPosition} from '../../../../src/compile/mark/encode/position-rect';
 import * as log from '../../../../src/log';
 import {parseUnitModelWithScaleAndLayoutSize} from '../../../util';
@@ -15,16 +16,63 @@ describe('compile/mark/encode/position-rect', () => {
             type: 'quantitative',
             scale: {reverse: {signal: 'r'}}
           }
+        },
+        config: {bar: {minBandSize: null}}
+      });
+
+      const props = rectPosition(model, 'x');
+      expect((props.x as any).offset).toEqual({
+        signal: '0.5 + (r ? -1 : 1) * -0.5'
+      });
+      expect((props.x2 as any).offset).toEqual({
+        signal: '0.5 + (r ? -1 : 1) * 0.5'
+      });
+    });
+
+    it('produces correct x-mixins for xOffset without x', () => {
+      const model = parseUnitModelWithScaleAndLayoutSize({
+        data: {values: []},
+        mark: 'bar',
+        encoding: {
+          xOffset: {
+            field: 'a',
+            type: 'nominal'
+          },
+          y: {
+            field: 'b',
+            type: 'quantitative'
+          }
         }
       });
 
       const props = rectPosition(model, 'x');
-      expect(props.x['offset']).toEqual({
-        signal: '0.5 + (r ? -1 : 1) * -0.5'
+      expect(props.x).toEqual({
+        signal: 'width',
+        mult: 0.5,
+        offset: {scale: 'xOffset', field: 'a'}
       });
-      expect(props.x2['offset']).toEqual({
-        signal: '0.5 + (r ? -1 : 1) * 0.5'
+      expect(props.width).toEqual({
+        signal: `max(0.25, bandwidth('xOffset'))`
       });
+    });
+
+    it('produces correct x-mixins for timeUnit with bandPosition = 0', () => {
+      const model = parseUnitModelWithScaleAndLayoutSize({
+        data: {values: []},
+        mark: 'bar',
+        encoding: {
+          x: {
+            timeUnit: 'yearmonth',
+            field: 'date',
+            type: 'temporal',
+            bandPosition: 0
+          }
+        }
+      });
+
+      const props = rectPosition(model, 'x');
+      expect((props.x as any).field).toBe(`yearmonth_date_${OFFSETTED_RECT_END_SUFFIX}`);
+      expect((props.x2 as any).field).toBe(`yearmonth_date_${OFFSETTED_RECT_START_SUFFIX}`);
     });
 
     it('produces correct x-mixins for binned data with step and start field, without end field', () => {
@@ -37,7 +85,8 @@ describe('compile/mark/encode/position-rect', () => {
             field: 'x',
             type: 'quantitative'
           }
-        }
+        },
+        config: {bar: {minBandSize: null}}
       });
 
       const props = rectPosition(model, 'x');
@@ -59,14 +108,15 @@ describe('compile/mark/encode/position-rect', () => {
             type: 'quantitative',
             scale: {reverse: {signal: 'r'}}
           }
-        }
+        },
+        config: {bar: {minBandSize: null}}
       });
 
       const props = rectPosition(model, 'y');
-      expect(props.y2['offset']).toEqual({
+      expect((props.y2 as any).offset).toEqual({
         signal: '0.5 + (r ? -1 : 1) * -0.5'
       });
-      expect(props.y['offset']).toEqual({
+      expect((props.y as any).offset).toEqual({
         signal: '0.5 + (r ? -1 : 1) * 0.5'
       });
     });
@@ -82,15 +132,16 @@ describe('compile/mark/encode/position-rect', () => {
             type: 'quantitative',
             scale: {reverse: {signal: 'r'}}
           }
-        }
+        },
+        config: {bar: {minBandSize: null}}
       });
 
       const props = rectPosition(model, 'x');
 
-      expect(props.x['offset']).toEqual({
+      expect((props.x as any).offset).toEqual({
         signal: '0.5 + (r ? -1 : 1) * -1'
       });
-      expect(props.x2['offset']).toEqual({
+      expect((props.x2 as any).offset).toEqual({
         signal: '0.5 + (r ? -1 : 1) * 1'
       });
     });
@@ -106,14 +157,15 @@ describe('compile/mark/encode/position-rect', () => {
             type: 'quantitative',
             scale: {reverse: {signal: 'r'}}
           }
-        }
+        },
+        config: {bar: {minBandSize: null}}
       });
 
       const props = rectPosition(model, 'y');
-      expect(props.y2['offset']).toEqual({
+      expect((props.y2 as any).offset).toEqual({
         signal: '0.5 + (r ? -1 : 1) * -1'
       });
-      expect(props.y['offset']).toEqual({
+      expect((props.y as any).offset).toEqual({
         signal: '0.5 + (r ? -1 : 1) * 1'
       });
     });
@@ -173,15 +225,16 @@ describe('compile/mark/encode/position-rect', () => {
             type: 'quantitative',
             axis: {translate: {signal: 't'}}
           }
-        }
+        },
+        config: {bar: {minBandSize: null}}
       });
       model.parseAxesAndHeaders();
 
       const props = rectPosition(model, 'x');
-      expect(props.x['offset']).toEqual({
+      expect((props.x as any).offset).toEqual({
         signal: 't + -0.5'
       });
-      expect(props.x2['offset']).toEqual({
+      expect((props.x2 as any).offset).toEqual({
         signal: 't + 0.5'
       });
     });
@@ -198,16 +251,36 @@ describe('compile/mark/encode/position-rect', () => {
             scale: {reverse: {signal: 'r'}},
             axis: {translate: {signal: 't'}}
           }
-        }
+        },
+        config: {bar: {minBandSize: null}}
       });
       model.parseAxesAndHeaders();
 
       const props = rectPosition(model, 'x');
-      expect(props.x['offset']).toEqual({
+      expect((props.x as any).offset).toEqual({
         signal: 't + (r ? -1 : 1) * (o + -0.5)'
       });
-      expect(props.x2['offset']).toEqual({
+      expect((props.x2 as any).offset).toEqual({
         signal: 't + (r ? -1 : 1) * (o + 0.5)'
+      });
+    });
+
+    it('produces correct default y-mixins for empty y encoding', () => {
+      const model = parseUnitModelWithScaleAndLayoutSize({
+        data: {values: []},
+        mark: {type: 'bar'},
+        encoding: {
+          x: {
+            field: 'x',
+            type: 'quantitative',
+            aggregate: 'mean'
+          }
+        }
+      });
+
+      const props = rectPosition(model, 'y');
+      expect(props.height).toEqual({
+        signal: '0.9 * height'
       });
     });
   });

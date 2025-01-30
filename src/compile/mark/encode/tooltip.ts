@@ -1,6 +1,6 @@
 import {array, isArray, isObject, isString} from 'vega-util';
 import {isBinned} from '../../../bin';
-import {getMainRangeChannel, isXorY, Channel} from '../../../channel';
+import {getMainRangeChannel, isXorY, Channel, THETA, RADIUS} from '../../../channel';
 import {
   defaultTitle,
   getFieldDef,
@@ -15,7 +15,7 @@ import {
 import {Config} from '../../../config';
 import {Encoding, forEach} from '../../../encoding';
 import {StackProperties} from '../../../stack';
-import {entries} from '../../../util';
+import {Dict, entries} from '../../../util';
 import {isSignalRef} from '../../../vega.schema';
 import {getMarkPropOrConfig} from '../../common';
 import {binFormatExpression, formatSignalRef} from '../../format';
@@ -30,7 +30,7 @@ export function tooltip(model: UnitModel, opt: {reactiveGeom?: boolean} = {}) {
     return {tooltip: tooltipRefForEncoding({tooltip: channelDef}, stack, config, opt)};
   } else {
     const datum = opt.reactiveGeom ? 'datum.datum' : 'datum';
-    return wrapCondition(model, channelDef, 'tooltip', cDef => {
+    const mainRefFn = (cDef: Encoding<string>['tooltip']) => {
       // use valueRef based on channelDef first
       const tooltipRefFromChannelDef = textRef(cDef, config, datum);
       if (tooltipRefFromChannelDef) {
@@ -62,6 +62,14 @@ export function tooltip(model: UnitModel, opt: {reactiveGeom?: boolean} = {}) {
       }
 
       return undefined;
+    };
+
+    return wrapCondition({
+      model,
+      channelDef,
+      vgChannel: 'tooltip',
+      mainRefFn,
+      invalidValueRef: undefined // tooltip encoding doesn't have continuous scales and thus can't have invalid values
     });
   }
 }
@@ -72,7 +80,8 @@ export function tooltipData(
   config: Config,
   {reactiveGeom}: {reactiveGeom?: boolean} = {}
 ) {
-  const toSkip = {};
+  const formatConfig = {...config, ...config.tooltipFormat};
+  const toSkip = new Set();
   const expr = reactiveGeom ? 'datum.datum' : 'datum';
   const tuples: {channel: Channel; key: string; value: string}[] = [];
 
@@ -86,8 +95,8 @@ export function tooltipData(
           type: (encoding[mainChannel] as TypedFieldDef<any>).type // for secondary field def, copy type from main channel
         };
 
-    const title = fieldDef.title || defaultTitle(fieldDef, config);
-    const key = array(title).join(', ');
+    const title = fieldDef.title || defaultTitle(fieldDef, formatConfig);
+    const key = array(title).join(', ').replaceAll(/"/g, '\\"');
 
     let value: string;
 
@@ -99,22 +108,29 @@ export function tooltipData(
         const startField = vgField(fieldDef, {expr});
         const endField = vgField(fieldDef2, {expr});
         const {format, formatType} = getFormatMixins(fieldDef);
-        value = binFormatExpression(startField, endField, format, formatType, config);
-        toSkip[channel2] = true;
-      } else if (stack && stack.fieldChannel === channel && stack.offset === 'normalize') {
-        const {format, formatType} = getFormatMixins(fieldDef);
-        value = formatSignalRef({
-          fieldOrDatumDef: fieldDef,
-          format,
-          formatType,
-          expr,
-          config,
-          normalizeStack: true
-        }).signal;
+        value = binFormatExpression(startField, endField, format, formatType, formatConfig);
+        toSkip.add(channel2);
       }
     }
 
-    value ??= textRef(fieldDef, config, expr).signal;
+    if (
+      (isXorY(channel) || channel === THETA || channel === RADIUS) &&
+      stack &&
+      stack.fieldChannel === channel &&
+      stack.offset === 'normalize'
+    ) {
+      const {format, formatType} = getFormatMixins(fieldDef);
+      value = formatSignalRef({
+        fieldOrDatumDef: fieldDef,
+        format,
+        formatType,
+        expr,
+        config: formatConfig,
+        normalizeStack: true
+      }).signal;
+    }
+
+    value ??= textRef(fieldDef, formatConfig, expr).signal;
 
     tuples.push({channel, key, value});
   }
@@ -127,9 +143,9 @@ export function tooltipData(
     }
   });
 
-  const out = {};
+  const out: Dict<string> = {};
   for (const {channel, key, value} of tuples) {
-    if (!toSkip[channel] && !out[key]) {
+    if (!toSkip.has(channel) && !out[key]) {
       out[key] = value;
     }
   }

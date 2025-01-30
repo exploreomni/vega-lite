@@ -80,7 +80,7 @@
       "name": "unit",
       "value": {},
       "on": [
-        {"events": "mousemove", "update": "isTuple(group()) ? group() : unit"}
+        {"events": "pointermove", "update": "isTuple(group()) ? group() : unit"}
       ]
     },
     {
@@ -107,7 +107,7 @@
           "on": [
             {
               "events": [{"source": "scope", "type": "click"}],
-              "update": "datum && item().mark.marktype !== 'group' ? {unit: \"concat_0\", fields: pts_tuple_fields, values: [(item().isVoronoi ? datum.datum : datum)[\"id\"]]} : null",
+              "update": "datum && item().mark.marktype !== 'group' && indexof(item().mark.role, 'legend') < 0 ? {unit: \"concat_0\", fields: pts_tuple_fields, values: [(item().isVoronoi ? datum.datum : datum)[\"id\"]]} : null",
               "force": true
             },
             {
@@ -253,7 +253,7 @@
               "name": "concat_1_marks",
               "type": "line",
               "style": ["line"],
-              "sort": {"field": "datum[\"lc.time\"]"},
+              "sort": {"field": "x"},
               "interactive": false,
               "from": {"data": "faceted_path_concat_1_main"},
               "encode": {

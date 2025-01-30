@@ -20,8 +20,8 @@ import {compile, TopLevelSpec} from '../../src';
 import {post} from './post';
 import {runStreamingExample} from './streaming';
 
-window['runStreamingExample'] = runStreamingExample;
-window['embedExample'] = embedExample;
+(window as any)['runStreamingExample'] = runStreamingExample;
+(window as any)['embedExample'] = embedExample;
 
 hljs.registerLanguage('javascript', javascript);
 hljs.registerLanguage('typescript', typescript);
@@ -51,8 +51,7 @@ selectAll('h2, h3, h4, h5, h6').each(function (this: d3.BaseType) {
 
 /* Documentation */
 function renderExample($target: Selection<any, any, any, any>, specText: string, figureOnly: boolean) {
-  $target.classed('example', true);
-  $target.text('');
+  $target.classed('example', true).text('');
 
   const vis = $target.append('div').attr('class', 'example-vis');
 
@@ -108,7 +107,7 @@ export function embedExample($target: any, spec: TopLevelSpec, actions = true, t
   return view;
 }
 
-function getSpec(el: d3.BaseType) {
+async function getSpec(el: d3.BaseType) {
   const sel = select(el);
   const name = sel.attr('data-name');
   const figureOnly = !!sel.attr('figure-only');
@@ -116,28 +115,29 @@ function getSpec(el: d3.BaseType) {
     const dir = sel.attr('data-dir');
     const fullUrl = `${BASEURL}/examples/${dir ? `${dir}/` : ''}${name}.vl.json`;
 
-    fetch(fullUrl)
-      .then(response => {
-        response
-          .text()
-          .then(spec => {
-            renderExample(sel, spec, figureOnly);
-          })
-          .catch(console.error);
-      })
-      .catch(console.error);
+    try {
+      const spec = await (await fetch(fullUrl)).text();
+      renderExample(sel, spec, figureOnly);
+    } catch (e) {
+      sel
+        .html(
+          `Could not load spec: ${e}. Please report this issue on <a href="https://github.com/vega/vega-lite/issues/new/choose">GitHub</a>.`
+        )
+        .classed('error', true);
+      console.error(e);
+    }
   } else {
     console.error('No "data-name" specified to import examples from');
   }
 }
 
-window['changeSpec'] = (elId: string, newSpec: string) => {
+(window as any)['changeSpec'] = (elId: string, newSpec: string) => {
   const el = document.getElementById(elId);
   select(el).attr('data-name', newSpec);
   getSpec(el);
 };
 
-window['buildSpecOpts'] = (id: string, baseName: string) => {
+(window as any)['buildSpecOpts'] = (id: string, baseName: string) => {
   const oldName = select(`#${id}`).attr('data-name');
   const prefixSel = select(`select[name=${id}]`);
   const inputsSel = selectAll(`input[name=${id}]:checked`);
@@ -149,7 +149,7 @@ window['buildSpecOpts'] = (id: string, baseName: string) => {
     .join('_');
   const newName = baseName + prefix + (values ? `_${values}` : '');
   if (oldName !== newName) {
-    window['changeSpec'](id, newName);
+    (window as any)['changeSpec'](id, newName);
   }
 };
 
@@ -241,7 +241,7 @@ if (carousel) {
   [].forEach.call(slides, (slide: Element) => {
     const video = slide.querySelector('video');
     if (video) {
-      video.addEventListener('mouseover', () => {
+      video.addEventListener('pointerover', () => {
         (slide.querySelector('.example-vis') as any).style.visibility = 'visible';
         video.style.display = 'none';
         video.pause();

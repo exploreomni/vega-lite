@@ -29,26 +29,38 @@ describe('Selection', () => {
     expect(component.one.name).toBe('one');
     expect(component.one.type).toBe('point');
     expect(component['one'].project.items).toEqual(
-      expect.arrayContaining([{field: '_vgsid_', type: 'E', signals: {data: 'one__vgsid_'}}])
+      expect.arrayContaining([{field: '_vgsid_', index: 0, type: 'E', signals: {data: 'one__vgsid_'}}])
     );
     expect(component['one'].events).toEqual(parseSelector('click', 'scope'));
 
     expect(component.two.name).toBe('two');
     expect(component.two.type).toBe('interval');
-    expect(component.two.translate).toBe('[mousedown, window:mouseup] > window:mousemove!');
+    expect(component.two.translate).toBe('[pointerdown, window:pointerup] > window:pointermove!');
     expect(component.two.zoom).toBe('wheel!');
     expect(component['two'].project.items).toEqual(
       expect.arrayContaining([
-        {field: 'Horsepower', channel: 'x', type: 'R', signals: {data: 'two_Horsepower', visual: 'two_x'}},
+        {
+          field: 'Horsepower',
+          channel: 'x',
+          index: 0,
+          type: 'R',
+          signals: {data: 'two_Horsepower', visual: 'two_x'}
+        },
         {
           field: 'Miles_per_Gallon',
           channel: 'y',
+          index: 1,
           type: 'R',
           signals: {data: 'two_Miles_per_Gallon', visual: 'two_y'}
         }
       ])
     );
-    expect(component['two'].events).toEqual(parseSelector('[mousedown, window:mouseup] > window:mousemove!', 'scope'));
+    expect(component['two'].events).toEqual(
+      parseSelector(
+        '[pointerdown[!event.item || event.item.mark.name !== "two_brush"], window:pointerup] > window:pointermove!',
+        'scope'
+      )
+    );
   });
 
   it('supports inline default overrides', () => {
@@ -65,7 +77,7 @@ describe('Selection', () => {
         name: 'two',
         select: {
           type: 'point',
-          on: 'mouseover',
+          on: 'pointerover',
           toggle: 'event.ctrlKey',
           encodings: ['color']
         }
@@ -74,7 +86,7 @@ describe('Selection', () => {
         name: 'three',
         select: {
           type: 'interval',
-          on: '[mousedown[!event.shiftKey], mouseup] > mousemove',
+          on: '[pointerdown[!event.shiftKey], pointerup] > pointermove',
           encodings: ['y'],
           translate: false,
           zoom: 'wheel[event.altKey]'
@@ -87,7 +99,7 @@ describe('Selection', () => {
     expect(component.one.name).toBe('one');
     expect(component.one.type).toBe('point');
     expect(component['one'].project.items).toEqual(
-      expect.arrayContaining([{field: 'Cylinders', type: 'E', signals: {data: 'one_Cylinders'}}])
+      expect.arrayContaining([{field: 'Cylinders', index: 0, type: 'E', signals: {data: 'one_Cylinders'}}])
     );
     expect(component['one'].events).toEqual(parseSelector('dblclick', 'scope'));
 
@@ -96,10 +108,10 @@ describe('Selection', () => {
     expect(component.two.toggle).toBe('event.ctrlKey');
     expect(component['two'].project.items).toEqual(
       expect.arrayContaining([
-        {field: 'Origin', channel: 'color', type: 'E', signals: {data: 'two_Origin', visual: 'two_color'}}
+        {field: 'Origin', channel: 'color', index: 0, type: 'E', signals: {data: 'two_Origin', visual: 'two_color'}}
       ])
     );
-    expect(component['two'].events).toEqual(parseSelector('mouseover', 'scope'));
+    expect(component['two'].events).toEqual(parseSelector('pointerover', 'scope'));
 
     expect(component.three.name).toBe('three');
     expect(component.three.type).toBe('interval');
@@ -110,21 +122,22 @@ describe('Selection', () => {
         {
           field: 'Miles_per_Gallon',
           channel: 'y',
+          index: 0,
           type: 'R',
           signals: {data: 'three_Miles_per_Gallon', visual: 'three_y'}
         }
       ])
     );
     expect(component['three'].events).toEqual(
-      parseSelector('[mousedown[!event.shiftKey], mouseup] > mousemove', 'scope')
+      parseSelector('[pointerdown[!event.shiftKey], pointerup] > pointermove', 'scope')
     );
   });
 
   it('respects selection configs', () => {
     model.config.selection = {
-      point: {on: 'mouseover', encodings: ['color'], toggle: 'event.ctrlKey'},
+      point: {on: 'pointerover', encodings: ['color'], toggle: 'event.ctrlKey'},
       interval: {
-        on: '[mousedown[!event.shiftKey], mouseup] > mousemove',
+        on: '[pointerdown[!event.shiftKey], pointerup] > pointermove',
         encodings: ['y'],
         zoom: 'wheel[event.altKey]'
       }
@@ -142,10 +155,10 @@ describe('Selection', () => {
     expect(component.one.toggle).toBe('event.ctrlKey');
     expect(component['one'].project.items).toEqual(
       expect.arrayContaining([
-        {field: 'Origin', channel: 'color', type: 'E', signals: {data: 'one_Origin', visual: 'one_color'}}
+        {field: 'Origin', channel: 'color', index: 0, type: 'E', signals: {data: 'one_Origin', visual: 'one_color'}}
       ])
     );
-    expect(component['one'].events).toEqual(parseSelector('mouseover', 'scope'));
+    expect(component['one'].events).toEqual(parseSelector('pointerover', 'scope'));
 
     expect(component.two.name).toBe('two');
     expect(component.two.type).toBe('interval');
@@ -156,13 +169,14 @@ describe('Selection', () => {
         {
           field: 'Miles_per_Gallon',
           channel: 'y',
+          index: 0,
           type: 'R',
           signals: {data: 'two_Miles_per_Gallon', visual: 'two_y'}
         }
       ])
     );
     expect(component['two'].events).toEqual(
-      parseSelector('[mousedown[!event.shiftKey], mouseup] > mousemove', 'scope')
+      parseSelector('[pointerdown[!event.shiftKey], pointerup] > pointermove', 'scope')
     );
   });
 
@@ -182,7 +196,7 @@ describe('Selection', () => {
 
       expect(c['one'].project.items).toEqual(
         expect.arrayContaining([
-          {field: 'Origin', channel: 'x', type: 'E', signals: {data: 'one_Origin', visual: 'one_x'}}
+          {field: 'Origin', channel: 'x', index: 0, type: 'E', signals: {data: 'one_Origin', visual: 'one_x'}}
         ])
       );
 
@@ -200,7 +214,7 @@ describe('Selection', () => {
 
       expect(c['one'].project.items).toEqual(
         expect.arrayContaining([
-          {field: 'Origin', channel: 'x', type: 'E', signals: {data: 'one_Origin', visual: 'one_x'}}
+          {field: 'Origin', channel: 'x', index: 0, type: 'E', signals: {data: 'one_Origin', visual: 'one_x'}}
         ])
       );
     });
@@ -218,7 +232,13 @@ describe('Selection', () => {
 
       expect(c['one'].project.items).toEqual(
         expect.arrayContaining([
-          {field: 'Acceleration', channel: 'x', type: 'R-RE', signals: {data: 'one_Acceleration', visual: 'one_x'}}
+          {
+            field: 'Acceleration',
+            channel: 'x',
+            index: 0,
+            type: 'R-RE',
+            signals: {data: 'one_Acceleration', visual: 'one_x'}
+          }
         ])
       );
     });
@@ -243,18 +263,24 @@ describe('Selection', () => {
       ]);
 
       expect(component['one'].project.items).toEqual(
-        expect.arrayContaining([{field: 'Origin', type: 'E', signals: {data: 'one_Origin'}}])
+        expect.arrayContaining([{field: 'Origin', index: 0, type: 'E', signals: {data: 'one_Origin'}}])
       );
 
       expect(component['two'].project.items).toEqual(
         expect.arrayContaining([
-          {channel: 'color', field: 'Origin', type: 'E', signals: {data: 'two_Origin', visual: 'two_color'}}
+          {channel: 'color', field: 'Origin', index: 0, type: 'E', signals: {data: 'two_Origin', visual: 'two_color'}}
         ])
       );
 
       expect(component['three'].project.items).toEqual(
         expect.arrayContaining([
-          {field: 'Horsepower', channel: 'x', type: 'R', signals: {data: 'three_Horsepower', visual: 'three_x'}}
+          {
+            field: 'Horsepower',
+            channel: 'x',
+            index: 0,
+            type: 'R',
+            signals: {data: 'three_Horsepower', visual: 'three_x'}
+          }
         ])
       );
     });
@@ -268,8 +294,8 @@ describe('Selection', () => {
       ]);
 
       expect(component['one'].project.items).toEqual([
-        {field: 'nested.a', type: 'E', signals: {data: 'one_nested_a'}},
-        {field: 'nested.b.aa', type: 'E', signals: {data: 'one_nested_b_aa'}}
+        {field: 'nested.a', index: 0, type: 'E', signals: {data: 'one_nested_a'}},
+        {field: 'nested.b.aa', index: 1, type: 'E', signals: {data: 'one_nested_b_aa'}}
       ]);
 
       expect(project.signals(null, component['one'], [])).toEqual([
@@ -292,8 +318,14 @@ describe('Selection', () => {
       ]);
 
       expect(component['one'].project.items).toEqual([
-        {field: 'Horsepower', channel: 'x', type: 'E', signals: {data: 'one_Horsepower', visual: 'one_x'}},
-        {field: 'Miles_per_Gallon', channel: 'y', type: 'E', signals: {data: 'one_Miles_per_Gallon', visual: 'one_y'}}
+        {field: 'Horsepower', channel: 'x', index: 0, type: 'E', signals: {data: 'one_Horsepower', visual: 'one_x'}},
+        {
+          field: 'Miles_per_Gallon',
+          channel: 'y',
+          index: 1,
+          type: 'E',
+          signals: {data: 'one_Miles_per_Gallon', visual: 'one_y'}
+        }
       ]);
     });
   });
@@ -306,10 +338,10 @@ describe('Selection', () => {
           params: [
             {
               name: 'index',
-              value: {x: {year: 2005, month: 1, date: 1}},
+              value: [{x: {year: 2005, month: 1, date: 1}}],
               select: {
                 type: 'point',
-                on: 'mouseover',
+                on: 'pointerover',
                 encodings: ['x'],
                 nearest: true
               }
@@ -339,32 +371,30 @@ describe('Selection', () => {
     lookupModel.parseData();
     optimizeDataflow(lookupModel.component.data, lookupModel);
 
-    expect(assembleRootData(lookupModel.component.data, {})).toEqual(
-      expect.arrayContaining([
+    const data = assembleRootData(lookupModel.component.data, {});
+    expect(data[2]).toEqual({
+      name: 'data_1',
+      source: 'data_0',
+      transform: [
         {
-          name: 'data_1',
-          source: 'data_0',
-          transform: [
-            {
-              type: 'filter',
-              expr: '!length(data("index_store")) || vlSelectionTest("index_store", datum)'
-            }
-          ]
-        },
-        {
-          name: 'data_2',
-          source: 'source_0',
-          transform: [
-            {
-              type: 'lookup',
-              from: 'data_1',
-              key: 'symbol',
-              fields: ['symbol'],
-              as: ['index']
-            }
-          ]
+          type: 'filter',
+          expr: '!length(data("index_store")) || vlSelectionTest("index_store", datum)'
         }
-      ])
-    );
+      ]
+    });
+
+    expect(data[3]).toEqual({
+      name: 'data_2',
+      source: 'source_0',
+      transform: [
+        {
+          type: 'lookup',
+          from: 'data_1',
+          key: 'symbol',
+          fields: ['symbol'],
+          as: ['index']
+        }
+      ]
+    });
   });
 });

@@ -120,6 +120,9 @@
           "labelFlush": true,
           "labelOverlap": true,
           "tickCount": {"signal": "ceil(child_width/40)"},
+          "tickMinStep": {
+            "signal": "datetime(2001, 0, 2, 0, 0, 0, 0) - datetime(2001, 0, 1, 0, 0, 0, 0)"
+          },
           "zindex": 0
         }
       ]
@@ -156,7 +159,7 @@
           "name": "child_marks",
           "type": "area",
           "style": ["area"],
-          "sort": {"field": "datum[\"monthdate_date\"]"},
+          "sort": {"field": "x"},
           "from": {"data": "facet"},
           "encode": {
             "update": {
@@ -167,7 +170,9 @@
               },
               "x": {"scale": "x", "field": "monthdate_date"},
               "y": {"scale": "y", "field": "mean_temperature"},
-              "y2": {"field": {"group": "height"}},
+              "y2": {
+                "signal": "scale('y', inrange(0, domain('y')) ? 0 : domain('y')[0])"
+              },
               "defined": {
                 "signal": "isValid(datum[\"monthdate_date\"]) && isFinite(+datum[\"monthdate_date\"]) && isValid(datum[\"mean_temperature\"]) && isFinite(+datum[\"mean_temperature\"])"
               }

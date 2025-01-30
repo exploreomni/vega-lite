@@ -1,12 +1,12 @@
-import {SignalRef} from 'vega';
+import type {SignalRef} from 'vega';
 import {isArray} from 'vega-util';
 import {FieldName, valueExpr, vgField} from './channeldef';
 import {DateTime} from './datetime';
-import {ExprRef} from './expr';
+import {ExprRef, replaceExprRef} from './expr';
 import {LogicalComposition} from './logical';
 import {ParameterName} from './parameter';
-import {fieldExpr as timeUnitFieldExpr, normalizeTimeUnit, TimeUnit, TimeUnitParams} from './timeunit';
-import {stringify} from './util';
+import {fieldExpr as timeUnitFieldExpr, normalizeTimeUnit, TimeUnit, TimeUnitParams, BinnedTimeUnit} from './timeunit';
+import {hasProperty, stringify} from './util';
 import {isSignalRef} from './vega.schema';
 
 export type Predicate =
@@ -48,7 +48,7 @@ export interface ParameterPredicate {
 }
 
 export function isSelectionPredicate(predicate: LogicalComposition<Predicate>): predicate is ParameterPredicate {
-  return predicate?.['param'];
+  return hasProperty(predicate, 'param');
 }
 
 export interface FieldPredicateBase {
@@ -57,7 +57,7 @@ export interface FieldPredicateBase {
   /**
    * Time unit for the field to be tested.
    */
-  timeUnit?: TimeUnit | TimeUnitParams;
+  timeUnit?: TimeUnit | BinnedTimeUnit | TimeUnitParams;
 
   /**
    * Field to be tested.
@@ -73,7 +73,7 @@ export interface FieldEqualPredicate extends FieldPredicateBase {
 }
 
 export function isFieldEqualPredicate(predicate: any): predicate is FieldEqualPredicate {
-  return predicate && !!predicate.field && predicate.equal !== undefined;
+  return !!predicate?.field && predicate.equal !== undefined;
 }
 
 export interface FieldLTPredicate extends FieldPredicateBase {
@@ -84,7 +84,7 @@ export interface FieldLTPredicate extends FieldPredicateBase {
 }
 
 export function isFieldLTPredicate(predicate: any): predicate is FieldLTPredicate {
-  return predicate && !!predicate.field && predicate.lt !== undefined;
+  return !!predicate?.field && predicate.lt !== undefined;
 }
 
 export interface FieldLTEPredicate extends FieldPredicateBase {
@@ -95,7 +95,7 @@ export interface FieldLTEPredicate extends FieldPredicateBase {
 }
 
 export function isFieldLTEPredicate(predicate: any): predicate is FieldLTEPredicate {
-  return predicate && !!predicate.field && predicate.lte !== undefined;
+  return !!predicate?.field && predicate.lte !== undefined;
 }
 
 export interface FieldGTPredicate extends FieldPredicateBase {
@@ -106,7 +106,7 @@ export interface FieldGTPredicate extends FieldPredicateBase {
 }
 
 export function isFieldGTPredicate(predicate: any): predicate is FieldGTPredicate {
-  return predicate && !!predicate.field && predicate.gt !== undefined;
+  return !!predicate?.field && predicate.gt !== undefined;
 }
 
 export interface FieldGTEPredicate extends FieldPredicateBase {
@@ -117,7 +117,7 @@ export interface FieldGTEPredicate extends FieldPredicateBase {
 }
 
 export function isFieldGTEPredicate(predicate: any): predicate is FieldGTEPredicate {
-  return predicate && !!predicate.field && predicate.gte !== undefined;
+  return !!predicate?.field && predicate.gte !== undefined;
 }
 
 export interface FieldRangePredicate extends FieldPredicateBase {
@@ -158,12 +158,12 @@ export interface FieldValidPredicate extends FieldPredicateBase {
 
 export function isFieldOneOfPredicate(predicate: any): predicate is FieldOneOfPredicate {
   return (
-    predicate && !!predicate.field && (isArray(predicate.oneOf) || isArray(predicate.in)) // backward compatibility
+    !!predicate?.field && (isArray(predicate.oneOf) || isArray(predicate.in)) // backward compatibility
   );
 }
 
 export function isFieldValidPredicate(predicate: any): predicate is FieldValidPredicate {
-  return predicate && !!predicate.field && predicate.valid !== undefined;
+  return !!predicate?.field && predicate.valid !== undefined;
 }
 
 export function isFieldPredicate(
@@ -198,55 +198,51 @@ function predicateValuesExpr(vals: (number | string | boolean | DateTime)[], tim
 // This method is used by Voyager. Do not change its behavior without changing Voyager.
 export function fieldFilterExpression(predicate: FieldPredicate, useInRange = true) {
   const {field} = predicate;
-  const timeUnit = normalizeTimeUnit(predicate.timeUnit)?.unit;
-  const fieldExpr = timeUnit
+  const normalizedTimeUnit = normalizeTimeUnit(predicate.timeUnit);
+  const {unit, binned} = normalizedTimeUnit || {};
+  const rawFieldExpr = vgField(predicate, {expr: 'datum'});
+  const fieldExpr = unit
     ? // For timeUnit, cast into integer with time() so we can use ===, inrange, indexOf to compare values directly.
       // TODO: We calculate timeUnit on the fly here. Consider if we would like to consolidate this with timeUnit pipeline
       // TODO: support utc
-      `time(${timeUnitFieldExpr(timeUnit, field)})`
-    : vgField(predicate, {expr: 'datum'});
+      `time(${!binned ? timeUnitFieldExpr(unit, field) : rawFieldExpr})`
+    : rawFieldExpr;
 
   if (isFieldEqualPredicate(predicate)) {
-    return `${fieldExpr}===${predicateValueExpr(predicate.equal, timeUnit)}`;
+    return `${fieldExpr}===${predicateValueExpr(predicate.equal, unit)}`;
   } else if (isFieldLTPredicate(predicate)) {
     const upper = predicate.lt;
-    return `${fieldExpr}<${predicateValueExpr(upper, timeUnit)}`;
+    return `${fieldExpr}<${predicateValueExpr(upper, unit)}`;
   } else if (isFieldGTPredicate(predicate)) {
     const lower = predicate.gt;
-    return `${fieldExpr}>${predicateValueExpr(lower, timeUnit)}`;
+    return `${fieldExpr}>${predicateValueExpr(lower, unit)}`;
   } else if (isFieldLTEPredicate(predicate)) {
     const upper = predicate.lte;
-    return `${fieldExpr}<=${predicateValueExpr(upper, timeUnit)}`;
+    return `${fieldExpr}<=${predicateValueExpr(upper, unit)}`;
   } else if (isFieldGTEPredicate(predicate)) {
     const lower = predicate.gte;
-    return `${fieldExpr}>=${predicateValueExpr(lower, timeUnit)}`;
+    return `${fieldExpr}>=${predicateValueExpr(lower, unit)}`;
   } else if (isFieldOneOfPredicate(predicate)) {
-    return `indexof([${predicateValuesExpr(predicate.oneOf, timeUnit).join(',')}], ${fieldExpr}) !== -1`;
+    return `indexof([${predicateValuesExpr(predicate.oneOf, unit).join(',')}], ${fieldExpr}) !== -1`;
   } else if (isFieldValidPredicate(predicate)) {
     return fieldValidPredicate(fieldExpr, predicate.valid);
   } else if (isFieldRangePredicate(predicate)) {
-    const {range} = predicate;
+    const {range} = replaceExprRef(predicate);
     const lower = isSignalRef(range) ? {signal: `${range.signal}[0]`} : range[0];
     const upper = isSignalRef(range) ? {signal: `${range.signal}[1]`} : range[1];
 
     if (lower !== null && upper !== null && useInRange) {
       return (
-        'inrange(' +
-        fieldExpr +
-        ', [' +
-        predicateValueExpr(lower, timeUnit) +
-        ', ' +
-        predicateValueExpr(upper, timeUnit) +
-        '])'
+        'inrange(' + fieldExpr + ', [' + predicateValueExpr(lower, unit) + ', ' + predicateValueExpr(upper, unit) + '])'
       );
     }
 
     const exprs = [];
     if (lower !== null) {
-      exprs.push(`${fieldExpr} >= ${predicateValueExpr(lower, timeUnit)}`);
+      exprs.push(`${fieldExpr} >= ${predicateValueExpr(lower, unit)}`);
     }
     if (upper !== null) {
-      exprs.push(`${fieldExpr} <= ${predicateValueExpr(upper, timeUnit)}`);
+      exprs.push(`${fieldExpr} <= ${predicateValueExpr(upper, unit)}`);
     }
 
     return exprs.length > 0 ? exprs.join(' && ') : 'true';
@@ -268,7 +264,7 @@ export function normalizePredicate(f: Predicate): Predicate {
   if (isFieldPredicate(f) && f.timeUnit) {
     return {
       ...f,
-      timeUnit: normalizeTimeUnit(f.timeUnit)?.unit
+      timeUnit: normalizeTimeUnit(f.timeUnit)
     };
   }
   return f;

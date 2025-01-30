@@ -102,6 +102,15 @@ describe('compile/mark/init', () => {
       });
       expect(model.markDef.orient).toBe('vertical');
     });
+    it('should return correct default for T', () => {
+      const model = parseUnitModelWithScaleAndLayoutSize({
+        mark: 'bar',
+        encoding: {
+          x: {type: 'temporal', field: 'bar'}
+        }
+      });
+      expect(model.markDef.orient).toBe('vertical');
+    });
 
     it('should return correct default for empty plot', () => {
       const model = parseUnitModelWithScaleAndLayoutSize({
@@ -381,6 +390,46 @@ describe('compile/mark/init', () => {
         }
       });
       expect(model.markDef.orient).toBe('horizontal');
+    });
+
+    it('should return correct orient for bar with horizontal un-binned data', () => {
+      const model = parseUnitModelWithScaleAndLayoutSize({
+        mark: 'bar',
+        encoding: {
+          x: {
+            field: 'q_start',
+            type: 'quantitative'
+          },
+          x2: {
+            field: 'q_end'
+          },
+          y: {
+            field: 'count',
+            type: 'quantitative'
+          }
+        }
+      });
+      expect(model.markDef.orient).toBe('horizontal');
+    });
+
+    it('should return correct orient for bar with vertical un-binned data', () => {
+      const model = parseUnitModelWithScaleAndLayoutSize({
+        mark: 'bar',
+        encoding: {
+          y: {
+            field: 'q_start',
+            type: 'quantitative'
+          },
+          y2: {
+            field: 'q_end'
+          },
+          x: {
+            field: 'count',
+            type: 'quantitative'
+          }
+        }
+      });
+      expect(model.markDef.orient).toBe('vertical');
     });
 
     it('should return correct orient for area with vertical binned data', () => {

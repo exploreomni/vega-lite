@@ -68,7 +68,7 @@ describe('Interactive Legends', () => {
     {
       name: 'two',
       select: {type: 'point', fields: ['Origin']},
-      bind: {legend: 'dblclick, mouseover'}
+      bind: {legend: 'dblclick, pointerover'}
     },
     {
       name: 'four',
@@ -78,12 +78,12 @@ describe('Interactive Legends', () => {
     {
       name: 'seven',
       select: {type: 'point', fields: ['Origin'], on: 'click'},
-      bind: {legend: 'mouseover'}
+      bind: {legend: 'pointerover'}
     },
     {
       name: 'eight',
       select: {type: 'point', encodings: ['color'], on: 'click', clear: 'dblclick'},
-      bind: {legend: 'mouseover'}
+      bind: {legend: 'pointerover'}
     },
     {
       name: 'nine',
@@ -139,7 +139,7 @@ describe('Interactive Legends', () => {
                   markname: 'Origin_legend_entries'
                 }
               ],
-              update: 'datum.value || item().items[0].items[0].datum.value',
+              update: 'isDefined(datum.value) ? datum.value : item().items[0].items[0].datum.value',
               force: true
             },
             {
@@ -162,7 +162,7 @@ describe('Interactive Legends', () => {
                 },
                 {
                   source: 'view',
-                  type: 'mouseover',
+                  type: 'pointerover',
                   markname: 'Origin_legend_symbols'
                 },
                 {
@@ -172,7 +172,7 @@ describe('Interactive Legends', () => {
                 },
                 {
                   source: 'view',
-                  type: 'mouseover',
+                  type: 'pointerover',
                   markname: 'Origin_legend_labels'
                 },
                 {
@@ -182,11 +182,11 @@ describe('Interactive Legends', () => {
                 },
                 {
                   source: 'view',
-                  type: 'mouseover',
+                  type: 'pointerover',
                   markname: 'Origin_legend_entries'
                 }
               ],
-              update: 'datum.value || item().items[0].items[0].datum.value',
+              update: 'isDefined(datum.value) ? datum.value : item().items[0].items[0].datum.value',
               force: true
             },
             {
@@ -197,7 +197,7 @@ describe('Interactive Legends', () => {
                 },
                 {
                   source: 'view',
-                  type: 'mouseover'
+                  type: 'pointerover'
                 }
               ],
               update: '!event.item || !datum ? null : two_Origin_legend',
@@ -227,7 +227,7 @@ describe('Interactive Legends', () => {
                   markname: 'Origin_legend_entries'
                 }
               ],
-              update: 'datum.value || item().items[0].items[0].datum.value',
+              update: 'isDefined(datum.value) ? datum.value : item().items[0].items[0].datum.value',
               force: true
             },
             {
@@ -250,28 +250,28 @@ describe('Interactive Legends', () => {
               events: [
                 {
                   source: 'view',
-                  type: 'mouseover',
+                  type: 'pointerover',
                   markname: 'Origin_legend_symbols'
                 },
                 {
                   source: 'view',
-                  type: 'mouseover',
+                  type: 'pointerover',
                   markname: 'Origin_legend_labels'
                 },
                 {
                   source: 'view',
-                  type: 'mouseover',
+                  type: 'pointerover',
                   markname: 'Origin_legend_entries'
                 }
               ],
-              update: 'datum.value || item().items[0].items[0].datum.value',
+              update: 'isDefined(datum.value) ? datum.value : item().items[0].items[0].datum.value',
               force: true
             },
             {
               events: [
                 {
                   source: 'view',
-                  type: 'mouseover'
+                  type: 'pointerover'
                 }
               ],
               update: '!event.item || !datum ? null : seven_Origin_legend',
@@ -287,28 +287,28 @@ describe('Interactive Legends', () => {
               events: [
                 {
                   source: 'view',
-                  type: 'mouseover',
+                  type: 'pointerover',
                   markname: 'Origin_legend_symbols'
                 },
                 {
                   source: 'view',
-                  type: 'mouseover',
+                  type: 'pointerover',
                   markname: 'Origin_legend_labels'
                 },
                 {
                   source: 'view',
-                  type: 'mouseover',
+                  type: 'pointerover',
                   markname: 'Origin_legend_entries'
                 }
               ],
-              update: 'datum.value || item().items[0].items[0].datum.value',
+              update: 'isDefined(datum.value) ? datum.value : item().items[0].items[0].datum.value',
               force: true
             },
             {
               events: [
                 {
                   source: 'view',
-                  type: 'mouseover'
+                  type: 'pointerover'
                 }
               ],
               update: '!event.item || !datum ? null : eight_Origin_legend',
@@ -354,7 +354,7 @@ describe('Interactive Legends', () => {
                 }
               ],
               update:
-                'datum && item().mark.marktype !== \'group\' ? {unit: "", fields: seven_tuple_fields, values: [(item().isVoronoi ? datum.datum : datum)["Origin"]]} : null',
+                'datum && item().mark.marktype !== \'group\' && indexof(item().mark.role, \'legend\') < 0 ? {unit: "", fields: seven_tuple_fields, values: [(item().isVoronoi ? datum.datum : datum)["Origin"]]} : null',
               force: true
             },
             {
@@ -380,7 +380,7 @@ describe('Interactive Legends', () => {
                 }
               ],
               update:
-                'datum && item().mark.marktype !== \'group\' ? {unit: "", fields: eight_tuple_fields, values: [(item().isVoronoi ? datum.datum : datum)["Origin"]]} : null',
+                'datum && item().mark.marktype !== \'group\' && indexof(item().mark.role, \'legend\') < 0 ? {unit: "", fields: eight_tuple_fields, values: [(item().isVoronoi ? datum.datum : datum)["Origin"]]} : null',
               force: true
             },
             {
@@ -431,7 +431,7 @@ describe('Interactive Legends', () => {
                   markname: 'Origin_legend_entries'
                 }
               ],
-              update: 'datum.value || item().items[0].items[0].datum.value',
+              update: 'isDefined(datum.value) ? datum.value : item().items[0].items[0].datum.value',
               force: true
             },
             {

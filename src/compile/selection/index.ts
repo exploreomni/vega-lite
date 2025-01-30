@@ -1,4 +1,4 @@
-import {Binding, isString, NewSignal, Signal, Stream} from 'vega';
+import {Binding, isString, Signal, Stream} from 'vega';
 import {stringValue} from 'vega-util';
 import {FACET_CHANNELS} from '../../channel';
 import {
@@ -7,8 +7,7 @@ import {
   SelectionInit,
   SelectionInitInterval,
   SelectionResolution,
-  SelectionType,
-  SELECTION_ID
+  SelectionType
 } from '../../selection';
 import {Dict, vals} from '../../util';
 import {OutputNode} from '../data/dataflow';
@@ -46,8 +45,6 @@ export interface SelectionComponent<T extends SelectionType = SelectionType> {
   bind?: 'scales' | Binding | Dict<Binding> | LegendBinding;
   resolve: SelectionResolution;
   mark?: BrushConfig;
-
-  // Transforms
   project: SelectionProjectionComponent;
   scales?: SelectionProjection[];
   toggle?: string;
@@ -60,8 +57,8 @@ export interface SelectionComponent<T extends SelectionType = SelectionType> {
 export interface SelectionCompiler<T extends SelectionType = SelectionType> {
   defined: (selCmpt: SelectionComponent) => boolean;
   parse?: (model: UnitModel, selCmpt: SelectionComponent<T>, def: SelectionParameter<T>) => void;
-  signals?: (model: UnitModel, selCmpt: SelectionComponent<T>, signals: NewSignal[]) => Signal[]; // the output can be a new or a push signal
-  topLevelSignals?: (model: Model, selCmpt: SelectionComponent<T>, signals: NewSignal[]) => NewSignal[];
+  signals?: (model: UnitModel, selCmpt: SelectionComponent<T>, signals: Signal[]) => Signal[];
+  topLevelSignals?: (model: Model, selCmpt: SelectionComponent<T>, signals: Signal[]) => Signal[];
   modifyExpr?: (model: UnitModel, selCmpt: SelectionComponent<T>, expr: string) => string;
   marks?: (model: UnitModel, selCmpt: SelectionComponent<T>, marks: any[]) => any[];
 }
@@ -110,7 +107,7 @@ export function unitName(model: Model, {escape} = {escape: true}) {
 
 export function requiresSelectionId(model: Model) {
   return vals(model.component.selection ?? {}).reduce((identifier, selCmpt) => {
-    return identifier || selCmpt.project.items.some(proj => proj.field === SELECTION_ID);
+    return identifier || selCmpt.project.hasSelectionId;
   }, false);
 }
 
@@ -120,4 +117,8 @@ export function disableDirectManipulation(selCmpt: SelectionComponent, selDef: S
   if (isString(selDef.select) || !selDef.select.on) delete selCmpt.events;
   if (isString(selDef.select) || !selDef.select.clear) delete selCmpt.clear;
   if (isString(selDef.select) || !selDef.select.toggle) delete selCmpt.toggle;
+}
+
+export function isTimerSelection<T extends SelectionType>(selCmpt: SelectionComponent<T>) {
+  return selCmpt.events?.find(e => 'type' in e && e.type === 'timer');
 }

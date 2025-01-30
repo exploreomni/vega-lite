@@ -1,4 +1,4 @@
-import {isArray, isString} from 'vega';
+import {isArray, isString} from 'vega-util';
 import {Field} from '../channeldef';
 import {VariableParameter} from '../parameter';
 import {isSelectionParameter, SelectionParameter} from '../selection';
@@ -31,7 +31,7 @@ export class TopLevelSelectionsNormalizer extends SpecMapper<NormalizerParams, N
     }
 
     normParams.selections = selections;
-    return super.map(spec, addSpecNameToParams(spec, normParams));
+    return super.map(spec, normParams);
   }
 
   public mapUnit(spec: UnitSpec<Field>, normParams: NormalizerParams): NormalizedUnitSpec | NormalizedLayerSpec {
@@ -49,8 +49,10 @@ export class TopLevelSelectionsNormalizer extends SpecMapper<NormalizerParams, N
         for (const view of selection.views) {
           // view is either a specific unit name, or a partial path through the spec tree.
           if (
-            (isString(view) && (view === spec.name || path.indexOf(view) >= 0)) ||
+            (isString(view) && (view === spec.name || path.includes(view))) ||
             (isArray(view) &&
+              // logic for backwards compatibility with view paths before we had unique names
+              // @ts-ignore
               view.map(v => path.indexOf(v)).every((v, i, arr) => v !== -1 && (i === 0 || v > arr[i - 1])))
           ) {
             params.push(selection);
@@ -64,7 +66,7 @@ export class TopLevelSelectionsNormalizer extends SpecMapper<NormalizerParams, N
   }
 }
 
-for (const method of ['mapFacet', 'mapRepeat', 'mapHConcat', 'mapVConcat', 'mapLayer']) {
+for (const method of ['mapFacet', 'mapRepeat', 'mapHConcat', 'mapVConcat', 'mapLayer'] as const) {
   const proto = TopLevelSelectionsNormalizer.prototype[method];
   TopLevelSelectionsNormalizer.prototype[method] = function (spec: BaseSpec, params: NormalizerParams) {
     return proto.call(this, spec, addSpecNameToParams(spec, params));

@@ -46,7 +46,7 @@
       "name": "unit",
       "value": {},
       "on": [
-        {"events": "mousemove", "update": "isTuple(group()) ? group() : unit"}
+        {"events": "pointermove", "update": "isTuple(group()) ? group() : unit"}
       ]
     },
     {
@@ -57,8 +57,8 @@
       "name": "hover_tuple",
       "on": [
         {
-          "events": [{"source": "scope", "type": "mouseover"}],
-          "update": "datum && item().mark.marktype !== 'group' ? {unit: \"layer_0\", fields: hover_tuple_fields, values: [(item().isVoronoi ? datum.datum : datum)[\"symbol\"]]} : null",
+          "events": [{"source": "scope", "type": "pointerover"}],
+          "update": "datum && item().mark.marktype !== 'group' && indexof(item().mark.role, 'legend') < 0 ? {unit: \"layer_0\", fields: hover_tuple_fields, values: [(item().isVoronoi ? datum.datum : datum)[\"symbol\"]]} : null",
           "force": true
         },
         {"events": [{"source": "view", "type": "dblclick"}], "update": "null"}
@@ -70,7 +70,7 @@
       "value": false,
       "on": [
         {
-          "events": [{"source": "scope", "type": "mouseover"}],
+          "events": [{"source": "scope", "type": "pointerover"}],
           "update": "event.shiftKey"
         },
         {"events": [{"source": "view", "type": "dblclick"}], "update": "false"}
@@ -108,7 +108,7 @@
           "name": "layer_0_marks",
           "type": "line",
           "style": ["line"],
-          "sort": {"field": "datum[\"date\"]"},
+          "sort": {"field": "x"},
           "interactive": true,
           "from": {"data": "faceted_path_layer_0_main"},
           "encode": {
@@ -156,7 +156,7 @@
           "name": "layer_1_marks",
           "type": "line",
           "style": ["line"],
-          "sort": {"field": "datum[\"date\"]"},
+          "sort": {"field": "x"},
           "interactive": false,
           "from": {"data": "faceted_path_layer_1_main"},
           "encode": {

@@ -1,4 +1,4 @@
-import {AggregateOp} from 'vega';
+import type {AggregateOp} from 'vega';
 import {array, isArray} from 'vega-util';
 import {isArgmaxDef, isArgminDef} from './aggregate';
 import {isBinned, isBinning} from './bin';
@@ -39,6 +39,7 @@ import {
   TEXT,
   THETA,
   THETA2,
+  TIME,
   TOOLTIP,
   UNIT_CHANNELS,
   URL,
@@ -65,6 +66,7 @@ import {
   isConditionalDef,
   isDatumDef,
   isFieldDef,
+  isOrderOnlyDef,
   isTypedFieldDef,
   isValueDef,
   LabelDef,
@@ -73,6 +75,7 @@ import {
   NumericMarkPropDef,
   OffsetDef,
   OrderFieldDef,
+  OrderOnlyDef,
   OrderValueDef,
   PolarDef,
   Position2Def,
@@ -83,6 +86,7 @@ import {
   StringFieldDefWithCondition,
   StringValueDefWithCondition,
   TextDef,
+  TimeDef,
   title,
   TypedFieldDef,
   vgField
@@ -95,6 +99,7 @@ import {AggregatedFieldDef, BinTransform, TimeUnitTransform} from './transform';
 import {isContinuous, isDiscrete, QUANTITATIVE, TEMPORAL} from './type';
 import {keys, some} from './util';
 import {isSignalRef} from './vega.schema';
+import {isBinnedTimeUnit} from './timeunit';
 
 export interface Encoding<F extends Field> {
   /**
@@ -183,6 +188,8 @@ export interface Encoding<F extends Field> {
    * The inner radius in pixels of arc marks.
    */
   radius2?: Position2Def<F>;
+
+  time?: TimeDef<F>;
 
   /**
    * Color of the marks – either fill or stroke color based on  the `filled` property of mark definition.
@@ -331,7 +338,7 @@ export interface Encoding<F extends Field> {
    *
    * __Note__: In aggregate plots, `order` field should be `aggregate`d to avoid creating additional aggregation grouping.
    */
-  order?: OrderFieldDef<F> | OrderFieldDef<F>[] | OrderValueDef;
+  order?: OrderFieldDef<F> | OrderFieldDef<F>[] | OrderValueDef | OrderOnlyDef;
 }
 
 export interface EncodingWithFacet<F extends Field> extends Encoding<F>, EncodingFacetMapping<F> {}
@@ -340,7 +347,7 @@ export function channelHasField<F extends Field>(
   encoding: EncodingWithFacet<F>,
   channel: keyof EncodingWithFacet<F>
 ): boolean {
-  const channelDef = encoding && encoding[channel];
+  const channelDef = encoding?.[channel];
   if (channelDef) {
     if (isArray(channelDef)) {
       return some(channelDef, fieldDef => !!fieldDef.field);
@@ -355,7 +362,7 @@ export function channelHasFieldOrDatum<F extends Field>(
   encoding: EncodingWithFacet<F>,
   channel: keyof EncodingWithFacet<F>
 ): boolean {
-  const channelDef = encoding && encoding[channel];
+  const channelDef = encoding?.[channel];
   if (channelDef) {
     if (isArray(channelDef)) {
       return some(channelDef, fieldDef => !!fieldDef.field);
@@ -372,7 +379,10 @@ export function channelHasNestedOffsetScale<F extends Field>(
 ): boolean {
   if (isXorY(channel)) {
     const fieldDef = encoding[channel];
-    if ((isFieldDef(fieldDef) || isDatumDef(fieldDef)) && isDiscrete(fieldDef.type)) {
+    if (
+      (isFieldDef(fieldDef) || isDatumDef(fieldDef)) &&
+      (isDiscrete(fieldDef.type) || (isFieldDef(fieldDef) && fieldDef.timeUnit))
+    ) {
       const offsetChannel = getOffsetScaleChannel(channel);
       return channelHasFieldOrDatum(encoding, offsetChannel);
     }
@@ -461,9 +471,9 @@ export function extractTransformsFromEncoding(oldEncoding: Encoding<any>, config
             }
             newFieldDef.bin = 'binned';
             if (!isSecondaryRangeChannel(channel)) {
-              newFieldDef['type'] = QUANTITATIVE;
+              (newFieldDef as any)['type'] = QUANTITATIVE;
             }
-          } else if (timeUnit) {
+          } else if (timeUnit && !isBinnedTimeUnit(timeUnit)) {
             timeUnits.push({
               timeUnit,
               field,
@@ -474,16 +484,16 @@ export function extractTransformsFromEncoding(oldEncoding: Encoding<any>, config
             const formatType = isTypedFieldDef(channelDef) && channelDef.type !== TEMPORAL && 'time';
             if (formatType) {
               if (channel === TEXT || channel === TOOLTIP) {
-                newFieldDef['formatType'] = formatType;
+                (newFieldDef as any)['formatType'] = formatType;
               } else if (isNonPositionScaleChannel(channel)) {
-                newFieldDef['legend'] = {
+                (newFieldDef as any)['legend'] = {
                   formatType,
-                  ...newFieldDef['legend']
+                  ...(newFieldDef as any)['legend']
                 };
               } else if (isXorY(channel)) {
-                newFieldDef['axis'] = {
+                (newFieldDef as any)['axis'] = {
                   formatType,
-                  ...newFieldDef['axis']
+                  ...(newFieldDef as any)['axis']
                 };
               }
             }
@@ -491,14 +501,14 @@ export function extractTransformsFromEncoding(oldEncoding: Encoding<any>, config
         }
 
         // now the field should refer to post-transformed field instead
-        encoding[channel as any] = newFieldDef;
+        (encoding as any)[channel as any] = newFieldDef;
       } else {
         groupby.push(field);
-        encoding[channel as any] = oldEncoding[channel];
+        (encoding as any)[channel as any] = oldEncoding[channel];
       }
     } else {
       // For value def / signal ref / datum def, just copy
-      encoding[channel as any] = oldEncoding[channel];
+      (encoding as any)[channel as any] = oldEncoding[channel];
     }
   });
 
@@ -555,17 +565,13 @@ export function initEncoding(
       const positionDef = normalizedEncoding[mainChannel];
       if (isFieldDef(positionDef)) {
         if (isContinuous(positionDef.type)) {
-          if (isFieldDef(channelDef)) {
+          if (isFieldDef(channelDef) && !positionDef.timeUnit) {
             // TODO: nesting continuous field instead continuous field should
             // behave like offsetting the data in data domain
             log.warn(log.message.offsetNestedInsideContinuousPositionScaleDropped(mainChannel));
             continue;
           }
         }
-      } else {
-        // no x/y, replace it with main channel
-        channel = mainChannel;
-        log.warn(log.message.replaceOffsetWithMainChannel(mainChannel));
       }
     }
 
@@ -601,6 +607,13 @@ export function initEncoding(
       (channel === TOOLTIP && isArray(channelDef))
     ) {
       if (channelDef) {
+        if (channel === ORDER) {
+          const def = encoding[channel];
+          if (isOrderOnlyDef(def)) {
+            normalizedEncoding[channel] = def;
+            continue;
+          }
+        }
         // Array of fieldDefs for detail channel (or production rule)
         (normalizedEncoding[channel] as any) = array(channelDef).reduce(
           (defs: FieldDef<string>[], fieldDef: FieldDef<string>) => {
@@ -629,7 +642,7 @@ export function initEncoding(
         continue;
       }
 
-      normalizedEncoding[channel as any] = initChannelDef(channelDef as ChannelDef, channel, config);
+      (normalizedEncoding as any)[channel as any] = initChannelDef(channelDef as ChannelDef, channel, config);
     }
   }
   return normalizedEncoding;
@@ -643,7 +656,7 @@ export function normalizeEncoding(encoding: Encoding<string>, config: Config): E
 
   for (const channel of keys(encoding)) {
     const newChannelDef = initChannelDef(encoding[channel], channel, config, {compositeMark: true});
-    normalizedEncoding[channel as any] = newChannelDef;
+    (normalizedEncoding as any)[channel as any] = newChannelDef;
   }
 
   return normalizedEncoding;
@@ -731,6 +744,7 @@ export function pathGroupingFields(mark: Mark, encoding: Encoding<string>): stri
       case RADIUS:
       case RADIUS2:
       case LABEL:
+      case TIME:
       // falls through
 
       case LATITUDE:

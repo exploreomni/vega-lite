@@ -4,7 +4,7 @@
   "padding": 5,
   "width": 200,
   "height": 200,
-  "style": "cell",
+  "style": ["cell", "view"],
   "data": [
     {"name": "source_0", "url": "data/movies.json", "format": {"type": "json"}},
     {
@@ -71,7 +71,7 @@
       "name": "layer_1_marks",
       "type": "line",
       "style": ["line"],
-      "sort": {"field": "datum[\"Rotten Tomatoes Rating\"]"},
+      "sort": {"field": "x"},
       "from": {"data": "data_1"},
       "encode": {
         "update": {

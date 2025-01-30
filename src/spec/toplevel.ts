@@ -1,4 +1,4 @@
-import {Color, SignalRef} from 'vega';
+import type {Color, SignalRef} from 'vega';
 import {BaseSpec} from '.';
 import {getPositionScaleChannel} from '../channel';
 import {signalRefOrValue} from '../compile/common';
@@ -15,6 +15,8 @@ import {Dict} from '../util';
 export type Padding = number | {top?: number; bottom?: number; left?: number; right?: number};
 
 export type Datasets = Dict<InlineDataset>;
+
+export type TopLevelParameter = VariableParameter | TopLevelSelectionParameter;
 
 export type TopLevel<S extends BaseSpec> = S &
   TopLevelProperties & {
@@ -72,13 +74,13 @@ export interface TopLevelProperties<ES extends ExprRef | SignalRef = ExprRef | S
   /**
    * Dynamic variables or selections that parameterize a visualization.
    */
-  params?: (VariableParameter | TopLevelSelectionParameter)[];
+  params?: TopLevelParameter[];
 }
 
 export type FitType = 'fit' | 'fit-x' | 'fit-y';
 
 export function isFitType(autoSizeType: AutosizeType): autoSizeType is FitType {
-  return autoSizeType === 'fit' || autoSizeType === 'fit-x' || autoSizeType === 'fit-y';
+  return ['fit', 'fit-x', 'fit-y'].includes(autoSizeType);
 }
 
 export function getFitType(sizeType?: 'width' | 'height'): FitType {
@@ -120,7 +122,7 @@ export function extractTopLevelProperties(t: TopLevelProperties, includeParams: 
   const o: TopLevelProperties<SignalRef> = {};
   for (const p of TOP_LEVEL_PROPERTIES) {
     if (t && t[p] !== undefined) {
-      o[p as any] = signalRefOrValue(t[p]);
+      (o as any)[p] = signalRefOrValue(t[p]);
     }
   }
   if (includeParams) {

@@ -1,4 +1,4 @@
-import {SignalRef} from 'vega';
+import type {SignalRef} from 'vega';
 import {ScaleChannel} from '../../../src/channel';
 import {PositionFieldDef} from '../../../src/channeldef';
 import {domainSort, mergeDomains, parseDomainForChannel} from '../../../src/compile/scale/domain';
@@ -8,6 +8,7 @@ import * as log from '../../../src/log';
 import {ScaleType} from '../../../src/scale';
 import {EncodingSortField} from '../../../src/sort';
 import {parseUnitModel} from '../../util';
+import {OFFSETTED_RECT_END_SUFFIX, OFFSETTED_RECT_START_SUFFIX} from '../../../src/compile/data/timeunit';
 
 describe('compile/scale', () => {
   describe('parseDomainForChannel()', () => {
@@ -50,7 +51,7 @@ describe('compile/scale', () => {
       });
 
       const xDomain = testParseDomainForChannel(model, 'x');
-      expect(xDomain).toEqual([{data: 'main', field: 'a'}, [0, 100]]);
+      expect(xDomain).toEqual([[0, 100], {data: 'main', field: 'a'}]);
     });
 
     it('correctly parse signal domain', () => {
@@ -311,6 +312,43 @@ describe('compile/scale', () => {
         });
         const _domain = testParseDomainForChannel(model, 'y');
         expect(_domain).toEqual([{data: 'main', field: 'month_origin'}]);
+      });
+
+      it('should return the correct bar domain for month T', () => {
+        const model = parseUnitModel({
+          mark: 'bar',
+          encoding: {
+            y: {
+              field: 'origin',
+              type: 'temporal',
+              timeUnit: 'month'
+            }
+          }
+        });
+        const _domain = testParseDomainForChannel(model, 'y');
+        expect(_domain).toEqual([
+          {data: 'main', field: 'month_origin'},
+          {data: 'main', field: 'month_origin_end'}
+        ]);
+      });
+
+      it('should return the correct bar domain for month T with bandPosition = 0', () => {
+        const model = parseUnitModel({
+          mark: 'bar',
+          encoding: {
+            y: {
+              field: 'origin',
+              type: 'temporal',
+              timeUnit: 'month',
+              bandPosition: 0
+            }
+          }
+        });
+        const _domain = testParseDomainForChannel(model, 'y');
+        expect(_domain).toEqual([
+          {data: 'main', field: `month_origin_${OFFSETTED_RECT_START_SUFFIX}`},
+          {data: 'main', field: `month_origin_${OFFSETTED_RECT_END_SUFFIX}`}
+        ]);
       });
 
       it('should return the correct domain for month O', () => {
@@ -1078,6 +1116,38 @@ describe('compile/scale', () => {
           data: 'foo',
           fields: ['a', 'b'],
           sort: true
+        });
+
+        expect(localLogger.warns[0]).toEqual(log.message.MORE_THAN_ONE_SORT);
+      })
+    );
+
+    it(
+      'should use non-min aggregation when sort ops conflict',
+      log.wrap(localLogger => {
+        const domain = mergeDomains([
+          {
+            data: 'foo',
+            field: 'a',
+            sort: {
+              op: 'min'
+            }
+          },
+          {
+            data: 'foo',
+            field: 'a',
+            sort: {
+              op: 'sum'
+            }
+          }
+        ]);
+
+        expect(domain).toEqual({
+          data: 'foo',
+          field: 'a',
+          sort: {
+            op: 'sum'
+          }
         });
 
         expect(localLogger.warns[0]).toEqual(log.message.MORE_THAN_ONE_SORT);

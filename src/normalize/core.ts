@@ -1,4 +1,4 @@
-import {SignalRef} from 'vega';
+import type {SignalRef} from 'vega';
 import {isArray} from 'vega-util';
 import {COLUMN, FACET, ROW} from '../channel';
 import {Field, FieldName, hasConditionalFieldOrDatumDef, isFieldOrDatumDef, isValueDef} from '../channeldef';
@@ -65,6 +65,7 @@ export class CoreNormalizer extends SpecMapper<NormalizerParams, FacetedUnitSpec
 
     const specWithReplacedEncoding = {
       ...spec,
+      ...(spec.name ? {name: [params.repeaterPrefix, spec.name].filter(n => n).join('_')} : {}),
       ...(encoding ? {encoding} : {})
     };
 
@@ -127,7 +128,9 @@ export class CoreNormalizer extends SpecMapper<NormalizerParams, FacetedUnitSpec
             layer: layerValue
           };
 
-          const childName = `${(childSpec.name || '') + repeaterPrefix}child__layer_${varName(layerValue)}`;
+          const childName = `${(childSpec.name ? `${childSpec.name}_` : '') + repeaterPrefix}child__layer_${varName(
+            layerValue
+          )}`;
 
           const child = this.mapLayerOrUnit(childSpec, {...params, repeater: childRepeater, repeaterPrefix: childName});
           child.name = childName;
@@ -168,7 +171,7 @@ export class CoreNormalizer extends SpecMapper<NormalizerParams, FacetedUnitSpec
           };
 
           const childName =
-            (childSpec.name || '') +
+            (childSpec.name ? `${childSpec.name}_` : '') +
             repeaterPrefix +
             'child__' +
             (isArray(repeat)
@@ -280,8 +283,8 @@ export class CoreNormalizer extends SpecMapper<NormalizerParams, FacetedUnitSpec
         log.warn(log.message.facetChannelDropped([...(row ? [ROW] : []), ...(column ? [COLUMN] : [])]));
       }
 
-      const facetMapping = {};
-      const layout = {};
+      const facetMapping: any = {};
+      const layout: any = {};
 
       for (const channel of [ROW, COLUMN]) {
         const def = facets[channel];
@@ -325,7 +328,13 @@ export class CoreNormalizer extends SpecMapper<NormalizerParams, FacetedUnitSpec
       parentEncoding: mergeEncoding({parentEncoding, encoding, layer: true}),
       parentProjection: mergeProjection({parentProjection, projection})
     };
-    return super.mapLayer(rest, params);
+    return super.mapLayer(
+      {
+        ...rest,
+        ...(spec.name ? {name: [params.repeaterPrefix, spec.name].filter(n => n).join('_')} : {})
+      },
+      params
+    );
   }
 }
 
@@ -342,7 +351,7 @@ function mergeEncoding({
   if (parentEncoding) {
     const channels = new Set([...keys(parentEncoding), ...keys(encoding)]);
     for (const channel of channels) {
-      const channelDef = encoding[channel];
+      const channelDef = (encoding as any)[channel];
       const parentChannelDef = parentEncoding[channel];
 
       if (isFieldOrDatumDef(channelDef)) {

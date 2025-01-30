@@ -1,3 +1,4 @@
+import {RangeRaw} from 'vega';
 import {
   defaultContinuousToDiscreteCount,
   interpolateRange,
@@ -8,7 +9,7 @@ import {makeExplicit, makeImplicit} from '../../../src/compile/split';
 import {Config, defaultConfig, DEFAULT_STEP} from '../../../src/config';
 import * as log from '../../../src/log';
 import {Mark} from '../../../src/mark';
-import {QUANTITATIVE_SCALES, ScaleType} from '../../../src/scale';
+import {defaultScaleConfig, QUANTITATIVE_SCALES, ScaleType} from '../../../src/scale';
 import {parseUnitModelWithScaleExceptRange} from '../../util';
 
 describe('compile/scale', () => {
@@ -108,6 +109,141 @@ describe('compile/scale', () => {
 
         expect(parseRangeForChannel('x', model)).toEqual(
           makeImplicit({step: {signal: "20 * bandspace(domain('xOffset').length, 0, 0) / (1-0.2)"}})
+        );
+      });
+
+      it('should return [0, year duration] when there is a nested offset with year time scale and no padding', () => {
+        const model = parseUnitModelWithScaleExceptRange({
+          mark: 'bar',
+          encoding: {
+            x: {field: 'x', type: 'temporal', timeUnit: 'year'},
+            xOffset: {field: 'xSub', type: 'nominal'},
+            y: {field: 'y', type: 'nominal'}
+          },
+          config: {scale: {bandWithNestedOffsetPaddingInner: 0}}
+        });
+
+        expect(parseRangeForChannel('xOffset', model)).toEqual(
+          makeImplicit([
+            0,
+            {
+              signal: "scale('x', datetime(2002, 0, 1, 0, 0, 0, 0)) - scale('x', datetime(2001, 0, 1, 0, 0, 0, 0))"
+            }
+          ])
+        );
+      });
+
+      it('should return [-width/2, width/2] for xOffset without x', () => {
+        const model = parseUnitModelWithScaleExceptRange({
+          mark: 'bar',
+          encoding: {
+            xOffset: {field: 'xSub', type: 'nominal'},
+            y: {field: 'y', type: 'nominal'}
+          }
+        });
+
+        expect(parseRangeForChannel('xOffset', model)).toEqual(
+          makeImplicit([
+            {
+              signal: '-width/2'
+            },
+            {
+              signal: 'width/2'
+            }
+          ])
+        );
+      });
+
+      it('should return [-height/2, height/2] for yOffset without y', () => {
+        const model = parseUnitModelWithScaleExceptRange({
+          mark: 'bar',
+          encoding: {
+            yOffset: {field: 'xSub', type: 'nominal'},
+            x: {field: 'y', type: 'nominal'}
+          }
+        });
+
+        expect(parseRangeForChannel('yOffset', model)).toEqual(
+          makeImplicit([
+            {
+              signal: '-height/2'
+            },
+            {
+              signal: 'height/2'
+            }
+          ])
+        );
+      });
+
+      it('should return padded duration range when there is a nested offset with year time scale and default padding', () => {
+        const model = parseUnitModelWithScaleExceptRange({
+          mark: 'bar',
+          encoding: {
+            x: {field: 'x', type: 'temporal', timeUnit: 'year'},
+            xOffset: {field: 'xSub', type: 'nominal'},
+            y: {field: 'y', type: 'nominal'}
+          }
+        });
+
+        expect(parseRangeForChannel('xOffset', model)).toEqual(
+          makeImplicit([
+            {
+              signal:
+                "0.1 * (scale('x', datetime(2002, 0, 1, 0, 0, 0, 0)) - scale('x', datetime(2001, 0, 1, 0, 0, 0, 0)))"
+            },
+            {
+              signal:
+                "0.9 * (scale('x', datetime(2002, 0, 1, 0, 0, 0, 0)) - scale('x', datetime(2001, 0, 1, 0, 0, 0, 0)))"
+            }
+          ])
+        );
+      });
+      it('should return padded duration range when there is a nested offset with year time scale, default padding, and bandPosition=0', () => {
+        const model = parseUnitModelWithScaleExceptRange({
+          mark: 'bar',
+          encoding: {
+            x: {field: 'x', type: 'temporal', timeUnit: 'year', bandPosition: 0},
+            xOffset: {field: 'xSub', type: 'nominal'},
+            y: {field: 'y', type: 'nominal'}
+          }
+        });
+
+        expect(parseRangeForChannel('xOffset', model)).toEqual(
+          makeImplicit([
+            {
+              signal:
+                "-0.4 * (scale('x', datetime(2002, 0, 1, 0, 0, 0, 0)) - scale('x', datetime(2001, 0, 1, 0, 0, 0, 0)))"
+            },
+            {
+              signal:
+                "0.4 * (scale('x', datetime(2002, 0, 1, 0, 0, 0, 0)) - scale('x', datetime(2001, 0, 1, 0, 0, 0, 0)))"
+            }
+          ])
+        );
+      });
+
+      it('should return padded duration range signal when there is a nested offset with year time scale and default padding', () => {
+        const model = parseUnitModelWithScaleExceptRange({
+          mark: 'bar',
+          encoding: {
+            x: {field: 'x', type: 'temporal', timeUnit: 'year'},
+            xOffset: {field: 'xSub', type: 'nominal'},
+            y: {field: 'y', type: 'nominal'}
+          },
+          config: {scale: {bandWithNestedOffsetPaddingInner: {signal: 'x'}}}
+        });
+
+        expect(parseRangeForChannel('xOffset', model)).toEqual(
+          makeImplicit([
+            {
+              signal:
+                "x/2 * (scale('x', datetime(2002, 0, 1, 0, 0, 0, 0)) - scale('x', datetime(2001, 0, 1, 0, 0, 0, 0)))"
+            },
+            {
+              signal:
+                "(1 - x/2) * (scale('x', datetime(2002, 0, 1, 0, 0, 0, 0)) - scale('x', datetime(2001, 0, 1, 0, 0, 0, 0)))"
+            }
+          ])
         );
       });
 
@@ -279,11 +415,11 @@ describe('compile/scale', () => {
         const model = parseUnitModelWithScaleExceptRange({
           mark: 'point',
           encoding: {
-            color: {field: 'x', type: 'quantitative', scale: {scheme: {name: 'warm', extent: [0.2, 1]}}}
+            color: {field: 'x', type: 'quantitative', scale: {scheme: {name: 'warmgreys', extent: [0.2, 1]}}}
           }
         });
 
-        expect(parseRangeForChannel('color', model)).toEqual(makeExplicit({scheme: 'warm', extent: [0.2, 1]}));
+        expect(parseRangeForChannel('color', model)).toEqual(makeExplicit({scheme: 'warmgreys', extent: [0.2, 1]}));
       });
 
       it('should support custom range.', () => {
@@ -439,8 +575,8 @@ describe('compile/scale', () => {
           }
         });
         const r = parseRangeForChannel('radius', model);
-        expect(r.value[0]).toBe(0);
-        expect(r.value[1]).toEqual({signal: 'min(width,height)/2'});
+        expect((r.value as RangeRaw)[0]).toBe(0);
+        expect((r.value as RangeRaw)[1]).toEqual({signal: 'min(width,height)/2'});
       });
     });
 
@@ -460,7 +596,7 @@ describe('compile/scale', () => {
           expect(parseRangeForChannel('size', model)).toEqual(makeImplicit([2, 9]));
         });
 
-        it('returns formula signal if zero is signal', () => {
+        it('returns [minBandSize, maxBandSize] if zero is signal', () => {
           const model = parseUnitModelWithScaleExceptRange({
             mark: 'bar',
             encoding: {
@@ -471,7 +607,7 @@ describe('compile/scale', () => {
             }
           });
 
-          expect(parseRangeForChannel('size', model)).toEqual(makeImplicit([{signal: 'a ? 0 : 2'}, 9]));
+          expect(parseRangeForChannel('size', model)).toEqual(makeImplicit([2, 9]));
         });
 
         it('should return [continuousBandSize, xRangeStep-1] when zero is excluded by default since min/maxSize config are not specified', () => {
@@ -563,7 +699,7 @@ describe('compile/scale', () => {
           }
         });
 
-        it('should return [0, maxSize] when zero is included', () => {
+        it('should return [minSize, maxSize] when zero is included', () => {
           for (const mark of ['point', 'square', 'circle'] as Mark[]) {
             const model = parseUnitModelWithScaleExceptRange({
               mark,
@@ -578,11 +714,11 @@ describe('compile/scale', () => {
               }
             });
 
-            expect(parseRangeForChannel('size', model)).toEqual(makeImplicit([0, 25]));
+            expect(parseRangeForChannel('size', model)).toEqual(makeImplicit([5, 25]));
           }
         });
 
-        it('should return [0, (minBandSize-2)^2] if both x and y are discrete and size is quantitative (thus use zero=true, by default)', () => {
+        it('should return [minSize, (minBandSize-2)^2] if both x and y are discrete and size is quantitative (thus use zero=true, by default)', () => {
           for (const mark of ['point', 'square', 'circle'] as Mark[]) {
             const model = parseUnitModelWithScaleExceptRange({
               width: {step: 11},
@@ -595,12 +731,15 @@ describe('compile/scale', () => {
               }
             });
             expect(parseRangeForChannel('size', model)).toEqual(
-              makeImplicit([0, MAX_SIZE_RANGE_STEP_RATIO * 11 * MAX_SIZE_RANGE_STEP_RATIO * 11])
+              makeImplicit([
+                defaultScaleConfig.minSize,
+                MAX_SIZE_RANGE_STEP_RATIO * 11 * MAX_SIZE_RANGE_STEP_RATIO * 11
+              ])
             );
           }
         });
 
-        it('should return [9, (minBandSize-2)^2] if both x and y are discrete and size is not quantitative (thus use zero=false, by default)', () => {
+        it('should return [minSize, (minBandSize-2)^2] if both x and y are discrete and size is not quantitative (thus use zero=false, by default)', () => {
           for (const mark of ['point', 'square', 'circle'] as Mark[]) {
             const model = parseUnitModelWithScaleExceptRange({
               width: {step: 11},
@@ -613,12 +752,15 @@ describe('compile/scale', () => {
               }
             });
             expect(parseRangeForChannel('size', model)).toEqual(
-              makeImplicit([9, MAX_SIZE_RANGE_STEP_RATIO * 11 * MAX_SIZE_RANGE_STEP_RATIO * 11])
+              makeImplicit([
+                defaultScaleConfig.minSize,
+                MAX_SIZE_RANGE_STEP_RATIO * 11 * MAX_SIZE_RANGE_STEP_RATIO * 11
+              ])
             );
           }
         });
 
-        it('should return [9, (minBandSize-2)^2] if both x and y are discrete and size is quantitative but use zero=false', () => {
+        it('should return [minSize, (minBandSize-2)^2] if both x and y are discrete and size is quantitative but use zero=false', () => {
           for (const mark of ['point', 'square', 'circle'] as Mark[]) {
             const model = parseUnitModelWithScaleExceptRange({
               width: {step: 11},
@@ -631,12 +773,15 @@ describe('compile/scale', () => {
               }
             });
             expect(parseRangeForChannel('size', model)).toEqual(
-              makeImplicit([9, MAX_SIZE_RANGE_STEP_RATIO * 11 * MAX_SIZE_RANGE_STEP_RATIO * 11])
+              makeImplicit([
+                defaultScaleConfig.minSize,
+                MAX_SIZE_RANGE_STEP_RATIO * 11 * MAX_SIZE_RANGE_STEP_RATIO * 11
+              ])
             );
           }
         });
 
-        it('should return [0, (xRangeStep-2)^2] if x is discrete and y is continuous and size is quantitative (thus use zero=true, by default)', () => {
+        it('should return [minSize, (xRangeStep-2)^2] if x is discrete and y is continuous and size is quantitative (thus use zero=true, by default)', () => {
           for (const mark of ['point', 'square', 'circle'] as Mark[]) {
             const model = parseUnitModelWithScaleExceptRange({
               width: {step: 11},
@@ -648,7 +793,10 @@ describe('compile/scale', () => {
               }
             });
             expect(parseRangeForChannel('size', model)).toEqual(
-              makeImplicit([0, MAX_SIZE_RANGE_STEP_RATIO * 11 * MAX_SIZE_RANGE_STEP_RATIO * 11])
+              makeImplicit([
+                defaultScaleConfig.minSize,
+                MAX_SIZE_RANGE_STEP_RATIO * 11 * MAX_SIZE_RANGE_STEP_RATIO * 11
+              ])
             );
           }
         });
@@ -666,7 +814,7 @@ describe('compile/scale', () => {
             });
             expect(parseRangeForChannel('size', model)).toEqual(
               makeImplicit([
-                0,
+                defaultScaleConfig.minSize,
                 {
                   signal:
                     'pow(0.95 * min(11, height / ((bin_maxbins_10_y_bins.stop - bin_maxbins_10_y_bins.start) / bin_maxbins_10_y_bins.step)), 2)'
@@ -686,7 +834,7 @@ describe('compile/scale', () => {
               }
             });
             expect(parseRangeForChannel('size', model)).toEqual(
-              makeImplicit({signal: 'sequence(9, 361 + (361 - 9) / (4 - 1), (361 - 9) / (4 - 1))'})
+              makeImplicit({signal: 'sequence(4, 361 + (361 - 4) / (4 - 1), (361 - 4) / (4 - 1))'})
             );
           });
         });
@@ -701,7 +849,7 @@ describe('compile/scale', () => {
               }
             });
             expect(parseRangeForChannel('size', model)).toEqual(
-              makeImplicit({signal: 'sequence(9, 361 + (361 - 9) / (3 - 1), (361 - 9) / (3 - 1))'})
+              makeImplicit({signal: 'sequence(4, 361 + (361 - 4) / (3 - 1), (361 - 4) / (3 - 1))'})
             );
             expect(localLogger.warns[0]).toEqual(log.message.domainRequiredForThresholdScale('size'));
           })
@@ -718,6 +866,34 @@ describe('compile/scale', () => {
           }
         });
         expect(parseRangeForChannel('shape', model)).toEqual(makeImplicit('symbol'));
+      });
+    });
+
+    describe('time', () => {
+      it('should use default time range.', () => {
+        const bandModel = parseUnitModelWithScaleExceptRange({
+          mark: 'point',
+          encoding: {
+            time: {field: 'x', type: 'ordinal'}
+          }
+        });
+
+        console.log(parseRangeForChannel('time', bandModel));
+        expect(parseRangeForChannel('time', bandModel)).toEqual(
+          makeImplicit({step: 1000 / defaultConfig.scale.framesPerSecond})
+        );
+
+        // TODO(jzong) uncomment the below when implementing linear scales for interpolation
+
+        // const linearModel = parseUnitModelWithScaleExceptRange({
+        //   mark: 'point',
+        //   encoding: {
+        //     time: {field: 'x', type: 'quantitative'}
+        //   }
+        // });
+
+        // console.log(parseRangeForChannel('time', linearModel));
+        // expect(parseRangeForChannel('time', linearModel)).toEqual(makeImplicit([0, defaultConfig.scale.animationDuration * 1000]));
       });
     });
   });

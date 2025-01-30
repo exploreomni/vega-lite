@@ -53,7 +53,7 @@
             "field": "Cylinders",
             "offset": {"scale": "xOffset", "field": "Origin"}
           },
-          "width": {"scale": "xOffset", "band": 1},
+          "width": {"signal": "max(0.25, bandwidth('xOffset'))"},
           "y": {"scale": "y", "field": "mean_Acceleration"},
           "y2": {"scale": "y", "value": 0}
         }
@@ -72,13 +72,13 @@
           "description": {
             "signal": "\"Cylinders: \" + (isValid(datum[\"Cylinders\"]) ? datum[\"Cylinders\"] : \"\"+datum[\"Cylinders\"]) + \"; Origin: \" + (isValid(datum[\"Origin\"]) ? datum[\"Origin\"] : \"\"+datum[\"Origin\"])"
           },
-          "xc": {
+          "x": {
             "scale": "x",
             "field": "Cylinders",
-            "offset": {"scale": "xOffset", "field": "Origin", "band": 0.5}
+            "offset": {"scale": "xOffset", "field": "Origin"}
           },
+          "width": {"signal": "max(0.25, bandwidth('xOffset'))"},
           "yc": {"scale": "y", "value": 10},
-          "width": {"value": 15},
           "height": {"value": 1}
         }
       }
