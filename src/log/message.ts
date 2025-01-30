@@ -29,6 +29,9 @@ import {VgSortField} from '../vega.schema';
 import {SelectionProjection} from '../compile/selection/project';
 import {ParameterExtent} from '../selection';
 
+export const ROUNDED_CORNERS_STACKED_BAR_WITH_AVOID =
+  'Labels on stacked bar chart with rounded corners can only avoid the base mark (stacked bars)';
+
 export function invalidSpec(spec: GenericSpec<any, any, any, any>) {
   return `Invalid specification ${stringify(
     spec
