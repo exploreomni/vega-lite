@@ -49,7 +49,7 @@
           "name": "marks",
           "type": "line",
           "style": ["line"],
-          "sort": {"field": "datum[\"year_date\"]"},
+          "sort": {"field": "x"},
           "from": {"data": "faceted_path_main"},
           "encode": {
             "update": {
@@ -71,7 +71,7 @@
       "name": "marks_label",
       "type": "text",
       "style": ["text"],
-      "sort": {"field": "datum[\"year_date\"]"},
+      "sort": {"field": "x"},
       "from": {"data": "pathgroup"},
       "encode": {
         "update": {
@@ -88,7 +88,7 @@
         {
           "type": "label",
           "size": {"signal": "[width, height]"},
-          "lineAnchor": "begin",
+          "lineAnchor": "start",
           "anchor": ["top-left", "left", "bottom-left"],
           "offset": [2, 2, 2],
           "padding": null
@@ -125,6 +125,9 @@
       "gridScale": "y",
       "grid": true,
       "tickCount": {"signal": "ceil(width/40)"},
+      "tickMinStep": {
+        "signal": "datetime(2002, 0, 1, 0, 0, 0, 0) - datetime(2001, 0, 1, 0, 0, 0, 0)"
+      },
       "domain": false,
       "labels": false,
       "aria": false,
@@ -158,6 +161,9 @@
       "labelFlush": true,
       "labelOverlap": true,
       "tickCount": {"signal": "ceil(width/40)"},
+      "tickMinStep": {
+        "signal": "datetime(2002, 0, 1, 0, 0, 0, 0) - datetime(2001, 0, 1, 0, 0, 0, 0)"
+      },
       "zindex": 0
     },
     {
