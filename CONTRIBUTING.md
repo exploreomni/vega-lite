@@ -44,9 +44,9 @@ You can find [tasks with the "Good first issue" label in the issue tracker :pray
 
 The website is under `site/` and the documentation is under `site/docs/`. We use GitHub Pages to publish our documentation when we release a new version. To contribute changes to the documentation or website, simply submit a pull request that changes the corresponding markdown files in `site/`.
 
-Since we only publish the GitHub Pages when we release a new version, it might be slightly outdated compared to `main`. For development, once you have [setup the repository](#repository-setup), you can run `npm run site` to serve the GitHub page locally at [http://localhost:4000/vega-lite/](http://localhost:4000/vega-lite/).
+Since we only publish the GitHub Pages when we release a new version, it might be slightly outdated compared to `main`. For development, once you have [setup the repository](#repository-setup), you can run `yarn site` to serve the GitHub page locally at [http://localhost:4000/vega-lite/](http://localhost:4000/vega-lite/).
 
-Note that when you checkout different branches, the compiled JavaScript for the website might be reset. You might have to run `npm run build:site` to recompile the JavaScript so that interactive examples work.
+Note that when you checkout different branches, the compiled JavaScript for the website might be reset. You might have to run `yarn build:site` to recompile the JavaScript so that interactive examples work.
 
 ### Documentation Guide
 
@@ -84,13 +84,13 @@ To name the example file:
 - For interactive example, begin with either `interactive_` or `selection_`.
 - For examples that are only for regression test, begin with `test_`.
 
-After you push a new branch to GitHub, the CI will automatically run `npm run build:examples` to recompile all examples and push the changed Vega specs and SVG files in `examples/compiled` , so that your branch includes these changes. When you add a new example or update the code, you may run `npm run build:examples` or `npm run build:example <examplename>` (e.g., `npm run build:example bar_1d`) to see the change locally. However, do **not** include these changes in your commit as different systems produce slightly different SVGs (mainly due to floating point differences). To avoid unnecessary SVG diffs, we should just let the CI generate the images. You're still encouraged to run `npm run build:examples` to make sure that your code does not cause unnecessary changes.
+After you push a new branch to GitHub, the CI will automatically run `yarn build:examples` to recompile all examples and push the changed Vega specs and SVG files in `examples/compiled` , so that your branch includes these changes. When you add a new example or update the code, you may run `yarn build:examples` or `yarn build:example <examplename>` (e.g., `yarn build:example bar_1d`) to see the change locally. However, do **not** include these changes in your commit as different systems produce slightly different SVGs (mainly due to floating point differences). To avoid unnecessary SVG diffs, we should just let the CI generate the images. You're still encouraged to run `yarn build:examples` to make sure that your code does not cause unnecessary changes.
 
 **Notes:**
 
-1. `npm run build:examples` only re-compile SVGs if the output Vega file changes (so it runs way faster). If you want to enforce re-compilation of all SVGs, use `npm run build:examples-full`.
-2. To make the CI run `npm run build:examples-full`, include `[SVG]` in your commit message of the last commit in your branch.
-3. To run `npm run build:examples`, you need to install [gnu parallel](https://www.gnu.org/software/parallel/). (For Mac, you can simply do `brew install parallel`.)
+1. `yarn build:examples` only re-compile SVGs if the output Vega file changes (so it runs way faster). If you want to enforce re-compilation of all SVGs, use `yarn build:examples-full`.
+2. To make the CI run `yarn build:examples-full`, include `[SVG]` in your commit message of the last commit in your branch.
+3. To run `yarn build:examples`, you need to install [gnu parallel](https://www.gnu.org/software/parallel/). (For Mac, you can simply do `brew install parallel`.)
 
 # Development Guide
 
@@ -176,29 +176,29 @@ This section lists commands that are commonly used during development. See `pack
 
 ### Build
 
-You can run `npm run build` to compile Vega-Lite and regenerate `vega-lite-schema.json`.
+You can run `yarn build` to compile Vega-Lite and regenerate `vega-lite-schema.json`.
 
 ### Basic Lint & Test & Test Coverage
 
-`npm test` run linting and all unit-tests respectively. `npm run format` automatically fixes linting issues if possible.
+`npm test` run linting and all unit-tests respectively. `yarn format` automatically fixes linting issues if possible.
 
-`npm run test:cover` includes test coverage and generates a report inside `coverage/index.html`. You can see if specific lines are covered in the unit test by running `open coverage/index.html` and browsing through the report.
+`yarn test:cover` includes test coverage and generates a report inside `coverage/index.html`. You can see if specific lines are covered in the unit test by running `open coverage/index.html` and browsing through the report.
 
 ### Watch tasks
 
 During development, it can be convenient to rebuild automatically or to run tests in the background. You can use:
 
-- `npm run watch` to start a watcher task that **re-compiles Vega-Lite** when `.ts` files related to VL change.
+- `yarn watch` to start a watcher task that **re-compiles Vega-Lite** when `.ts` files related to VL change.
 
 To automatically run tests when files change, run `npx vitest`. You can also run specific tests like the runtime tests with `npx vitest test-runtime/`.
 
 ### Website
 
-`npm run site`. See details in [Documentation and Website](#documentation-and-website).
+`yarn site`. See details in [Documentation and Website](#documentation-and-website).
 
 ### Publishing
 
-To make a release, run `npm run release`. After the release notes are generated (from commits), please take a look to clean up so they are readable to the community. Triggered by the GitHub release, the CI will automatically deploy the website and update the schema repo. The website deployment will require an approval from the maintainers on GitHub.
+To make a release, run `yarn release`. After the release notes are generated (from commits), please take a look to clean up so they are readable to the community. Triggered by the GitHub release, the CI will automatically deploy the website and update the schema repo. The website deployment will require an approval from the maintainers on GitHub.
 
 ## Suggested Programming Environment.
 
@@ -213,7 +213,7 @@ We use the [Visual Studio Code](https://code.visualstudio.com/) editor.
 
 To manually test your changes locally, you should have a local instance of [Vega Editor](https://github.com/vega/editor) and link Vega-Lite to the editor (See [Vega Editor's README](https://github.com/vega/editor#local-testing--debugging) for instructions).
 
-To update the Vega-Lite code in the editor, you need to compile TypeScript to JavaScript. The easiest way is to run `npm run watch` in the Vega-Lite directory. This command will automatically recompile the code whenever you make changes.
+To update the Vega-Lite code in the editor, you need to compile TypeScript to JavaScript. The easiest way is to run `yarn watch` in the Vega-Lite directory. This command will automatically recompile the code whenever you make changes.
 
 ## Pull Requests and Continuous Integration (CI)
 
