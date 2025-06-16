@@ -76,7 +76,7 @@
     "test:runtime": "TZ=America/Los_Angeles npx jest test-runtime/ --config test-runtime/jest-config.json",
     "watch": "tsc -p tsconfig.build.json -w",
     "watch:site": "yarn build:site -w",
-    "release": "release-it",
+    "release": "release-it"
   },
   "devDependencies": {
     "@release-it/conventional-changelog": "^10.0.0",
