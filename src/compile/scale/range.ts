@@ -65,6 +65,7 @@ import {UnitModel} from '../unit';
 import {ScaleComponentIndex} from './component';
 import {durationExpr} from '../../timeunit';
 import {isFacetModel} from '../model';
+import {getFacetModel} from "../selection";
 
 export const RANGE_PROPERTIES: (keyof Scale)[] = ['range', 'scheme'];
 
@@ -263,13 +264,16 @@ function defaultRange(channel: ScaleChannel, model: UnitModel): VgRange {
 
   const {domain, domainMid} = model.specifiedScales[channel];
 
+  const facetParent = getFacetModel(model);
+
   switch (channel) {
     case X:
     case Y: {
       // If there is no explicit width/height for discrete x/y scales
       if (util.contains(['point', 'band'], scaleType)) {
+        const sizeChannel = channel === X ? 'width' : 'height';
         const positionSize = getDiscretePositionSize(channel, size, config.view);
-        if (isStep(positionSize)) {
+        if (isStep(positionSize) && !facetParent?.hasExplicitSize(sizeChannel)) {
           const step = getPositionStep(positionSize, model, channel);
           return {step};
         }
