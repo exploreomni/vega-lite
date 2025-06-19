@@ -6,7 +6,10 @@ import {isSignalRef, isVgRangeStep, VgRangeStep} from '../../vega.schema';
 import {signalOrStringValue} from '../common';
 import {isFacetModel, Model} from '../model';
 import {ScaleComponent} from '../scale/component';
-import {LayoutSizeType} from './component';
+import {getSizeTypeFromLayoutSizeType, LayoutSizeType} from './component';
+import {getFacetModel} from "../selection";
+import {FacetModel} from "../facet";
+import {isFacetMapping} from "../../spec/facet";
 
 export function assembleLayoutSignals(model: Model): NewSignal[] {
   return [
@@ -20,14 +23,22 @@ export function assembleLayoutSignals(model: Model): NewSignal[] {
 export function sizeSignals(model: Model, sizeType: LayoutSizeType): (NewSignal | InitSignal)[] {
   const channel = sizeType === 'width' ? 'x' : 'y';
   const size = model.component.layoutSize.get(sizeType);
-  if (!size || size === 'merged') {
+  const facetParent = getFacetModel(model);
+  if (!size || (size === 'merged' && !facetParent)) {
     return [];
   }
 
   // Read size signal name from name map, just in case it is the top-level size signal that got renamed.
   const name = model.getSizeSignalRef(sizeType).signal;
 
-  if (size === 'step') {
+  if (facetParent?.hasExplicitSize(getSizeTypeFromLayoutSizeType(sizeType))) {
+    return [
+      {
+        name,
+        update: autosizedFacetExpr(facetParent, sizeType),
+      },
+    ];
+  } else if (size === 'step') {
     const scaleComponent = model.getScaleComponent(channel);
 
     if (scaleComponent) {
@@ -101,4 +112,14 @@ export function sizeExpr(scaleName: string, scaleComponent: ScaleComponent, card
   return `bandspace(${cardinality}, ${signalOrStringValue(paddingInner)}, ${signalOrStringValue(
     paddingOuter
   )}) * ${scaleName}_step`;
+}
+
+function autosizedFacetExpr(model: FacetModel, sizeType: LayoutSizeType) {
+  const channel = sizeType === 'width' ? 'column' : 'row';
+  if (!model.facet[channel] && isFacetMapping(model.facet)) {
+    return sizeType;
+  }
+  const name = model.name ? `${model.name}_` : '';
+  const domain = !isFacetMapping(model.facet) ? `facet_domain_${channel}` : `${name}${channel}_domain`;
+  return `${sizeType} / length(data('${domain}'))`;
 }

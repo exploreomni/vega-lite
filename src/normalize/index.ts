@@ -5,6 +5,7 @@ import {Config, initConfig} from '../config';
 import * as log from '../log';
 import {
   FacetedUnitSpec,
+  isFacetSpec,
   isLayerSpec,
   isUnitSpec,
   LayoutSizeMixins,
@@ -72,7 +73,7 @@ export function normalizeAutoSize(
 ) {
   let {width, height} = sizeInfo;
 
-  const isFitCompatible = isUnitSpec(spec) || isLayerSpec(spec);
+  const isFitCompatible = isUnitSpec(spec) || isLayerSpec(spec) || isFacetSpec(spec);
   const autosizeDefault: AutoSizeParams = {};
 
   if (!isFitCompatible) {
