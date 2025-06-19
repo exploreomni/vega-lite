@@ -222,8 +222,15 @@ export class FacetModel extends ModelWithField {
 
   public assembleLayoutSignals(): NewSignal[] {
     const layoutSignals = assembleLayoutSignals(this);
-    const childSignals = this.child.assembleLayoutSignals();
-    return [...layoutSignals, ...childSignals];
+
+    for (const signal of this.child.assembleLayoutSignals()) {
+      const currentSignals = layoutSignals.map((s) => s.name);
+      if (!currentSignals.includes(signal.name)) {
+        layoutSignals.push(signal);
+      }
+    }
+
+    return layoutSignals;
   }
 
   private columnDistinctSignal() {
