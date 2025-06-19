@@ -75,7 +75,7 @@ export function sizeSignals(model: Model, sizeType: LayoutSizeType): (NewSignal 
     const defaultValue = getViewConfigContinuousSize(model.config.view, isWidth ? 'width' : 'height');
     const safeExpr = `isFinite(${expr}) ? ${expr} : ${defaultValue}`;
     return [{name, init: safeExpr, on: [{update: safeExpr, events: 'window:resize'}]}];
-  } else {
+  } else if (size !== 'merged') {
     return [
       {
         name,
@@ -83,6 +83,7 @@ export function sizeSignals(model: Model, sizeType: LayoutSizeType): (NewSignal 
       }
     ];
   }
+  return [];
 }
 
 function stepSignal(scaleName: string, range: VgRangeStep): NewSignal {
