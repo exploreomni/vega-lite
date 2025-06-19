@@ -56,7 +56,8 @@
   ],
   "signals": [
     {"name": "child_x_step", "value": 17},
-    {"name": "child_height", "value": 200}
+    {"name": "child_height", "value": 200},
+    {"name": "child_width", "value": "merged"}
   ],
   "layout": {
     "padding": 20,
