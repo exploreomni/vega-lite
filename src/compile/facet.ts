@@ -26,8 +26,8 @@ import {assembleDomain, getFieldFromDomain} from './scale/domain';
 import {assembleFacetSignals} from './selection/assemble';
 import {isTimerSelection} from './selection';
 import {MULTI_VIEW_ANIMATION_UNSUPPORTED} from '../log/message';
-import {isStep} from "../spec/base";
-import {assembleLayoutSignals} from "./layoutsize/assemble";
+import {isStep} from '../spec/base';
+import {assembleLayoutSignals} from './layoutsize/assemble';
 
 export function facetSortFieldName(
   fieldDef: FacetFieldDef<string>,
@@ -52,7 +52,7 @@ export class FacetModel extends ModelWithField {
 
     this.size = {
       ...(spec.width ? {width: spec.width} : {}),
-      ...(spec.height ? {height: spec.height} : {}),
+      ...(spec.height ? {height: spec.height} : {})
     };
 
     this.facet = this.initFacet(spec.facet);
@@ -226,7 +226,7 @@ export class FacetModel extends ModelWithField {
     const layoutSignals = assembleLayoutSignals(this);
 
     for (const signal of this.child.assembleLayoutSignals()) {
-      const currentSignals = layoutSignals.map((s) => s.name);
+      const currentSignals = layoutSignals.map(s => s.name);
       if (!currentSignals.includes(signal.name)) {
         layoutSignals.push(signal);
       }

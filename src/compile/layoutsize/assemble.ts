@@ -7,9 +7,9 @@ import {signalOrStringValue} from '../common';
 import {isFacetModel, Model} from '../model';
 import {ScaleComponent} from '../scale/component';
 import {getSizeTypeFromLayoutSizeType, LayoutSizeType} from './component';
-import {getFacetModel} from "../selection";
-import {FacetModel} from "../facet";
-import {isFacetMapping} from "../../spec/facet";
+import {getFacetModel} from '../selection';
+import {FacetModel} from '../facet';
+import {isFacetMapping} from '../../spec/facet';
 
 export function assembleLayoutSignals(model: Model): NewSignal[] {
   return [
@@ -35,8 +35,8 @@ export function sizeSignals(model: Model, sizeType: LayoutSizeType): (NewSignal 
     return [
       {
         name,
-        update: autosizedFacetExpr(facetParent, sizeType),
-      },
+        update: autosizedFacetExpr(facetParent, sizeType)
+      }
     ];
   } else if (size === 'step') {
     const scaleComponent = model.getScaleComponent(channel);
