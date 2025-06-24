@@ -26,6 +26,8 @@ import {assembleDomain, getFieldFromDomain} from './scale/domain';
 import {assembleFacetSignals} from './selection/assemble';
 import {isTimerSelection} from './selection';
 import {MULTI_VIEW_ANIMATION_UNSUPPORTED} from '../log/message';
+import {isStep} from '../spec/base';
+import {assembleLayoutSignals} from './layoutsize/assemble';
 
 export function facetSortFieldName(
   fieldDef: FacetFieldDef<string>,
@@ -47,6 +49,11 @@ export class FacetModel extends ModelWithField {
 
     this.child = buildModel(spec.spec, this, this.getName('child'), undefined, config);
     this.children = [this.child];
+
+    this.size = {
+      ...(spec.width ? {width: spec.width} : {}),
+      ...(spec.height ? {height: spec.height} : {})
+    };
 
     this.facet = this.initFacet(spec.facet);
   }
@@ -107,6 +114,14 @@ export class FacetModel extends ModelWithField {
 
   public parseLayoutSize() {
     parseChildrenLayoutSize(this);
+
+    const {size, component} = this;
+    for (const dimension of ['width', 'height'] as const) {
+      const specifiedSize = size[dimension];
+      if (specifiedSize) {
+        component.layoutSize.set(dimension, isStep(specifiedSize) ? 'step' : specifiedSize, true);
+      }
+    }
   }
 
   public parseSelections() {
@@ -208,8 +223,16 @@ export class FacetModel extends ModelWithField {
   }
 
   public assembleLayoutSignals(): NewSignal[] {
-    // FIXME(https://github.com/vega/vega-lite/issues/1193): this can be incorrect if we have independent scales.
-    return this.child.assembleLayoutSignals();
+    const layoutSignals = assembleLayoutSignals(this);
+
+    for (const signal of this.child.assembleLayoutSignals()) {
+      const currentSignals = layoutSignals.map(s => s.name);
+      if (!currentSignals.includes(signal.name)) {
+        layoutSignals.push(signal);
+      }
+    }
+
+    return layoutSignals;
   }
 
   private columnDistinctSignal() {
