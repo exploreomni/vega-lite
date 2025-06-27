@@ -120,7 +120,20 @@ function autosizedFacetExpr(model: FacetModel, sizeType: LayoutSizeType) {
   if (!model.facet[channel] && isFacetMapping(model.facet)) {
     return sizeType;
   }
+  if (!isFacetMapping(model.facet)) {
+    const cardinality = `length(data("facet_domain"))`;
+    const columns = model.layout.columns;
+    const domain =
+      channel === 'row'
+        ? columns
+          ? `ceil(${cardinality} / ${model.layout.columns})`
+          : 1
+        : columns
+          ? `min(${cardinality}, ${model.layout.columns})`
+          : cardinality;
+    return `${sizeType} / ${domain}`;
+  }
   const name = model.name ? `${model.name}_` : '';
-  const domain = !isFacetMapping(model.facet) ? `facet_domain_${channel}` : `${name}${channel}_domain`;
+  const domain = `${name}${channel}_domain`;
   return `${sizeType} / length(data('${domain}'))`;
 }
