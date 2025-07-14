@@ -415,8 +415,10 @@ function getOffsetRange(channel: string, model: UnitModel, offsetScaleType: Scal
 
   if (positionScaleType === 'band') {
     const size = getDiscretePositionSize(positionChannel, model.size, model.config.view);
+    const sizeChannel = positionChannel === X ? 'width' : 'height';
+    const facetParent = getFacetModel(model);
 
-    if (isStep(size)) {
+    if (isStep(size) && !facetParent?.hasExplicitSize(sizeChannel)) {
       // step is for offset
       const step = getOffsetStep(size, offsetScaleType);
       if (step) {
