@@ -17,3 +17,4 @@ site/static/bundle.*
 test/log
 test/log/difflist.json
 test-runtime/__screenshots__
+.idea
