@@ -32,8 +32,8 @@ export function sizeSignals(model: Model, sizeType: LayoutSizeType): (NewSignal 
     return [
       {
         name,
-        update: autosizedFacetExpr(facetParent, sizeType)
-      }
+        update: autosizedFacetExpr(facetParent, sizeType),
+      },
     ];
   } else if (size === 'step') {
     const scaleComponent = model.getScaleComponent(channel);

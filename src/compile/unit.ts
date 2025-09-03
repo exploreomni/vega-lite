@@ -38,7 +38,7 @@ import {isSelectionParameter, SelectionParameter} from '../selection.js';
 import {LayoutSizeMixins, NormalizedUnitSpec} from '../spec/index.js';
 import {isFrameMixins} from '../spec/base.js';
 import {stack, StackProperties} from '../stack.js';
-import {keys} from '../util.js';
+import {keys, unique} from '../util.js';
 import {VgData, VgLayout, VgMarkGroup} from '../vega.schema.js';
 import {assembleAxisSignals} from './axis/assemble.js';
 import {AxisInternalIndex} from './axis/component.js';
@@ -50,7 +50,7 @@ import {initLayoutSize} from './layoutsize/init.js';
 import {parseUnitLayoutSize} from './layoutsize/parse.js';
 import {LegendInternalIndex} from './legend/component.js';
 import {defaultFilled, initMarkdef} from './mark/init.js';
-import {parseMarkGroups} from './mark/mark.js';
+import {isLabelMark, LabelMark, parseMarkGroupsAndLabels} from './mark/mark.js';
 import {isLayerModel, Model, ModelWithField} from './model.js';
 import {ScaleIndex} from './scale/component.js';
 import {
@@ -337,7 +337,7 @@ export class UnitModel extends ModelWithField {
       const {transform} = this.labelMark;
       const [l] = transform;
       if ('avoidMarks' in l) {
-        l.avoidMarks = unique(l.avoidMarks, m => m);
+        l.avoidMarks = unique(l.avoidMarks, (m) => m);
       }
     }
 
@@ -352,7 +352,7 @@ export class UnitModel extends ModelWithField {
 
     marks = marks.map(this.correctDataNames);
     // move label marks to the top
-    return [...marks.filter(mark => !isLabelMark(mark)), ...marks.filter(isLabelMark)];
+    return [...marks.filter((mark) => !isLabelMark(mark)), ...marks.filter(isLabelMark)];
   }
   public assembleGroupStyle(): string | string[] {
     const {style} = this.view || {};
@@ -371,7 +371,7 @@ export class UnitModel extends ModelWithField {
   }
 
   public getMarkNames(): string[] {
-    return (this.component.mark ?? []).map(m => m.name).filter(name => name);
+    return (this.component.mark ?? []).map((m) => m.name).filter((name) => name);
   }
 
   public getLabelNames(): string[] {

@@ -1,6 +1,6 @@
 import {array, hasOwnProperty, isBoolean} from 'vega-util';
 import {Aggregate, SUM_OPS} from './aggregate.js';
-import {getSecondaryRangeChannel, NonPositionChannel, NONPOSITION_CHANNELS} from './channel.js';
+import {getSecondaryRangeChannel, NonPositionChannel, STACKABLE_CHANNELS} from './channel.js';
 import {
   channelDefType,
   FieldName,
