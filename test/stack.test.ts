@@ -178,8 +178,8 @@ describe('stack', () => {
         y: {field: 'variety', type: 'nominal'},
         detail: {field: 'site', type: 'nominal'},
         tooltip: {field: 'total_yield', type: 'nominal'},
-        label: {field: 'total_yield', type: 'nominal'}
-      }
+        label: {field: 'total_yield', type: 'nominal'},
+      },
     };
 
     const _stack = stack(spec.mark, spec.encoding);
