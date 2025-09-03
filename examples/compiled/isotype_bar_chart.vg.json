@@ -1,5 +1,5 @@
 {
-  "$schema": "https://vega.github.io/schema/vega/v5.json",
+  "$schema": "https://vega.github.io/schema/vega/v6.json",
   "background": "white",
   "padding": 5,
   "data": [
@@ -46,8 +46,19 @@
       ]
     },
     {
-      "name": "row_domain",
+      "name": "data_0",
       "source": "source_0",
+      "transform": [
+        {
+          "type": "formula",
+          "expr": "indexof([\"person\",\"cattle\",\"pigs\",\"sheep\"], datum['animal'])",
+          "as": "_animal_sort_index"
+        }
+      ]
+    },
+    {
+      "name": "row_domain",
+      "source": "data_0",
       "transform": [{"type": "aggregate", "groupby": ["country"]}]
     }
   ],
@@ -79,7 +90,7 @@
       "type": "group",
       "style": "cell",
       "from": {
-        "facet": {"name": "facet", "data": "source_0", "groupby": ["country"]}
+        "facet": {"name": "facet", "data": "data_0", "groupby": ["country"]}
       },
       "sort": {"field": ["datum[\"country\"]"], "order": ["ascending"]},
       "encode": {
@@ -93,6 +104,10 @@
           "name": "child_marks",
           "type": "symbol",
           "style": ["point"],
+          "sort": {
+            "field": ["datum[\"_animal_sort_index\"]"],
+            "order": ["descending"]
+          },
           "from": {"data": "facet"},
           "encode": {
             "update": {
@@ -116,14 +131,14 @@
     {
       "name": "x",
       "type": "point",
-      "domain": {"data": "source_0", "field": "col", "sort": true},
+      "domain": {"data": "data_0", "field": "col", "sort": true},
       "range": [0, {"signal": "child_width"}],
       "padding": 0.5
     },
     {
       "name": "y",
       "type": "point",
-      "domain": {"data": "source_0", "field": "animal", "sort": true},
+      "domain": {"data": "data_0", "field": "animal", "sort": true},
       "range": [0, {"signal": "child_height"}],
       "padding": 0.5
     },

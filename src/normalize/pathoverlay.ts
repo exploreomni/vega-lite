@@ -1,16 +1,17 @@
 import type {SignalRef} from 'vega';
 import {isObject} from 'vega-util';
-import {getAncestorLevel, LabelDef} from '../channeldef';
-import {Config} from '../config';
-import {Encoding, normalizeEncoding, pathGroupingFields} from '../encoding';
-import {ExprRef} from '../expr';
-import {AreaConfig, isMarkDef, LineConfig, Mark, MarkConfig, MarkDef} from '../mark';
-import {GenericUnitSpec, NormalizedUnitSpec} from '../spec';
-import {isUnitSpec} from '../spec/unit';
-import {stack} from '../stack';
-import {keys, omit, pick} from '../util';
-import {NonFacetUnitNormalizer, NormalizeLayerOrUnit, NormalizerParams} from './base';
-import {initMarkdef} from '../compile/mark/init';
+import {getAncestorLevel, LabelDef} from '../channeldef.js';
+import {Config} from '../config.js';
+import {Encoding, normalizeEncoding, pathGroupingFields} from '../encoding.js';
+import {ExprRef} from '../expr.js';
+import {AreaConfig, isMarkDef, LineConfig, Mark, MarkConfig, MarkDef} from '../mark.js';
+import {GenericUnitSpec, NormalizedUnitSpec} from '../spec/index.js';
+import {isUnitSpec} from '../spec/unit.js';
+import {stack} from '../stack.js';
+import {keys, omit, pick} from '../util.js';
+import {NonFacetUnitNormalizer, NormalizeLayerOrUnit, NormalizerParams} from './base.js';
+import {DEFAULT_REDUCED_OPACITY, initMarkdef} from '../compile/mark/init.js';
+import {getMarkPropOrConfig} from '../compile/common.js';
 
 type UnitSpecWithPathOverlay = GenericUnitSpec<Encoding<string>, Mark | MarkDef<'line' | 'area' | 'rule' | 'trail'>>;
 
@@ -26,7 +27,7 @@ function dropLineAndPointFromConfig(config: Config<SignalRef>) {
       config = {
         ...config,
         // TODO: remove as any
-        [mark]: omit(config[mark], ['point', 'line'] as any)
+        [mark]: omit(config[mark], ['point', 'line'] as any),
       };
     }
   }
@@ -36,7 +37,7 @@ function dropLineAndPointFromConfig(config: Config<SignalRef>) {
 function getPointOverlay(
   markDef: MarkDef,
   markConfig: LineConfig<ExprRef | SignalRef> = {},
-  encoding: Encoding<string>
+  encoding: Encoding<string>,
 ): MarkConfig<ExprRef | SignalRef> {
   if (
     markDef.point === 'transparent' ||
@@ -63,7 +64,7 @@ function getPointOverlay(
 
 function getLineOverlay(
   markDef: MarkDef,
-  markConfig: AreaConfig<ExprRef | SignalRef> = {}
+  markConfig: AreaConfig<ExprRef | SignalRef> = {},
 ): MarkConfig<ExprRef | SignalRef> {
   if (markDef.line) {
     // true or object
@@ -133,11 +134,12 @@ export class PathOverlayNormalizer implements NonFacetUnitNormalizer<UnitSpecWit
         name,
         ...(params ? {params} : {}),
         mark: dropLineAndPoint({
-          // TODO: extract this 0.7 to be shared with default opacity for point/tick/...
-          ...(markDef.type === 'area' && markDef.opacity === undefined && markDef.fillOpacity === undefined
-            ? {opacity: 0.7}
+          ...(markDef.type === 'area' &&
+          getMarkPropOrConfig('opacity', markDef, config) == undefined &&
+          getMarkPropOrConfig('fillOpacity', markDef, config) == undefined
+            ? {opacity: DEFAULT_REDUCED_OPACITY}
             : {}),
-          ...markDef
+          ...markDef,
         }),
         // drop shape from encoding as this might be used to trigger point overlay
         // If the main mark is multi-series line/trail or stacked area, label the main mark.
@@ -147,7 +149,7 @@ export class PathOverlayNormalizer implements NonFacetUnitNormalizer<UnitSpecWit
 
     // FIXME: determine rules for applying selections.
 
-    // Need to copy stack config to overlayed layer
+    // Need to copy stack config to overlaid layer
     // FIXME: normalizer shouldn't call `initMarkdef`, a method from an init phase.
     const stackProps = stack(initMarkdef(markDef, encoding, config), encoding);
 
@@ -158,8 +160,8 @@ export class PathOverlayNormalizer implements NonFacetUnitNormalizer<UnitSpecWit
         ...encoding,
         [stackFieldChannel]: {
           ...encoding[stackFieldChannel],
-          ...(offset ? {stack: offset} : {})
-        }
+          ...(offset ? {stack: offset} : {}),
+        },
       };
     }
 
@@ -174,7 +176,7 @@ export class PathOverlayNormalizer implements NonFacetUnitNormalizer<UnitSpecWit
         mark: {
           type: 'line',
           ...pick(markDef, ['clip', 'interpolate', 'tension', 'tooltip']),
-          ...lineOverlay
+          ...lineOverlay,
         },
         // Drop label. Only add label to the area mark for stacked area chart.
         // Or, only add label to the point overlay for single area chart.
@@ -189,7 +191,7 @@ export class PathOverlayNormalizer implements NonFacetUnitNormalizer<UnitSpecWit
           opacity: 1,
           filled: true,
           ...pick(markDef, ['clip', 'tooltip']),
-          ...pointOverlay
+          ...pointOverlay,
         },
         // If the main mark is a single line/trail/area chart, label the point overlay instead of the main mark.
         encoding: omit(overlayEncoding, isMultiSeriesPath ? ['label'] : [])
@@ -199,12 +201,12 @@ export class PathOverlayNormalizer implements NonFacetUnitNormalizer<UnitSpecWit
     return normalize(
       {
         ...outerSpec,
-        layer
+        layer,
       },
       {
         ...normParams,
-        config: dropLineAndPointFromConfig(config)
-      }
+        config: dropLineAndPointFromConfig(config),
+      },
     );
   }
 }

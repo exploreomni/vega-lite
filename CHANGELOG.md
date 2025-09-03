@@ -1,4 +1,51 @@
+# Changelog
 
+# [6.2.0](https://github.com/vega/vega-lite/compare/v6.1.0...v6.2.0) (2025-06-27)
+
+
+### Bug Fixes
+
+* **docs:** improve header alignment for `facet_bullet` graph example ([#9554](https://github.com/vega/vega-lite/issues/9554)) ([99a43e4](https://github.com/vega/vega-lite/commit/99a43e4e0110275016c1592e256bae32ae5a4401))
+* ensure temporal field propagates to time expression ([#8757](https://github.com/vega/vega-lite/issues/8757)) ([473f359](https://github.com/vega/vega-lite/commit/473f3594e3db5c24f439f0c183eac8f662f46817))
+* turn off aria for the generated voronoi layer from nearest spec ([#9624](https://github.com/vega/vega-lite/issues/9624)) ([8588c14](https://github.com/vega/vega-lite/commit/8588c14eb798d198f6537f259f2848ccf03a5941))
+
+
+### Features
+
+* export types ([#9595](https://github.com/vega/vega-lite/issues/9595)) ([641a5b5](https://github.com/vega/vega-lite/commit/641a5b5a5d25ca503d3eab77e80eec9682847380)), closes [#9583](https://github.com/vega/vega-lite/issues/9583) [#9222](https://github.com/vega/vega-lite/issues/9222) [#9584](https://github.com/vega/vega-lite/issues/9584)
+* update deps ([#9626](https://github.com/vega/vega-lite/issues/9626)) ([e369205](https://github.com/vega/vega-lite/commit/e3692053894ebf9b9e49868c47c584cedf0d7c7c))
+
+# [6.1.0](https://github.com/vega/vega-lite/compare/v6.0.2...v6.1.0) (2025-03-28)
+
+
+### Features
+
+* export the schema ([#9574](https://github.com/vega/vega-lite/issues/9574)) ([5220f07](https://github.com/vega/vega-lite/commit/5220f07e03f8b976d5351923828e451966344872))
+
+## [6.0.2](https://github.com/vega/vega-lite/compare/v6.0.1...v6.0.2) (2025-03-28)
+
+
+### Bug Fixes
+
+* update version in example specs ([#9573](https://github.com/vega/vega-lite/issues/9573)) ([bac7a2f](https://github.com/vega/vega-lite/commit/bac7a2f36a0597f4b714342bce54d67e349640f0))
+
+## [6.0.1](https://github.com/vega/vega-lite/compare/v6.0.0...v6.0.1) (2025-03-28)
+
+
+### Bug Fixes
+
+* correct peer dependency ([984ea50](https://github.com/vega/vega-lite/commit/984ea50c18912b3b72024ef914c222a878c83c92))
+
+# [6.0.0](https://github.com/vega/vega-lite/compare/v5.23.0...v6.0.0) (2025-03-28)
+
+
+### Bug Fixes
+
+* correct build normalized example script ([#9571](https://github.com/vega/vega-lite/issues/9571)) ([4cbf2fd](https://github.com/vega/vega-lite/commit/4cbf2fdb49c05d70d158d51d3e7608d097b53072))
+* correct y axis title in boxplot when mark.extent isnt set ([#9483](https://github.com/vega/vega-lite/issues/9483)) ([f3dc811](https://github.com/vega/vega-lite/commit/f3dc81124e23dbb6e56bf9ebbe15fa75bb25857b))
+* correctly support timeFormatSpecifier in Vega-Lite ([#9455](https://github.com/vega/vega-lite/issues/9455)) ([9325b67](https://github.com/vega/vega-lite/commit/9325b676b57ba84780afbf509acab403f8318da1))
+* prefer user-defined tickMinStep to defaultTickMinStep ([#9461](https://github.com/vega/vega-lite/issues/9461)) ([31a76e7](https://github.com/vega/vega-lite/commit/31a76e72a054a3e21df9bc6a79215c725bff0ba9))
+* remove extra backtick in LegendConfig.labelOverlap documentation ([#9560](https://github.com/vega/vega-lite/issues/9560)) ([44fe4ac](https://github.com/vega/vega-lite/commit/44fe4ac1f2fa2544b15213c63a76f1427aec622a))
 
 # [5.23.0](https://github.com/vega/vega-lite/compare/v5.21.0...v5.23.0) (2024-12-10)
 

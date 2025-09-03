@@ -1,5 +1,5 @@
 {
-  "$schema": "https://vega.github.io/schema/vega/v5.json",
+  "$schema": "https://vega.github.io/schema/vega/v6.json",
   "description": "An interactive scatter plot of global health statistics by country and year.",
   "background": "white",
   "padding": 5,
@@ -295,6 +295,7 @@
         "update": {
           "opacity": {"value": 0.9},
           "size": {"value": 100},
+          "cursor": {"value": "pointer"},
           "fill": {"scale": "color", "field": "name"},
           "ariaRoleDescription": {"value": "circle"},
           "description": {

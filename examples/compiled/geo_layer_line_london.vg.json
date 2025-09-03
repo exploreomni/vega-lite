@@ -1,5 +1,5 @@
 {
-  "$schema": "https://vega.github.io/schema/vega/v5.json",
+  "$schema": "https://vega.github.io/schema/vega/v6.json",
   "background": "white",
   "padding": 5,
   "width": 700,
@@ -11,11 +11,6 @@
       "name": "source_0",
       "url": "data/londonBoroughs.json",
       "format": {"type": "topojson", "feature": "boroughs"}
-    },
-    {
-      "name": "source_2",
-      "url": "data/londonTubeLines.json",
-      "format": {"type": "topojson", "feature": "line"}
     },
     {
       "name": "source_1",
@@ -37,6 +32,18 @@
           "projection": "projection",
           "fields": ["cx", "cy"],
           "as": ["layer_1_x", "layer_1_y"]
+        }
+      ]
+    },
+    {
+      "name": "source_2",
+      "url": "data/londonTubeLines.json",
+      "format": {"type": "topojson", "feature": "line"},
+      "transform": [
+        {
+          "type": "formula",
+          "expr": "indexof([\"Bakerloo\",\"Central\",\"Circle\",\"District\",\"DLR\",\"Hammersmith & City\",\"Jubilee\",\"Metropolitan\",\"Northern\",\"Piccadilly\",\"Victoria\",\"Waterloo & City\"], datum['id'])",
+          "as": "_id_sort_index"
         }
       ]
     }
@@ -93,6 +100,7 @@
       "name": "layer_2_marks",
       "type": "shape",
       "style": ["geoshape"],
+      "sort": {"field": ["datum[\"_id_sort_index\"]"], "order": ["descending"]},
       "from": {"data": "source_2"},
       "encode": {
         "update": {

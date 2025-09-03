@@ -1,11 +1,11 @@
-import {getFormatMixins, isFieldOrDatumDef, isValueDef} from '../../../channeldef';
-import {Config} from '../../../config';
-import {Encoding} from '../../../encoding';
-import {VgValueRef} from '../../../vega.schema';
-import {signalOrValueRef} from '../../common';
-import {formatSignalRef} from '../../format';
-import {UnitModel} from '../../unit';
-import {wrapCondition} from './conditional';
+import {getFormatMixins, isFieldOrDatumDef, isValueDef} from '../../../channeldef.js';
+import {Config} from '../../../config.js';
+import {Encoding} from '../../../encoding.js';
+import {VgValueRef} from '../../../vega.schema.js';
+import {signalOrValueRef} from '../../common.js';
+import {formatSignalRef} from '../../format.js';
+import {UnitModel} from '../../unit.js';
+import {wrapCondition} from './conditional.js';
 
 export function text(
   model: UnitModel,
@@ -25,7 +25,7 @@ export function text(
 export function textRef(
   channelDef: Encoding<string>['text' | 'tooltip'],
   config: Config,
-  expr: 'datum' | 'datum.datum' = 'datum'
+  expr: 'datum' | 'datum.datum' = 'datum',
 ): VgValueRef {
   // text
   if (channelDef) {

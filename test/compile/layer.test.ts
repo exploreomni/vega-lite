@@ -1,6 +1,6 @@
-import {LayerModel} from '../../src/compile/layer';
-import {UnitModel} from '../../src/compile/unit';
-import {parseLayerModel} from '../util';
+import {LayerModel} from '../../src/compile/layer.js';
+import {UnitModel} from '../../src/compile/unit.js';
+import {parseLayerModel} from '../util.js';
 
 describe('Layer', () => {
   describe('parseScale', () => {
@@ -10,16 +10,16 @@ describe('Layer', () => {
           {
             mark: 'point',
             encoding: {
-              x: {field: 'a', type: 'ordinal'}
-            }
+              x: {field: 'a', type: 'ordinal'},
+            },
           },
           {
             mark: 'point',
             encoding: {
-              x: {field: 'b', type: 'ordinal'}
-            }
-          }
-        ]
+              x: {field: 'b', type: 'ordinal'},
+            },
+          },
+        ],
       });
       expect(model.children).toHaveLength(2);
       model.parseScale();
@@ -28,13 +28,13 @@ describe('Layer', () => {
         {
           data: 'layer_0_main',
           field: 'a',
-          sort: true
+          sort: true,
         },
         {
           data: 'layer_1_main',
           field: 'b',
-          sort: true
-        }
+          sort: true,
+        },
       ]);
     });
 
@@ -44,16 +44,16 @@ describe('Layer', () => {
           {
             mark: 'point',
             encoding: {
-              x: {scale: {domain: [1, 2, 3]}, field: 'b', type: 'ordinal'}
-            }
+              x: {scale: {domain: [1, 2, 3]}, field: 'b', type: 'ordinal'},
+            },
           },
           {
             mark: 'point',
             encoding: {
-              x: {field: 'b', type: 'ordinal'}
-            }
-          }
-        ]
+              x: {field: 'b', type: 'ordinal'},
+            },
+          },
+        ],
       });
       model.parseScale();
 
@@ -67,21 +67,21 @@ describe('Layer', () => {
         {
           mark: 'point',
           encoding: {
-            x: {field: 'a', type: 'quantitative'}
-          }
+            x: {field: 'a', type: 'quantitative'},
+          },
         },
         {
           mark: 'point',
           encoding: {
-            x: {field: 'b', type: 'quantitative'}
-          }
-        }
+            x: {field: 'b', type: 'quantitative'},
+          },
+        },
       ],
       resolve: {
         scale: {
-          x: 'independent'
-        }
-      }
+          x: 'independent',
+        },
+      },
     });
 
     it('should have two children', () => {
@@ -95,14 +95,14 @@ describe('Layer', () => {
       expect(model.children[0].component.scales['x'].get('domains')).toEqual([
         {
           data: 'layer_0_main',
-          field: 'a'
-        }
+          field: 'a',
+        },
       ]);
       expect(model.children[1].component.scales['x'].get('domains')).toEqual([
         {
           data: 'layer_1_main',
-          field: 'b'
-        }
+          field: 'b',
+        },
       ]);
     });
 

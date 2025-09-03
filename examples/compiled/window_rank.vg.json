@@ -1,5 +1,5 @@
 {
-  "$schema": "https://vega.github.io/schema/vega/v5.json",
+  "$schema": "https://vega.github.io/schema/vega/v6.json",
   "background": "white",
   "padding": 5,
   "title": {"text": "World Cup 2018: Group F Rankings", "frame": "bounds"},
@@ -37,6 +37,11 @@
             "order": ["descending", "descending"]
           },
           "groupby": ["matchday"]
+        },
+        {
+          "type": "formula",
+          "expr": "indexof([\"Germany\",\"Mexico\",\"South Korea\",\"Sweden\"], datum['team'])",
+          "as": "_team_sort_index"
         }
       ]
     }
@@ -75,7 +80,10 @@
           "name": "marks",
           "type": "line",
           "style": ["line"],
-          "sort": {"field": "x"},
+          "sort": {
+            "field": ["datum[\"_team_sort_index\"]"],
+            "order": ["descending"]
+          },
           "from": {"data": "faceted_path_main"},
           "encode": {
             "update": {

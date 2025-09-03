@@ -5,9 +5,9 @@ import {
   rangeType,
   SCALE_CHANNELS,
   SINGLE_DEF_CHANNELS,
-  UNIT_CHANNELS
-} from '../src/channel';
-import {without} from './util';
+  UNIT_CHANNELS,
+} from '../src/channel.js';
+import {without} from './util.js';
 
 describe('channel', () => {
   describe('UNIT_CHANNELS', () => {
@@ -46,8 +46,8 @@ describe('channel', () => {
           'tooltip',
           'href',
           'url',
-          'description'
-        ])
+          'description',
+        ]),
       );
     });
   });
@@ -55,7 +55,7 @@ describe('channel', () => {
   describe('NONPOSITION_SCALE_CHANNELS', () => {
     it('should be SCALE_CHANNELS without x, y, x2, y2', () => {
       expect(NONPOSITION_SCALE_CHANNELS).toEqual(
-        without(SCALE_CHANNELS, ['x', 'y', 'xOffset', 'yOffset', 'theta', 'radius'])
+        without(SCALE_CHANNELS, ['x', 'y', 'xOffset', 'yOffset', 'theta', 'radius']),
       );
     });
   });
