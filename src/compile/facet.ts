@@ -48,6 +48,11 @@ export class FacetModel extends ModelWithField {
     this.child = buildModel(spec.spec, this, this.getName('child'), undefined, config);
     this.children = [this.child];
 
+    this.size = {
+      ...(spec.width ? {width: spec.width} : {}),
+      ...(spec.height ? {height: spec.height} : {}),
+    };
+
     this.facet = this.initFacet(spec.facet);
   }
 
@@ -107,6 +112,14 @@ export class FacetModel extends ModelWithField {
 
   public parseLayoutSize() {
     parseChildrenLayoutSize(this);
+
+    const {size, component} = this;
+    for (const dimension of ['width', 'height'] as const) {
+      const specifiedSize = size[dimension];
+      if (specifiedSize) {
+        component.layoutSize.set(dimension, isStep(specifiedSize) ? 'step' : specifiedSize, true);
+      }
+    }
   }
 
   public parseSelections() {
@@ -208,8 +221,9 @@ export class FacetModel extends ModelWithField {
   }
 
   public assembleLayoutSignals(): NewSignal[] {
-    // FIXME(https://github.com/vega/vega-lite/issues/1193): this can be incorrect if we have independent scales.
-    return this.child.assembleLayoutSignals();
+    const layoutSignals = assembleLayoutSignals(this);
+    const childSignals = this.child.assembleLayoutSignals();
+    return [...layoutSignals, ...childSignals];
   }
 
   private columnDistinctSignal() {
