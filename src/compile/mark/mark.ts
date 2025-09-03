@@ -25,9 +25,9 @@ import {
   text as encodeText,
   nonPosition as encodeNonPosition,
 } from './encode/index.js';
-import {NormalizedUnitSpec} from '../../spec';
-import * as log from '../../log';
-import {LabelInheritableChannel, supportMark} from '../../channel';
+import {NormalizedUnitSpec} from '../../spec/index.js';
+import * as log from '../../log/index.js';
+import {LabelInheritableChannel, supportMark} from '../../channel.js';
 
 const markCompiler: Record<Mark, MarkCompiler> = {
   arc,
