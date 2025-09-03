@@ -22,7 +22,7 @@ import {
   pathGroupingFields,
 } from '../src/encoding.js';
 import * as log from '../src/log/index.js';
-import {CIRCLE, POINT, SQUARE, TICK} from '../src/mark.js';
+import {AREA, BAR, CIRCLE, LINE, POINT, RECT, SQUARE, TICK, TRAIL} from '../src/mark.js';
 import {internalField} from '../src/util.js';
 
 describe('encoding', () => {
