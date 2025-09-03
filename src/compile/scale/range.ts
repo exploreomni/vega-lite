@@ -65,6 +65,7 @@ import {UnitModel} from '../unit.js';
 import {ScaleComponentIndex} from './component.js';
 import {durationExpr} from '../../timeunit.js';
 import {isFacetModel} from '../model.js';
+import {getFacetModel} from '../selection/index.js';
 
 export const RANGE_PROPERTIES: (keyof Scale)[] = ['range', 'scheme'];
 

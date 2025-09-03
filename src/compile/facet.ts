@@ -26,6 +26,8 @@ import {assembleDomain, getFieldFromDomain} from './scale/domain.js';
 import {assembleFacetSignals} from './selection/assemble.js';
 import {isTimerSelection} from './selection/index.js';
 import {MULTI_VIEW_ANIMATION_UNSUPPORTED} from '../log/message.js';
+import {isStep} from '../spec/base.js';
+import {assembleLayoutSignals} from './layoutsize/assemble.js';
 
 export function facetSortFieldName(
   fieldDef: FacetFieldDef<string>,

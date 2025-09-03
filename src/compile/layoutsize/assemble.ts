@@ -6,7 +6,10 @@ import {isSignalRef, isVgRangeStep, VgRangeStep} from '../../vega.schema.js';
 import {signalOrStringValue} from '../common.js';
 import {isFacetModel, Model} from '../model.js';
 import {ScaleComponent} from '../scale/component.js';
-import {LayoutSizeType} from './component.js';
+import {getSizeTypeFromLayoutSizeType, LayoutSizeType} from './component.js';
+import {getFacetModel} from '../selection/index.js';
+import {FacetModel} from '../facet.js';
+import {isFacetMapping} from '../../spec/facet.js';
 
 export function assembleLayoutSignals(model: Model): NewSignal[] {
   return [

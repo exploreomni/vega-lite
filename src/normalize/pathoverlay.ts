@@ -1,7 +1,7 @@
 import type {SignalRef} from 'vega';
 import {isObject} from 'vega-util';
 import {Config} from '../config.js';
-import {Encoding, normalizeEncoding} from '../encoding.js';
+import {Encoding, normalizeEncoding, pathGroupingFields} from '../encoding.js';
 import {ExprRef} from '../expr.js';
 import {AreaConfig, isMarkDef, LineConfig, Mark, MarkConfig, MarkDef} from '../mark.js';
 import {GenericUnitSpec, NormalizedUnitSpec} from '../spec/index.js';
@@ -11,6 +11,7 @@ import {keys, omit, pick} from '../util.js';
 import {NonFacetUnitNormalizer, NormalizeLayerOrUnit, NormalizerParams} from './base.js';
 import {DEFAULT_REDUCED_OPACITY, initMarkdef} from '../compile/mark/init.js';
 import {getMarkPropOrConfig} from '../compile/common.js';
+import {getAncestorLevel, LabelDef} from '../channeldef.js';
 
 type UnitSpecWithPathOverlay = GenericUnitSpec<Encoding<string>, Mark | MarkDef<'line' | 'area' | 'rule' | 'trail'>>;
 

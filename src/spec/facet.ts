@@ -5,7 +5,7 @@ import {ExprRef} from '../expr.js';
 import {Header} from '../header.js';
 import {EncodingSortField, SortArray, SortOrder} from '../sort.js';
 import {StandardType} from '../type.js';
-import {BaseSpec, GenericCompositionLayoutWithColumns, ResolveMixins} from './base.js';
+import {BaseSpec, GenericCompositionLayoutWithColumns, LayoutSizeMixins, ResolveMixins} from './base.js';
 import {GenericLayerSpec, NormalizedLayerSpec} from './layer.js';
 import {GenericUnitSpec, NormalizedUnitSpec} from './unit.js';
 import {hasProperty} from '../util.js';

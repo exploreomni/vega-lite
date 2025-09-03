@@ -1,8 +1,8 @@
 import {LabelTransform, Mark as VGMark, BaseMark, Encodable, array, LabelAnchor} from 'vega';
 import {isArray} from 'vega-util';
-import {FieldRefOption, isFieldDef, isValueDef, vgField} from '../../channeldef.js';
+import {FieldRefOption, getAncestorLevel, isFieldDef, isValueDef, vgField} from '../../channeldef.js';
 import {DataSourceType} from '../../data.js';
-import {pathGroupingFields} from '../../encoding.js';
+import {Encoding, pathGroupingFields} from '../../encoding.js';
 import {AREA, BAR, LINE, Mark, TRAIL, isPathMark} from '../../mark.js';
 import {contains, getFirstDefined, isNullOrFalse, keys, omit, pick} from '../../util.js';
 import {VG_CORNERRADIUS_CHANNELS, VgCompare, VgEncodeEntry} from '../../vega.schema.js';
@@ -20,6 +20,14 @@ import {rect} from './rect.js';
 import {rule} from './rule.js';
 import {text} from './text.js';
 import {tick} from './tick.js';
+import * as log from '../../log/index.js';
+import {LabelInheritableChannel, supportMark} from '../../channel.js';
+import {NormalizedUnitSpec} from '../../spec/index.js';
+import {
+  baseEncodeEntry as encodeBaseEncodeEntry,
+  text as encodeText,
+  nonPosition as encodeNonPosition,
+} from './encode/index.js';
 
 const markCompiler: Record<Mark, MarkCompiler> = {
   arc,

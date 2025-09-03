@@ -16,6 +16,7 @@ import {assembleLayerSelectionMarks} from './selection/assemble.js';
 import {UnitModel} from './unit.js';
 import {isTimerSelection} from './selection/index.js';
 import {MULTI_VIEW_ANIMATION_UNSUPPORTED} from '../log/message.js';
+import {isLabelMark} from './mark/mark.js';
 
 export class LayerModel extends Model {
   // HACK: This should be (LayerModel | UnitModel)[], but setting the correct type leads to weird error.
