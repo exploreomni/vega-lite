@@ -147,6 +147,7 @@
       "encode": {
         "update": {
           "opacity": {"value": 0},
+          "cursor": {"value": "pointer"},
           "fill": {"value": "transparent"},
           "stroke": {"value": "#4c78a8"},
           "ariaRoleDescription": {"value": "point"},
@@ -162,6 +163,7 @@
       "name": "layer_1_voronoi",
       "type": "path",
       "interactive": true,
+      "aria": false,
       "from": {"data": "layer_1_marks"},
       "encode": {
         "update": {

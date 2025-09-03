@@ -61,12 +61,13 @@ export function initMarkdef(originalMarkDef: MarkDef, encoding: Encoding<string>
 
   // set opacity and filled if not specified in mark config
   const specifiedOpacity = getMarkPropOrConfig('opacity', markDef, config);
-  const specifiedfillOpacity = getMarkPropOrConfig('fillOpacity', markDef, config);
-  if (specifiedOpacity === undefined && specifiedfillOpacity === undefined) {
+  const specifiedFillOpacity = getMarkPropOrConfig('fillOpacity', markDef, config);
+  if (specifiedOpacity === undefined && specifiedFillOpacity === undefined) {
     markDef.opacity = opacity(markDef.type, encoding);
   }
 
-  // set cursor, which should be pointer if href channel is present unless otherwise specified
+  // Set cursor, which should be pointer if href channel is present unless otherwise specified.
+  // We will also set the cursor in parse via getMarkGroup since we need access to the selections.
   const specifiedCursor = getMarkPropOrConfig('cursor', markDef, config);
   if (specifiedCursor === undefined) {
     markDef.cursor = cursor(markDef, encoding, config);
@@ -82,12 +83,11 @@ function cursor(markDef: MarkDef<Mark, SignalRef>, encoding: Encoding<string>, c
   return markDef.cursor;
 }
 
+export const DEFAULT_REDUCED_OPACITY = 0.7;
+
 function opacity(mark: Mark, encoding: Encoding<string>) {
-  if (contains([POINT, TICK, CIRCLE, SQUARE], mark)) {
-    // point-based marks
-    if (!isAggregate(encoding)) {
-      return 0.7;
-    }
+  if (contains([POINT, TICK, CIRCLE, SQUARE], mark) && !isAggregate(encoding)) {
+    return DEFAULT_REDUCED_OPACITY;
   }
   return undefined;
 }
@@ -106,7 +106,6 @@ function orient(mark: Mark, encoding: Encoding<string>, specifiedOrient: Orienta
     case POINT:
     case CIRCLE:
     case SQUARE:
-    case TEXT:
     case RECT:
     case IMAGE:
       // orient is meaningless for these marks.
@@ -116,6 +115,7 @@ function orient(mark: Mark, encoding: Encoding<string>, specifiedOrient: Orienta
   const {x, y, x2, y2} = encoding;
 
   switch (mark) {
+    case TEXT:
     case BAR:
       if (isFieldDef(x) && (isBinned(x.bin) || (isFieldDef(y) && y.aggregate && !x.aggregate))) {
         return 'vertical';
