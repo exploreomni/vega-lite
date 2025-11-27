@@ -1,4 +1,4 @@
-import {Transforms as VgTransform} from 'vega';
+import {Transforms as VgTransform} from '@omni-co/vega';
 import {assembleRootData} from '../../../src/compile/data/assemble.js';
 import {IdentifierNode} from '../../../src/compile/data/identifier.js';
 import {optimizeDataflow} from '../../../src/compile/data/optimize.js';

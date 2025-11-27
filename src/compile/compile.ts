@@ -1,5 +1,5 @@
-import type {AutoSizeType, LoggerInterface, Spec as VgSpec} from 'vega';
-import {isString, mergeConfig} from 'vega-util';
+import type {AutoSizeType, LoggerInterface, Spec as VgSpec} from '@omni-co/vega';
+import {isString, mergeConfig} from '@omni-co/vega-util';
 import {getPositionScaleChannel} from '../channel.js';
 import * as vlFieldDef from '../channeldef.js';
 import {Config, initConfig, stripAndRedirectConfig} from '../config.js';

@@ -1,5 +1,5 @@
-import {Binding, isString, Signal, Stream} from 'vega';
-import {stringValue} from 'vega-util';
+import {Binding, isString, Signal, Stream} from '@omni-co/vega';
+import {stringValue} from '@omni-co/vega-util';
 import {FACET_CHANNELS} from '../../channel.js';
 import {
   BrushConfig,

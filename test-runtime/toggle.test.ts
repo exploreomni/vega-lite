@@ -1,7 +1,7 @@
 import {SelectionType} from '../src/selection.js';
 import {compositeTypes, embed, parentSelector, getSpec, clear, _pt} from './util.js';
 import {describe, expect, it} from 'vitest';
-import {View} from 'vega';
+import {View} from '@omni-co/vega';
 
 const hits = {
   qq: [8, 19, 13, 21],

@@ -1,4 +1,4 @@
-import {isArray, isString} from 'vega-util';
+import {isArray, isString} from '@omni-co/vega-util';
 import {Field} from '../channeldef.js';
 import {VariableParameter} from '../parameter.js';
 import {isSelectionParameter, SelectionParameter} from '../selection.js';

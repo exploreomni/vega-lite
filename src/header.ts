@@ -8,7 +8,7 @@ import type {
   TextBaseline,
   TitleAnchor,
   TitleConfig,
-} from 'vega';
+} from '@omni-co/vega';
 import {FormatMixins} from './channeldef.js';
 import {ExprRef} from './expr.js';
 import {Guide, VlOnlyGuideConfig} from './guide.js';

@@ -1,5 +1,5 @@
-import type {SignalRef} from 'vega';
-import {isObject} from 'vega-util';
+import type {SignalRef} from '@omni-co/vega';
+import {isObject} from '@omni-co/vega-util';
 import {getAncestorLevel, LabelDef} from '../channeldef.js';
 import {Config} from '../config.js';
 import {Encoding, normalizeEncoding, pathGroupingFields} from '../encoding.js';

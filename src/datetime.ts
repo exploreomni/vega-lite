@@ -1,6 +1,6 @@
 // DateTime definition object
 
-import {isNumber, isObject} from 'vega-util';
+import {isNumber, isObject} from '@omni-co/vega-util';
 import * as log from './log/index.js';
 import {TIMEUNIT_PARTS} from './timeunit.js';
 import {duplicate, hasProperty, isNumeric, keys} from './util.js';

@@ -1,4 +1,4 @@
-import type {SignalRef} from 'vega';
+import type {SignalRef} from '@omni-co/vega';
 import {Field} from '../src/channeldef.js';
 import {buildModel} from '../src/compile/buildmodel.js';
 import {ConcatModel} from '../src/compile/concat.js';

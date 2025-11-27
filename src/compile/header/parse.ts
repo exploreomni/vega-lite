@@ -1,5 +1,5 @@
-import {AxisOrient, SignalRef} from 'vega';
-import {isArray} from 'vega-util';
+import {AxisOrient, SignalRef} from '@omni-co/vega';
+import {isArray} from '@omni-co/vega-util';
 import {FacetChannel, FACET_CHANNELS} from '../../channel.js';
 import {title as fieldDefTitle} from '../../channeldef.js';
 import {contains, getFirstDefined} from '../../util.js';

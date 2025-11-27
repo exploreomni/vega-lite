@@ -1,7 +1,7 @@
 /**
  * Collection of all Vega-Lite Error Messages
  */
-import {AggregateOp, SignalRef, stringValue} from 'vega';
+import {AggregateOp, SignalRef, stringValue} from '@omni-co/vega';
 import {Aggregate} from '../aggregate.js';
 import {
   Channel,

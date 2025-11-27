@@ -1,5 +1,5 @@
 import {ImputeSequence} from './transform.js';
-import type {ImputeMethod} from 'vega';
+import type {ImputeMethod} from '@omni-co/vega';
 
 export interface ImputeParams {
   /**

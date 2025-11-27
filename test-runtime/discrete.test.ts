@@ -1,4 +1,4 @@
-import {View} from 'vega';
+import {View} from '@omni-co/vega';
 import {SelectionType, SELECTION_ID} from '../src/selection.js';
 import {embed, fill, hits as hitsMaster, pt, getSpec} from './util.js';
 import {describe, expect, it} from 'vitest';

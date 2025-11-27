@@ -1,5 +1,5 @@
-import {BaseTitle, SignalRef, Text, TextEncodeEntry, TitleAnchor} from 'vega';
-import {isArray, isString} from 'vega-util';
+import {BaseTitle, SignalRef, Text, TextEncodeEntry, TitleAnchor} from '@omni-co/vega';
+import {isArray, isString} from '@omni-co/vega-util';
 import {ExprRef} from './expr.js';
 import {MarkConfig} from './mark.js';
 import {pick} from './util.js';

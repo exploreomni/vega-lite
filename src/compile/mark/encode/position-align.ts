@@ -1,4 +1,4 @@
-import {Align, SignalRef, TextBaseline} from 'vega';
+import {Align, SignalRef, TextBaseline} from '@omni-co/vega';
 import {getVgPositionChannel} from '../../../channel.js';
 import {Config} from '../../../config.js';
 import * as log from '../../../log/index.js';

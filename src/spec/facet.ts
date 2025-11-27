@@ -1,4 +1,4 @@
-import type {LayoutAlign, SignalRef} from 'vega';
+import type {LayoutAlign, SignalRef} from '@omni-co/vega';
 import {BinParams} from '../bin.js';
 import {ChannelDef, Field, FieldName, TypedFieldDef} from '../channeldef.js';
 import {ExprRef} from '../expr.js';

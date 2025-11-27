@@ -1,5 +1,5 @@
-import type {Color, InitSignal, Locale, NewSignal, RangeConfig, RangeScheme, SignalRef} from 'vega';
-import {isObject, mergeConfig, writeConfig} from 'vega-util';
+import type {Color, InitSignal, Locale, NewSignal, RangeConfig, RangeScheme, SignalRef} from '@omni-co/vega';
+import {isObject, mergeConfig, writeConfig} from '@omni-co/vega-util';
 import {Axis, AxisConfig, AxisConfigMixins, AXIS_CONFIGS, isConditionalAxisValue} from './axis.js';
 import {signalOrValueRefWithCondition, signalRefOrValue} from './compile/common.js';
 import {CompositeMarkConfigMixins, getAllCompositeMarks} from './compositemark/index.js';

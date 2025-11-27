@@ -1,5 +1,5 @@
-import type {SignalRef} from 'vega';
-import {isString} from 'vega-util';
+import type {SignalRef} from '@omni-co/vega';
+import {isString} from '@omni-co/vega-util';
 import {Field} from '../channeldef.js';
 import {Config, initConfig} from '../config.js';
 import * as log from '../log/index.js';

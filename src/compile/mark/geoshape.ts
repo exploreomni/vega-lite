@@ -1,4 +1,4 @@
-import {GeoShapeTransform as VgGeoShapeTransform} from 'vega';
+import {GeoShapeTransform as VgGeoShapeTransform} from '@omni-co/vega';
 import {isFieldDef, vgField} from '../../channeldef.js';
 import {GEOJSON} from '../../type.js';
 import {VgPostEncodingTransform} from '../../vega.schema.js';

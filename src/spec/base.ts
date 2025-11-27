@@ -1,5 +1,5 @@
-import {Color, Cursor, SignalRef, Text} from 'vega';
-import {isNumber} from 'vega-util';
+import {Color, Cursor, SignalRef, Text} from '@omni-co/vega';
+import {isNumber} from '@omni-co/vega-util';
 import {NormalizedSpec} from './index.js';
 import {Data} from '../data.js';
 import {ExprRef} from '../expr.js';

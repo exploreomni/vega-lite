@@ -1,4 +1,4 @@
-import {isObject} from 'vega-util';
+import {isObject} from '@omni-co/vega-util';
 import {isXorY, ScaleChannel} from '../../channel.js';
 import {keys} from '../../util.js';
 import {isDataRefDomain, isVgRangeStep, VgRange, VgScale} from '../../vega.schema.js';

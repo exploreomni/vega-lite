@@ -1,4 +1,4 @@
-import {isString} from 'vega-util';
+import {isString} from '@omni-co/vega-util';
 import {LogicalComposition} from '../logical.js';
 import {fieldFilterExpression, isSelectionPredicate, Predicate} from '../predicate.js';
 import {logicalExpr} from '../util.js';

@@ -12,14 +12,14 @@ import type {
   TextBaseline,
   TimeInterval,
   TimeIntervalStep,
-} from 'vega';
+} from '@omni-co/vega';
 import {ConditionalPredicate, Value, ValueDef} from './channeldef.js';
 import {DateTime} from './datetime.js';
 import {ExprRef} from './expr.js';
 import {Guide, GuideEncodingEntry, TitleMixins, VlOnlyGuideConfig} from './guide.js';
 import {Flag, keys} from './util.js';
 import {MapExcludeValueRefAndReplaceSignalWith, VgEncodeChannel} from './vega.schema.js';
-import {hasOwnProperty} from 'vega-util';
+import {hasOwnProperty} from '@omni-co/vega-util';
 
 export type BaseAxisNoValueRefs<ES extends ExprRef | SignalRef> = AxisOverrideMixins<ES> &
   VLOnlyAxisMixins &

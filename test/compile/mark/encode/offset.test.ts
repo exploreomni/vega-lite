@@ -1,4 +1,4 @@
-import type {SignalRef} from 'vega';
+import type {SignalRef} from '@omni-co/vega';
 import {positionOffset} from '../../../../src/compile/mark/encode/offset.js';
 import {Mark, MarkDef} from '../../../../src/mark.js';
 

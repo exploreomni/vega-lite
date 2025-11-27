@@ -1,5 +1,5 @@
-import {TimeUnitTransform as VgTimeUnitTransform} from 'vega';
-import {FormulaTransform as VgFormulaTransform} from 'vega';
+import {TimeUnitTransform as VgTimeUnitTransform} from '@omni-co/vega';
+import {FormulaTransform as VgFormulaTransform} from '@omni-co/vega';
 import {FieldName, getBandPosition, vgField} from '../../channeldef.js';
 import {
   TimeUnitParams,

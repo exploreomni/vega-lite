@@ -1,4 +1,4 @@
-import {FieldRef, GeoJSONTransform, Vector2} from 'vega';
+import {FieldRef, GeoJSONTransform, Vector2} from '@omni-co/vega';
 import {GeoJSONNode} from '../../../src/compile/data/geojson.js';
 import {contains, every} from '../../../src/util.js';
 import {parseUnitModelWithScaleAndLayoutSize} from '../../util.js';

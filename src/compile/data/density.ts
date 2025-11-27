@@ -1,4 +1,4 @@
-import {KDETransform as VgKDETransform} from 'vega';
+import {KDETransform as VgKDETransform} from '@omni-co/vega';
 import {DensityTransform} from '../../transform.js';
 import {duplicate, hash} from '../../util.js';
 import {DataFlowNode} from './dataflow.js';

@@ -1,4 +1,4 @@
-import type {SignalRef} from 'vega';
+import type {SignalRef} from '@omni-co/vega';
 import {COUNTING_OPS} from '../src/aggregate.js';
 import {CHANNELS} from '../src/channel.js';
 import {

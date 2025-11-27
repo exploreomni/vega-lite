@@ -8,7 +8,7 @@ import json from 'highlight.js/lib/languages/json';
 import typescript from 'highlight.js/lib/languages/typescript';
 import xml from 'highlight.js/lib/languages/xml';
 import compactStringify from 'json-stringify-pretty-compact';
-import * as vega from 'vega';
+import * as vega from '@omni-co/vega';
 import {Handler} from 'vega-tooltip';
 import {compile, TopLevelSpec} from '../../src/index.js';
 import {post} from './post.js';

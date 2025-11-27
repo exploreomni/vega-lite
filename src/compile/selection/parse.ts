@@ -1,5 +1,5 @@
-import {parseSelector} from 'vega-event-selector';
-import {array, isObject, isString, stringValue} from 'vega-util';
+import {parseSelector} from '@omni-co/vega-event-selector';
+import {array, isObject, isString, stringValue} from '@omni-co/vega-util';
 import {isTimerSelection, selectionCompilers, SelectionComponent, STORE} from './index.js';
 import {warn} from '../../log/index.js';
 import {BaseSelectionConfig, SelectionParameter, ParameterExtent} from '../../selection.js';

@@ -1,7 +1,7 @@
-import type {SignalRef} from 'vega';
+import type {SignalRef} from '@omni-co/vega';
 import {ScaleChannel} from './channel.js';
 import {Mark, MarkDef} from './mark.js';
-import {isObject} from 'vega-util';
+import {isObject} from '@omni-co/vega-util';
 
 /**
  * Mixins for Vega-Lite Spec's Mark Definiton (to add mark.invalid)

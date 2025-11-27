@@ -1,4 +1,4 @@
-import type {FilterTransform as VgFilterTransform} from 'vega';
+import type {FilterTransform as VgFilterTransform} from '@omni-co/vega';
 import {isScaleChannel} from '../../channel.js';
 import {TypedFieldDef, vgField as fieldRef} from '../../channeldef.js';
 import {Dict, hash, keys} from '../../util.js';

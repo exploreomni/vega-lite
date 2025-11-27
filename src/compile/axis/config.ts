@@ -1,5 +1,5 @@
-import {ScaleType, SignalRef} from 'vega';
-import {array} from 'vega-util';
+import {ScaleType, SignalRef} from '@omni-co/vega';
+import {array} from '@omni-co/vega-util';
 import {AxisConfig} from '../../axis.js';
 import {PositionScaleChannel} from '../../channel.js';
 import {Config, StyleConfigIndex} from '../../config.js';

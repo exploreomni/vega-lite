@@ -1,5 +1,5 @@
-import {isObject, NewSignal, OnEvent, SignalValue, Stream} from 'vega';
-import {array, stringValue} from 'vega-util';
+import {isObject, NewSignal, OnEvent, SignalValue, Stream} from '@omni-co/vega';
+import {array, stringValue} from '@omni-co/vega-util';
 import {SelectionCompiler, SelectionComponent, STORE, TUPLE, unitName} from './index.js';
 import {GeoPositionChannel, LATITUDE, LONGITUDE, ScaleChannel, X, Y} from '../../channel.js';
 import {FieldName} from '../../channeldef.js';

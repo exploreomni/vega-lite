@@ -1,5 +1,5 @@
-import {Orientation, SignalRef, Text} from 'vega';
-import {isArray, isBoolean, isString} from 'vega-util';
+import {Orientation, SignalRef, Text} from '@omni-co/vega';
+import {isArray, isBoolean, isString} from '@omni-co/vega-util';
 import {CompositeMark, CompositeMarkDef} from './index.js';
 import {
   Field,

@@ -2,8 +2,8 @@
  * Utility for generating row / column headers
  */
 
-import {SignalRef, TitleAnchor, TitleConfig} from 'vega';
-import {isArray} from 'vega-util';
+import {SignalRef, TitleAnchor, TitleConfig} from '@omni-co/vega';
+import {isArray} from '@omni-co/vega-util';
 import {FacetChannel, FACET_CHANNELS} from '../../channel.js';
 import {vgField} from '../../channeldef.js';
 import {Config} from '../../config.js';

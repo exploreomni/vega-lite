@@ -1,4 +1,4 @@
-import type {Color, SignalRef} from 'vega';
+import type {Color, SignalRef} from '@omni-co/vega';
 import {BaseSpec} from './index.js';
 import {getPositionScaleChannel} from '../channel.js';
 import {signalRefOrValue} from '../compile/common.js';

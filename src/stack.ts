@@ -1,4 +1,4 @@
-import {array, hasOwnProperty, isBoolean} from 'vega-util';
+import {array, hasOwnProperty, isBoolean} from '@omni-co/vega-util';
 import {Aggregate, SUM_OPS} from './aggregate.js';
 import {getSecondaryRangeChannel, NonPositionChannel, STACKABLE_CHANNELS} from './channel.js';
 import {

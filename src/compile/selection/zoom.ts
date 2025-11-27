@@ -1,6 +1,6 @@
-import {NewSignal} from 'vega';
-import {parseSelector} from 'vega-event-selector';
-import {stringValue} from 'vega-util';
+import {NewSignal} from '@omni-co/vega';
+import {parseSelector} from '@omni-co/vega-event-selector';
+import {stringValue} from '@omni-co/vega-util';
 import {SelectionComponent} from './index.js';
 import {ScaleChannel, X, Y} from '../../channel.js';
 import {UnitModel} from '../unit.js';

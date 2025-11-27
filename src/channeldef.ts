@@ -7,8 +7,8 @@ import {
   SignalRef,
   Text,
   TimeFormatSpecifier,
-} from 'vega';
-import {isArray, isBoolean, isNumber, isString} from 'vega-util';
+} from '@omni-co/vega';
+import {isArray, isBoolean, isNumber, isString} from '@omni-co/vega-util';
 import {Aggregate, isAggregateOp, isArgmaxDef, isArgminDef, isCountingAggregateOp} from './aggregate.js';
 import {Axis} from './axis.js';
 import {autoMaxBins, Bin, BinParams, binToString, isBinned, isBinning} from './bin.js';

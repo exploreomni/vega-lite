@@ -1,4 +1,4 @@
-import type {AggregateOp} from 'vega';
+import type {AggregateOp} from '@omni-co/vega';
 import {BinParams} from './bin.js';
 import {FieldName} from './channeldef.js';
 import {Data} from './data.js';

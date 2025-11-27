@@ -1,5 +1,5 @@
-import type {SignalRef} from 'vega';
-import {isArray, isNumber} from 'vega-util';
+import type {SignalRef} from '@omni-co/vega';
+import {isArray, isNumber} from '@omni-co/vega-util';
 import {isBinned, isBinning, isBinParams} from '../../../bin.js';
 import {
   getOffsetChannel,

@@ -1,6 +1,6 @@
-import {Update} from 'vega';
-import {parseSelector} from 'vega-event-selector';
-import {isString} from 'vega-util';
+import {Update} from '@omni-co/vega';
+import {parseSelector} from '@omni-co/vega-event-selector';
+import {isString} from '@omni-co/vega-util';
 import {TUPLE, isTimerSelection} from './index.js';
 import {varName} from '../../util.js';
 import inputBindings from './inputs.js';

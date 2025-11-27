@@ -1,4 +1,4 @@
-import {AggregateTransform} from 'vega';
+import {AggregateTransform} from '@omni-co/vega';
 import {compile} from '../../src/compile/compile.js';
 import * as log from '../../src/log/index.js';
 

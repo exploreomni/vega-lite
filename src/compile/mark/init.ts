@@ -1,4 +1,4 @@
-import {Orientation, SignalRef} from 'vega';
+import {Orientation, SignalRef} from '@omni-co/vega';
 import {isBinned, isBinning} from '../../bin.js';
 import {
   isFieldDef,

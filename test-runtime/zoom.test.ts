@@ -1,4 +1,4 @@
-import {View} from 'vega';
+import {View} from '@omni-co/vega';
 import {describe, expect, it} from 'vitest';
 import {
   bound,
