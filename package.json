@@ -121,7 +121,7 @@
     "typescript-eslint": "^8.35.0",
     "@omni-co/vega-cli": "^6.1.2",
     "vega-datasets": "^3.1.0",
-    "@omni-co/vega-embed": "^7.2.0",
+    "@omni-co/vega-embed": "^7.1.0-fork.1",
     "vega-tooltip": "^1.0.0",
     "vitest": "^3.2.4",
     "yaml-front-matter": "^4.1.1"
