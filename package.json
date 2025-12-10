@@ -119,9 +119,9 @@
     "ts-json-schema-generator": "^2.4.0",
     "typescript": "~5.8.3",
     "typescript-eslint": "^8.35.0",
-    "@omni-co/vega-cli": "^6.1.2-fork.2-beta.1",
+    "@omni-co/vega-cli": "^6.1.2-fork.2-beta.4",
     "vega-datasets": "^3.1.0",
-    "vega-embed": "^7.1.0-fork.2-beta.1",
+    "vega-embed": "^7.1.0-fork.2-beta.4",
     "vega-tooltip": "^1.0.0",
     "vitest": "^3.2.4",
     "yaml-front-matter": "^4.1.1"
@@ -135,7 +135,7 @@
     "yargs": "~18.0.0"
   },
   "peerDependencies": {
-    "@omni-co/vega": "6.2.0-fork.2-beta.1"
+    "@omni-co/vega": "6.2.0-fork.2-beta.4"
   },
   "engines": {
     "node": ">=18"
