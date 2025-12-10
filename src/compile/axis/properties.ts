@@ -1,5 +1,5 @@
 import {Align, AxisOrient, Orient, SignalRef} from '@omni-co/vega';
-import {isArray, isObject} from '@omni-co/vega-util';
+import {isArray, isObject} from 'vega-util';
 import {AxisInternal} from '../../axis.js';
 import {isBinned, isBinning} from '../../bin.js';
 import {PositionScaleChannel, X} from '../../channel.js';

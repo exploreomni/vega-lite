@@ -1,5 +1,5 @@
 import type {SignalRef} from '@omni-co/vega';
-import {isArray, isNumber} from '@omni-co/vega-util';
+import {isArray, isNumber} from 'vega-util';
 import {ScaleChannel} from '../../channel.js';
 import {Scale, ScaleType} from '../../scale.js';
 import {ParameterExtent} from '../../selection.js';

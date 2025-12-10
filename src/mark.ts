@@ -7,7 +7,7 @@ import type {
   TextBaseline,
   MarkConfig as VgMarkConfig,
 } from '@omni-co/vega';
-import {hasOwnProperty} from '@omni-co/vega-util';
+import {hasOwnProperty} from 'vega-util';
 import {CompositeMark, CompositeMarkDef} from './compositemark/index.js';
 import {ExprRef} from './expr.js';
 import {MarkInvalidMixins} from './invalid.js';

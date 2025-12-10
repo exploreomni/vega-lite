@@ -3,7 +3,7 @@
  * such as 'x', 'y', 'color'.
  */
 
-import {hasOwnProperty} from '@omni-co/vega-util';
+import {hasOwnProperty} from 'vega-util';
 import {RangeType} from './compile/scale/type.js';
 import {Encoding} from './encoding.js';
 import {Mark} from './mark.js';

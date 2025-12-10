@@ -1,4 +1,4 @@
-import {isBoolean, isObject} from '@omni-co/vega-util';
+import {isBoolean, isObject} from 'vega-util';
 import {
   COLOR,
   COLUMN,

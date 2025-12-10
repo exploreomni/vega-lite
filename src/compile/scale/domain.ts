@@ -1,5 +1,5 @@
 import type {SignalRef} from '@omni-co/vega';
-import {hasOwnProperty, isObject, isString} from '@omni-co/vega-util';
+import {hasOwnProperty, isObject, isString} from 'vega-util';
 import {
   Aggregate,
   isAggregateOp,

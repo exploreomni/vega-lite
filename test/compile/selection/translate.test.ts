@@ -1,4 +1,4 @@
-import {parseSelector} from '@omni-co/vega-event-selector';
+import {parseSelector} from 'vega-event-selector';
 import {assembleUnitSelectionSignals} from '../../../src/compile/selection/assemble.js';
 import {parseUnitSelection} from '../../../src/compile/selection/parse.js';
 import translate from '../../../src/compile/selection/translate.js';

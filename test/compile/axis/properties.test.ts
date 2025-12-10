@@ -1,6 +1,6 @@
 import {AxisOrient, Orient, SignalRef} from '@omni-co/vega';
-import {codegenExpression, parseExpression} from '@omni-co/vega-expression';
-import {stringValue} from '@omni-co/vega-util';
+import {codegenExpression, parseExpression} from 'vega-expression';
+import {stringValue} from 'vega-util';
 import {getAxisConfigs} from '../../../src/compile/axis/config.js';
 import * as properties from '../../../src/compile/axis/properties.js';
 import {defaultLabelAlign, defaultLabelBaseline, getLabelAngle} from '../../../src/compile/axis/properties.js';

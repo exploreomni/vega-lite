@@ -1,5 +1,5 @@
 import {LabelOverlap, LegendOrient, LegendType, Orientation, SignalRef, SymbolShape} from '@omni-co/vega';
-import {isArray} from '@omni-co/vega-util';
+import {isArray} from 'vega-util';
 import {isColorChannel} from '../../channel.js';
 import {
   DatumDef,

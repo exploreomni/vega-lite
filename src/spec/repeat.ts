@@ -1,4 +1,4 @@
-import {isArray} from '@omni-co/vega-util';
+import {isArray} from 'vega-util';
 import {LayerSpec, NonNormalizedSpec} from './index.js';
 import {Field} from '../channeldef.js';
 import {BaseSpec, GenericCompositionLayoutWithColumns, ResolveMixins} from './base.js';

@@ -1,5 +1,5 @@
 import {SignalRef, TimeInterval} from '@omni-co/vega';
-import {isArray, isNumber} from '@omni-co/vega-util';
+import {isArray, isNumber} from 'vega-util';
 import {isBinned, isBinning, isBinParams} from '../../bin.js';
 import {
   COLOR,

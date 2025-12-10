@@ -1,4 +1,4 @@
-import {parseExpression} from '@omni-co/vega-expression';
+import {parseExpression} from 'vega-expression';
 
 function getName(node: any) {
   const name: string[] = [];

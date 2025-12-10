@@ -1,5 +1,5 @@
 import {RangeScheme, SignalRef} from '@omni-co/vega';
-import {isArray, isNumber, isObject} from '@omni-co/vega-util';
+import {isArray, isNumber, isObject} from 'vega-util';
 import {isBinning} from '../../bin.js';
 import {
   ANGLE,

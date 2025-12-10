@@ -1,5 +1,5 @@
 import type {SignalRef} from '@omni-co/vega';
-import {hasOwnProperty} from '@omni-co/vega-util';
+import {hasOwnProperty} from 'vega-util';
 import {LATITUDE, LATITUDE2, LONGITUDE, LONGITUDE2, SHAPE} from '../../channel.js';
 import {getFieldOrDatumDef} from '../../channeldef.js';
 import {DataSourceType} from '../../data.js';

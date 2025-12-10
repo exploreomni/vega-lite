@@ -1,5 +1,5 @@
 import {Axis as VgAxis, AxisEncode, NewSignal, SignalRef, Text} from '@omni-co/vega';
-import {array, isArray} from '@omni-co/vega-util';
+import {array, isArray} from 'vega-util';
 import {
   AXIS_PARTS,
   AXIS_PROPERTY_TYPE,

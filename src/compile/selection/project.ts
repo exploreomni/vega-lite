@@ -1,4 +1,4 @@
-import {array, isObject} from '@omni-co/vega-util';
+import {array, isObject} from 'vega-util';
 import {
   GeoPositionChannel,
   getPositionChannelFromLatLong,

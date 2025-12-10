@@ -1,4 +1,4 @@
-import {hasOwnProperty, isArray} from '@omni-co/vega-util';
+import {hasOwnProperty, isArray} from 'vega-util';
 import {NonArgAggregateOp} from './aggregate.js';
 import {FieldName} from './channeldef.js';
 import {DateTime} from './datetime.js';

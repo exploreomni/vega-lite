@@ -1,6 +1,6 @@
 import {isObject, MergedStream, NewSignal, Stream} from '@omni-co/vega';
-import {parseSelector} from '@omni-co/vega-event-selector';
-import {array, isString} from '@omni-co/vega-util';
+import {parseSelector} from 'vega-event-selector';
+import {array, isString} from 'vega-util';
 import {disableDirectManipulation, TUPLE} from './index.js';
 import {NonPositionScaleChannel} from '../../channel.js';
 import * as log from '../../log/index.js';

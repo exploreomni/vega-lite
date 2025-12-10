@@ -1,5 +1,5 @@
 import type {Binding, Color, Cursor, Stream, Vector2} from '@omni-co/vega';
-import {isObject} from '@omni-co/vega-util';
+import {isObject} from 'vega-util';
 import {SingleDefUnitChannel} from './channel.js';
 import {FieldName, PrimitiveValue} from './channeldef.js';
 import {DateTime} from './datetime.js';

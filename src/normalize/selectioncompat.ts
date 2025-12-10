@@ -1,4 +1,4 @@
-import {isArray} from '@omni-co/vega-util';
+import {isArray} from 'vega-util';
 import {BinParams, isBinParams} from '../bin.js';
 import {ChannelDef, Field, isConditionalDef, isFieldDef, isScaleFieldDef} from '../channeldef.js';
 import {Encoding} from '../encoding.js';

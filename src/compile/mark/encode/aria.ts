@@ -1,4 +1,4 @@
-import {hasOwnProperty} from '@omni-co/vega-util';
+import {hasOwnProperty} from 'vega-util';
 import {entries, isEmpty} from '../../../util.js';
 import {getMarkPropOrConfig, signalOrValueRef} from '../../common.js';
 import {VG_MARK_INDEX} from './../../../vega.schema.js';

@@ -1,4 +1,4 @@
-import {splitAccessPath} from '@omni-co/vega-util';
+import {splitAccessPath} from 'vega-util';
 import {FilterNode} from '../src/compile/data/filter.js';
 import {PivotTransformNode} from '../src/compile/data/pivot.js';
 import {

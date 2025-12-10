@@ -7,7 +7,7 @@ import {
   SignalRef,
   SymbolEncodeEntry,
 } from '@omni-co/vega';
-import {array, isArray, stringValue} from '@omni-co/vega-util';
+import {array, isArray, stringValue} from 'vega-util';
 import {COLOR, NonPositionScaleChannel, OPACITY} from '../../channel.js';
 import {
   Conditional,

@@ -1,4 +1,4 @@
-import {parseSelector} from '@omni-co/vega-event-selector';
+import {parseSelector} from 'vega-event-selector';
 import {parseUnitSelection} from '../../../src/compile/selection/parse.js';
 import {keys} from '../../../src/util.js';
 import {parseUnitModel, parseModelWithScale, parseUnitModelWithScale} from '../../util.js';

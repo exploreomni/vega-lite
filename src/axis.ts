@@ -19,7 +19,7 @@ import {ExprRef} from './expr.js';
 import {Guide, GuideEncodingEntry, TitleMixins, VlOnlyGuideConfig} from './guide.js';
 import {Flag, keys} from './util.js';
 import {MapExcludeValueRefAndReplaceSignalWith, VgEncodeChannel} from './vega.schema.js';
-import {hasOwnProperty} from '@omni-co/vega-util';
+import {hasOwnProperty} from 'vega-util';
 
 export type BaseAxisNoValueRefs<ES extends ExprRef | SignalRef> = AxisOverrideMixins<ES> &
   VLOnlyAxisMixins &

@@ -1,4 +1,4 @@
-import {array} from '@omni-co/vega-util';
+import {array} from 'vega-util';
 import {ChannelDef, ConditionalPredicate, isConditionalDef, isConditionalParameter} from '../../../channeldef.js';
 import {GuideEncodingConditionalValueDef} from '../../../guide.js';
 import {VgEncodeEntry, VgValueRef} from '../../../vega.schema.js';

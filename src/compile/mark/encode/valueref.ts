@@ -2,7 +2,7 @@
  * Utility files for producing Vega ValueRef for marks
  */
 import type {SignalRef} from '@omni-co/vega';
-import {isFunction} from '@omni-co/vega-util';
+import {isFunction} from 'vega-util';
 import {isBinned, isBinning} from '../../../bin.js';
 import {Channel, PolarPositionChannel, PositionChannel, X, X2, Y2, getMainRangeChannel} from '../../../channel.js';
 import {

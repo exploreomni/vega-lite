@@ -1,5 +1,5 @@
 import {BinTransform as VgBinTransform, Transforms as VgTransform} from '@omni-co/vega';
-import {isString} from '@omni-co/vega-util';
+import {isString} from 'vega-util';
 import {BinParams, binToString, isBinning, isParameterExtent} from '../../bin.js';
 import {Channel} from '../../channel.js';
 import {binRequiresRange, FieldName, isTypedFieldDef, normalizeBin, TypedFieldDef, vgField} from '../../channeldef.js';

@@ -1,5 +1,5 @@
 import {Legend as VgLegend, NewSignal, SignalRef, Title as VgTitle} from '@omni-co/vega';
-import {array} from '@omni-co/vega-util';
+import {array} from 'vega-util';
 import {Config} from '../config.js';
 import * as log from '../log/index.js';
 import {isLayerSpec, isUnitSpec, LayoutSizeMixins, NormalizedLayerSpec} from '../spec/index.js';

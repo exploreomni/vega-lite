@@ -1,5 +1,5 @@
 import type {AggregateOp} from '@omni-co/vega';
-import {hasOwnProperty, isString} from '@omni-co/vega-util';
+import {hasOwnProperty, isString} from 'vega-util';
 import {FieldName} from './channeldef.js';
 import {contains, Flag, hasProperty} from './util.js';
 

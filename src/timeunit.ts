@@ -1,4 +1,4 @@
-import {isObject, isString} from '@omni-co/vega-util';
+import {isObject, isString} from 'vega-util';
 import {DateTime, DateTimeExpr, dateTimeExprToExpr, dateTimeToExpr} from './datetime.js';
 import {accessPathWithDatum, keys, stringify, varName} from './util.js';
 import {hasOwnProperty} from '@omni-co/vega';

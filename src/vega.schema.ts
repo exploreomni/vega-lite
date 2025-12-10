@@ -41,7 +41,7 @@ import type {
   Transforms as VgTransform,
   UnionSortField as VgUnionSortField,
 } from '@omni-co/vega';
-import {isArray} from '@omni-co/vega-util';
+import {isArray} from 'vega-util';
 import {Value} from './channeldef.js';
 import {ExprRef} from './expr.js';
 import {SortOrder} from './sort.js';

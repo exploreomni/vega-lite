@@ -1,4 +1,4 @@
-import {array, isArray, isObject, isString} from '@omni-co/vega-util';
+import {array, isArray, isObject, isString} from 'vega-util';
 import {isBinned} from '../../../bin.js';
 import {getMainRangeChannel, isXorY, Channel, THETA, RADIUS} from '../../../channel.js';
 import {

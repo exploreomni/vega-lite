@@ -1,5 +1,5 @@
 import type {AggregateOp} from '@omni-co/vega';
-import {isArray} from '@omni-co/vega-util';
+import {isArray} from 'vega-util';
 import {isBinning} from '../../bin.js';
 import {COLUMN, FACET_CHANNELS, POSITION_SCALE_CHANNELS, ROW} from '../../channel.js';
 import {vgField} from '../../channeldef.js';

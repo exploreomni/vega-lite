@@ -8,7 +8,7 @@ import type {
   TimeInterval,
   TimeIntervalStep,
 } from '@omni-co/vega';
-import {isString, isObject} from '@omni-co/vega-util';
+import {isString, isObject} from 'vega-util';
 import * as CHANNEL from './channel.js';
 import {Channel, isColorChannel} from './channel.js';
 import {DateTime} from './datetime.js';

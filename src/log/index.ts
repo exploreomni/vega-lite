@@ -2,7 +2,7 @@
  * Vega-Lite's singleton logger utility.
  */
 
-import {Debug, Error as ErrorLevel, Info, logger, LoggerInterface, Warn} from '@omni-co/vega-util';
+import {Debug, Error as ErrorLevel, Info, logger, LoggerInterface, Warn} from 'vega-util';
 export * as message from './message.js';
 
 /**

@@ -1,4 +1,4 @@
-import {stringValue} from '@omni-co/vega-util';
+import {stringValue} from 'vega-util';
 import {VL_SELECTION_RESOLVE} from './index.js';
 import {isScaleChannel, ScaleChannel} from '../../channel.js';
 import * as log from '../../log/index.js';

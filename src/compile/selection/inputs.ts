@@ -1,4 +1,4 @@
-import {stringValue} from '@omni-co/vega-util';
+import {stringValue} from 'vega-util';
 import {disableDirectManipulation, TUPLE, SelectionCompiler} from './index.js';
 import {varName} from '../../util.js';
 import {assembleInit} from './assemble.js';

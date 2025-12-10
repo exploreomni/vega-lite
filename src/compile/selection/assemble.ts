@@ -1,6 +1,6 @@
 import {Signal, SignalRef} from '@omni-co/vega';
-import {parseSelector} from '@omni-co/vega-event-selector';
-import {identity, isArray, stringValue} from '@omni-co/vega-util';
+import {parseSelector} from 'vega-event-selector';
+import {identity, isArray, stringValue} from 'vega-util';
 import {MODIFY, STORE, unitName, VL_SELECTION_RESOLVE, TUPLE, selectionCompilers, isTimerSelection} from './index.js';
 import {dateTimeToExpr, isDateTime, dateTimeToTimestamp} from '../../datetime.js';
 import {hasContinuousDomain} from '../../scale.js';

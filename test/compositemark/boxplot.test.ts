@@ -1,4 +1,4 @@
-import {array} from '@omni-co/vega-util';
+import {array} from 'vega-util';
 import * as log from '../../src/log/index.js';
 import {normalize} from '../../src/normalize/index.js';
 import {Transform} from '../../src/transform.js';

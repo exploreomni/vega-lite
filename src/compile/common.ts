@@ -1,5 +1,5 @@
 import type {ExprRef, SignalRef, Text} from '@omni-co/vega';
-import {array, isArray, stringValue} from '@omni-co/vega-util';
+import {array, isArray, stringValue} from 'vega-util';
 import {AxisConfig, ConditionalAxisProperty} from '../axis.js';
 import {
   ConditionalPredicate,

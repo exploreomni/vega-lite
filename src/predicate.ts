@@ -1,5 +1,5 @@
 import type {SignalRef} from '@omni-co/vega';
-import {isArray} from '@omni-co/vega-util';
+import {isArray} from 'vega-util';
 import {FieldName, valueExpr, vgField} from './channeldef.js';
 import {DateTime} from './datetime.js';
 import {ExprRef, replaceExprRef} from './expr.js';

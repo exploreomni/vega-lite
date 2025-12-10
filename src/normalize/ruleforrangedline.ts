@@ -1,4 +1,4 @@
-import {isObject} from '@omni-co/vega-util';
+import {isObject} from 'vega-util';
 import {isBinned} from '../bin.js';
 import {getMainRangeChannel, SECONDARY_RANGE_CHANNEL} from '../channel.js';
 import {Field, isDatumDef, isFieldDef} from '../channeldef.js';
