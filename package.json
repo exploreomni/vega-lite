@@ -1,6 +1,6 @@
 {
   "name": "@omni-co/vega-lite",
-  "version": "6.2.0-fork.2-beta.2",
+  "version": "6.2.0-fork.2",
   "license": "BSD-3-Clause",
   "author": {
     "name": "Vega",
@@ -84,7 +84,7 @@
   },
   "devDependencies": {
     "@omni-co/vega-cli": "6.1.2-fork.2",
-    "@omni-co/vega-embed": "7.1.0-fork.2",
+    "@omni-co/vega-embed": "7.1.0-fork.3-beta.1",
     "@release-it/conventional-changelog": "^10.0.1",
     "@rollup/plugin-alias": "^5.1.1",
     "@rollup/plugin-commonjs": "^28.0.3",
