@@ -1,6 +1,6 @@
 // copied from https://github.com/vega/vega-embed/blob/next/src/post.ts
 
-import {Renderers} from 'vega';
+import {Renderers} from '@omni-co/vega';
 
 /**
  * Open editor url in a new window, and pass a message.

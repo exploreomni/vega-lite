@@ -1,4 +1,4 @@
-import {parse, View, resetSVGDefIds} from 'vega';
+import {parse, View, resetSVGDefIds} from '@omni-co/vega';
 import {compile} from '../src/index.js';
 import {IntervalSelectionConfigWithoutType, SelectionResolution, SelectionType} from '../src/selection.js';
 import {NormalizedLayerSpec, NormalizedUnitSpec, TopLevelSpec} from '../src/spec/index.js';

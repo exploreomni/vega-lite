@@ -2,7 +2,7 @@ import {Ajv, ErrorObject} from 'ajv';
 import draft6Schema from 'ajv/lib/refs/json-schema-draft-06.json';
 import fs from 'node:fs';
 import path from 'node:path';
-import {Spec as VgSpec} from 'vega';
+import {Spec as VgSpec} from '@omni-co/vega';
 import vgSchema from '../node_modules/vega/build/vega-schema.json';
 import vlSchema from '../build/vega-lite-schema.json';
 import {compile} from '../src/compile/compile.js';
