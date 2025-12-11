@@ -1,4 +1,4 @@
-import {AggregateOp} from 'vega';
+import {AggregateOp} from '@omni-co/vega';
 import {vgField} from '../../channeldef.js';
 import {JoinAggregateTransform} from '../../transform.js';
 import {duplicate, hash} from '../../util.js';

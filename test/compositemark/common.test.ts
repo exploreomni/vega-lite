@@ -1,4 +1,4 @@
-import {Orientation} from 'vega';
+import {Orientation} from '@omni-co/vega';
 import {compositeMarkOrient} from '../../src/compositemark/common.js';
 import {isMarkDef, MarkDef} from '../../src/mark.js';
 import {normalize} from '../../src/normalize/index.js';

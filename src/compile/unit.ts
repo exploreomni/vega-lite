@@ -1,4 +1,4 @@
-import {NewSignal, SignalRef} from 'vega';
+import {NewSignal, SignalRef} from '@omni-co/vega';
 import {isArray} from 'vega-util';
 import {Axis, AxisInternal, isConditionalAxisValue} from '../axis.js';
 import {

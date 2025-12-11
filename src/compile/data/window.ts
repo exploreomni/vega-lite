@@ -1,4 +1,4 @@
-import {AggregateOp, WindowTransform as VgWindowTransform} from 'vega';
+import {AggregateOp, WindowTransform as VgWindowTransform} from '@omni-co/vega';
 import {isAggregateOp} from '../../aggregate.js';
 import {vgField} from '../../channeldef.js';
 import {SortOrder} from '../../sort.js';

@@ -1,4 +1,4 @@
-import {Interpolate, Orientation} from 'vega';
+import {Interpolate, Orientation} from '@omni-co/vega';
 import {Field} from '../channeldef.js';
 import {Encoding, normalizeEncoding} from '../encoding.js';
 import * as log from '../log/index.js';

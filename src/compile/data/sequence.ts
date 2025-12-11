@@ -1,6 +1,6 @@
 import {SequenceParams} from '../../data.js';
 import {hash} from '../../util.js';
-import {SequenceTransform as VgSequenceTransform} from 'vega';
+import {SequenceTransform as VgSequenceTransform} from '@omni-co/vega';
 import {DataFlowNode} from './dataflow.js';
 
 export class SequenceNode extends DataFlowNode {

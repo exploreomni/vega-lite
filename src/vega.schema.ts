@@ -40,7 +40,7 @@ import type {
   Title as VgTitle,
   Transforms as VgTransform,
   UnionSortField as VgUnionSortField,
-} from 'vega';
+} from '@omni-co/vega';
 import {isArray} from 'vega-util';
 import {Value} from './channeldef.js';
 import {ExprRef} from './expr.js';

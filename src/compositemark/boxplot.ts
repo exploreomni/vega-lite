@@ -1,4 +1,4 @@
-import {Orientation} from 'vega';
+import {Orientation} from '@omni-co/vega';
 import {isNumber, isObject} from 'vega-util';
 import {getMarkPropOrConfig} from '../compile/common.js';
 import {Config} from '../config.js';

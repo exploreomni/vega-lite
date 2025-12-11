@@ -1,4 +1,4 @@
-import {Color, Cursor, SignalRef, Text} from 'vega';
+import {Color, Cursor, SignalRef, Text} from '@omni-co/vega';
 import {isNumber} from 'vega-util';
 import {NormalizedSpec} from './index.js';
 import {Data} from '../data.js';

@@ -12,7 +12,7 @@ import type {
   TextBaseline,
   TimeInterval,
   TimeIntervalStep,
-} from 'vega';
+} from '@omni-co/vega';
 import {ConditionalPredicate, Value, ValueDef} from './channeldef.js';
 import {DateTime} from './datetime.js';
 import {ExprRef} from './expr.js';

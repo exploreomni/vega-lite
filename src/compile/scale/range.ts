@@ -1,4 +1,4 @@
-import {RangeScheme, SignalRef} from 'vega';
+import {RangeScheme, SignalRef} from '@omni-co/vega';
 import {isArray, isNumber, isObject} from 'vega-util';
 import {isBinning} from '../../bin.js';
 import {

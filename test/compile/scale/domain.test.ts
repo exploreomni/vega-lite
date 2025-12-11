@@ -1,4 +1,4 @@
-import type {SignalRef} from 'vega';
+import type {SignalRef} from '@omni-co/vega';
 import {ScaleChannel} from '../../../src/channel.js';
 import {PositionFieldDef} from '../../../src/channeldef.js';
 import {domainSort, mergeDomains, parseDomainForChannel} from '../../../src/compile/scale/domain.js';

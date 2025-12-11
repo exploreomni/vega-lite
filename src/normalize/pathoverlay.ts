@@ -1,4 +1,4 @@
-import type {SignalRef} from 'vega';
+import type {SignalRef} from '@omni-co/vega';
 import {isObject} from 'vega-util';
 import {getAncestorLevel, LabelDef} from '../channeldef.js';
 import {Config} from '../config.js';

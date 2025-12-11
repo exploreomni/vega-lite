@@ -1,4 +1,4 @@
-import {LoessTransform as VgLoessTransform} from 'vega';
+import {LoessTransform as VgLoessTransform} from '@omni-co/vega';
 import {LoessTransform} from '../../transform.js';
 import {duplicate, hash} from '../../util.js';
 import {DataFlowNode} from './dataflow.js';

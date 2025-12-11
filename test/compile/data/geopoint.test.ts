@@ -1,4 +1,4 @@
-import {FieldRef, GeoPointTransform as VgGeoPointTransform, Vector2} from 'vega';
+import {FieldRef, GeoPointTransform as VgGeoPointTransform, Vector2} from '@omni-co/vega';
 import {GeoPointNode} from '../../../src/compile/data/geopoint.js';
 import {contains, every} from '../../../src/util.js';
 import {parseUnitModel} from '../../util.js';

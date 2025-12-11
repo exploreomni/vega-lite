@@ -1,4 +1,4 @@
-import {RangeRaw} from 'vega';
+import {RangeRaw} from '@omni-co/vega';
 import {
   defaultContinuousToDiscreteCount,
   interpolateRange,

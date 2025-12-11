@@ -1,4 +1,4 @@
-import {Legend as VgLegend} from 'vega';
+import {Legend as VgLegend} from '@omni-co/vega';
 import {NonPositionScaleChannel} from '../../channel.js';
 import {COMMON_LEGEND_PROPERTY_INDEX, LegendInternal} from '../../legend.js';
 import {Flag, keys} from '../../util.js';

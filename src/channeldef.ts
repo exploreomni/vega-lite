@@ -7,7 +7,7 @@ import {
   SignalRef,
   Text,
   TimeFormatSpecifier,
-} from 'vega';
+} from '@omni-co/vega';
 import {isArray, isBoolean, isNumber, isString} from 'vega-util';
 import {Aggregate, isAggregateOp, isArgmaxDef, isArgminDef, isCountingAggregateOp} from './aggregate.js';
 import {Axis} from './axis.js';

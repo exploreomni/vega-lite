@@ -1,4 +1,4 @@
-import {LabelTransform, Mark as VGMark, BaseMark, Encodable, array, LabelAnchor} from 'vega';
+import {LabelTransform, Mark as VGMark, BaseMark, Encodable, array, LabelAnchor} from '@omni-co/vega';
 import {isArray} from 'vega-util';
 import {getAncestorLevel, FieldRefOption, isFieldDef, isValueDef, vgField} from '../../channeldef.js';
 import {DataSourceType} from '../../data.js';

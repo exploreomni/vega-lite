@@ -1,4 +1,4 @@
-import {RegressionTransform as VgRegressionTransform} from 'vega';
+import {RegressionTransform as VgRegressionTransform} from '@omni-co/vega';
 import {RegressionTransform} from '../../transform.js';
 import {duplicate, hash} from '../../util.js';
 import {DataFlowNode} from './dataflow.js';

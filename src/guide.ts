@@ -1,4 +1,4 @@
-import type {SignalRef, Text} from 'vega';
+import type {SignalRef, Text} from '@omni-co/vega';
 import {ConditionValueDefMixins, FormatMixins, ValueDef} from './channeldef.js';
 import {LegendConfig} from './legend.js';
 import {VgEncodeChannel} from './vega.schema.js';

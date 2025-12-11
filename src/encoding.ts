@@ -1,4 +1,4 @@
-import type {AggregateOp} from 'vega';
+import type {AggregateOp} from '@omni-co/vega';
 import {array, isArray} from 'vega-util';
 import {isArgmaxDef, isArgminDef} from './aggregate.js';
 import {isBinned, isBinning} from './bin.js';

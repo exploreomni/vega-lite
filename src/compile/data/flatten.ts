@@ -1,4 +1,4 @@
-import type {FlattenTransform as VgFlattenTransform} from 'vega';
+import type {FlattenTransform as VgFlattenTransform} from '@omni-co/vega';
 import {FlattenTransform} from '../../transform.js';
 import {duplicate, hash} from '../../util.js';
 import {DataFlowNode} from './dataflow.js';

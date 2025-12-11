@@ -1,4 +1,4 @@
-import {isObject, MergedStream, NewSignal, Stream} from 'vega';
+import {isObject, MergedStream, NewSignal, Stream} from '@omni-co/vega';
 import {parseSelector} from 'vega-event-selector';
 import {array, isString} from 'vega-util';
 import {disableDirectManipulation, TUPLE} from './index.js';

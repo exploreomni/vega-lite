@@ -1,4 +1,4 @@
-import {AggregateOp, Orientation, SignalRef, Text} from 'vega';
+import {AggregateOp, Orientation, SignalRef, Text} from '@omni-co/vega';
 import {PositionChannel} from '../channel.js';
 import {
   Field,

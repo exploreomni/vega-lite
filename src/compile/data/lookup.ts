@@ -1,4 +1,4 @@
-import {LookupTransform as VgLookupTransform} from 'vega';
+import {LookupTransform as VgLookupTransform} from '@omni-co/vega';
 import {array, isString} from 'vega-util';
 import * as log from '../../log/index.js';
 import {isLookupData, isLookupSelection, LookupTransform} from '../../transform.js';

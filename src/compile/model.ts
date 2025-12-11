@@ -7,7 +7,7 @@ import {
   Signal,
   SignalRef,
   Title as VgTitle,
-} from 'vega';
+} from '@omni-co/vega';
 import {
   Channel,
   ExtendedChannel,

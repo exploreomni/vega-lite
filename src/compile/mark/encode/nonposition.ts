@@ -1,4 +1,4 @@
-import type {SignalRef} from 'vega';
+import type {SignalRef} from '@omni-co/vega';
 import {NonPositionScaleChannel} from '../../../channel.js';
 import {Value, isConditionalDef} from '../../../channeldef.js';
 import {VgEncodeChannel, VgEncodeEntry, VgValueRef} from '../../../vega.schema.js';

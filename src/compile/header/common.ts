@@ -1,4 +1,4 @@
-import {Orient, SignalRef} from 'vega';
+import {Orient, SignalRef} from '@omni-co/vega';
 import {FacetChannel} from '../../channel.js';
 import {Config} from '../../config.js';
 import {Header} from '../../header.js';

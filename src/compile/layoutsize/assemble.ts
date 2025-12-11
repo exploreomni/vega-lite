@@ -1,4 +1,4 @@
-import {InitSignal, NewSignal} from 'vega';
+import {InitSignal, NewSignal} from '@omni-co/vega';
 import {getViewConfigContinuousSize} from '../../config.js';
 import {hasDiscreteDomain} from '../../scale.js';
 import {getFirstDefined} from '../../util.js';
