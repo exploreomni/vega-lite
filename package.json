@@ -83,6 +83,8 @@
     "release": "release-it"
   },
   "devDependencies": {
+    "@omni-co/vega-cli": "6.1.2-fork.2",
+    "@omni-co/vega-embed": "7.1.0-fork.2",
     "@release-it/conventional-changelog": "^10.0.1",
     "@rollup/plugin-alias": "^5.1.1",
     "@rollup/plugin-commonjs": "^28.0.3",
@@ -119,9 +121,7 @@
     "ts-json-schema-generator": "^2.4.0",
     "typescript": "~5.8.3",
     "typescript-eslint": "^8.35.0",
-    "vega-cli": "^6.1.2",
     "vega-datasets": "^3.1.0",
-    "vega-embed": "^7.0.2",
     "vega-tooltip": "^1.0.0",
     "vitest": "^3.2.4",
     "yaml-front-matter": "^4.1.1"
@@ -135,7 +135,7 @@
     "yargs": "~18.0.0"
   },
   "peerDependencies": {
-    "vega": "^6.0.0"
+    "@omni-co/vega": "6.2.0-fork.2"
   },
   "engines": {
     "node": ">=18"
