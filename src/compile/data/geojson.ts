@@ -1,4 +1,4 @@
-import {Transforms as VgTransform, Vector2} from 'vega';
+import {Transforms as VgTransform, Vector2} from '@omni-co/vega';
 import {isString} from 'vega-util';
 import {GeoPositionChannel, LATITUDE, LATITUDE2, LONGITUDE, LONGITUDE2, SHAPE} from '../../channel.js';
 import {getFieldOrDatumDef, isDatumDef, isFieldDef, isValueDef} from '../../channeldef.js';

@@ -1,4 +1,4 @@
-import {Binding, isString, Signal, Stream} from 'vega';
+import {Binding, isString, Signal, Stream} from '@omni-co/vega';
 import {stringValue} from 'vega-util';
 import {FACET_CHANNELS} from '../../channel.js';
 import {
@@ -81,7 +81,7 @@ export const selectionCompilers: SelectionCompiler[] = [
   nearest,
 ];
 
-function getFacetModel(model: Model): FacetModel {
+export function getFacetModel(model: Model): FacetModel {
   let parent = model.parent;
   while (parent) {
     if (isFacetModel(parent)) break;

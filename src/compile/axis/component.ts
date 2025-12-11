@@ -1,4 +1,4 @@
-import {Axis as VgAxis, SignalRef, Text} from 'vega';
+import {Axis as VgAxis, SignalRef, Text} from '@omni-co/vega';
 import {
   AxisInternal,
   AxisPart,

@@ -1,4 +1,4 @@
-import type {MarkConfig} from 'vega';
+import type {MarkConfig} from '@omni-co/vega';
 import {MarkDef} from '../../../mark.js';
 import {hasProperty} from '../../../util.js';
 import {VG_MARK_CONFIGS, VgEncodeEntry, VgValueRef} from '../../../vega.schema.js';

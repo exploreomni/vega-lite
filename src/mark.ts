@@ -1,4 +1,12 @@
-import type {Align, Color, Gradient, Orientation, SignalRef, TextBaseline, MarkConfig as VgMarkConfig} from 'vega';
+import type {
+  Align,
+  Color,
+  Gradient,
+  Orientation,
+  SignalRef,
+  TextBaseline,
+  MarkConfig as VgMarkConfig,
+} from '@omni-co/vega';
 import {hasOwnProperty} from 'vega-util';
 import {CompositeMark, CompositeMarkDef} from './compositemark/index.js';
 import {ExprRef} from './expr.js';

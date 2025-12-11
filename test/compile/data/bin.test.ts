@@ -1,4 +1,4 @@
-import {BinTransform as VgBinTransform} from 'vega';
+import {BinTransform as VgBinTransform} from '@omni-co/vega';
 import {BIN_RANGE_DELIMITER} from '../../../src/compile/common.js';
 import {BinNode, getBinSignalName} from '../../../src/compile/data/bin.js';
 import {Model, ModelWithField} from '../../../src/compile/model.js';

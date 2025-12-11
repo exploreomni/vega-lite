@@ -1,4 +1,4 @@
-import {Projection as VgProjection, SignalRef} from 'vega';
+import {Projection as VgProjection, SignalRef} from '@omni-co/vega';
 import {Projection} from '../../projection.js';
 import {Split} from '../split.js';
 

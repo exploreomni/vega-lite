@@ -1,4 +1,4 @@
-import type {AxisEncode as VgAxisEncode, AxisOrient, SignalRef} from 'vega';
+import type {AxisEncode as VgAxisEncode, AxisOrient, SignalRef} from '@omni-co/vega';
 import {Axis, AXIS_PARTS, isAxisProperty, isConditionalAxisValue} from '../../axis.js';
 import {PositionScaleChannel, POSITION_SCALE_CHANNELS} from '../../channel.js';
 import {getFieldOrDatumDef, PositionDatumDef, PositionFieldDef} from '../../channeldef.js';

@@ -1,4 +1,4 @@
-import {ExtentTransform as VgExtentTransform} from 'vega';
+import {ExtentTransform as VgExtentTransform} from '@omni-co/vega';
 import {ExtentTransform} from '../../transform.js';
 import {duplicate, hash} from '../../util.js';
 import {DataFlowNode} from './dataflow.js';

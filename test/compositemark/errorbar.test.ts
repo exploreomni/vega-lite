@@ -1,4 +1,4 @@
-import {AggregateOp} from 'vega';
+import {AggregateOp} from '@omni-co/vega';
 import {FieldName} from '../../src/channeldef.js';
 import {ErrorBarCenter, ErrorBarExtent} from '../../src/compositemark/errorbar.js';
 import {defaultConfig} from '../../src/config.js';

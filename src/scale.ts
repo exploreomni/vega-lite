@@ -7,7 +7,7 @@ import type {
   SignalRef,
   TimeInterval,
   TimeIntervalStep,
-} from 'vega';
+} from '@omni-co/vega';
 import {isString, isObject} from 'vega-util';
 import * as CHANNEL from './channel.js';
 import {Channel, isColorChannel} from './channel.js';

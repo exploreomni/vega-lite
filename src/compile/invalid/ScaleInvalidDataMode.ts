@@ -1,4 +1,4 @@
-import {SignalRef} from 'vega';
+import {SignalRef} from '@omni-co/vega';
 import {ScaleChannel} from '../../channel.js';
 import {Config} from '../../config.js';
 import {MarkInvalidDataMode} from '../../invalid.js';

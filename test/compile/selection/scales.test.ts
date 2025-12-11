@@ -1,4 +1,4 @@
-import {NewSignal, PushSignal} from 'vega';
+import {NewSignal, PushSignal} from '@omni-co/vega';
 import {X} from '../../../src/channel.js';
 import {Model} from '../../../src/compile/model.js';
 import {assembleScalesForModel} from '../../../src/compile/scale/assemble.js';

@@ -6,7 +6,7 @@ import type {
   LegendOrient,
   Orientation,
   SignalRef,
-} from 'vega';
+} from '@omni-co/vega';
 import {DateTime} from './datetime.js';
 import {ExprRef} from './expr.js';
 import {Guide, GuideEncodingEntry, VlOnlyGuideConfig} from './guide.js';

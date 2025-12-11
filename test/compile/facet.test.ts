@@ -1,4 +1,4 @@
-import type {SignalRef} from 'vega';
+import type {SignalRef} from '@omni-co/vega';
 import {ROW} from '../../src/channel.js';
 import {FacetModel} from '../../src/compile/facet.js';
 import {assembleLabelTitle} from '../../src/compile/header/assemble.js';

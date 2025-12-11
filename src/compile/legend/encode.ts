@@ -1,4 +1,12 @@
-import {ColorValueRef, EncodeEntry, Gradient, LegendEncode, LegendType, SignalRef, SymbolEncodeEntry} from 'vega';
+import {
+  ColorValueRef,
+  EncodeEntry,
+  Gradient,
+  LegendEncode,
+  LegendType,
+  SignalRef,
+  SymbolEncodeEntry,
+} from '@omni-co/vega';
 import {array, isArray, stringValue} from 'vega-util';
 import {COLOR, NonPositionScaleChannel, OPACITY} from '../../channel.js';
 import {

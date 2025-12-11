@@ -1,7 +1,7 @@
 /**
  * Collection of all Vega-Lite Error Messages
  */
-import {AggregateOp, SignalRef, stringValue} from 'vega';
+import {AggregateOp, SignalRef, stringValue} from '@omni-co/vega';
 import {Aggregate} from '../aggregate.js';
 import {
   Channel,
@@ -28,6 +28,9 @@ import {stringify} from '../util.js';
 import {VgSortField} from '../vega.schema.js';
 import {SelectionProjection} from '../compile/selection/project.js';
 import {ParameterExtent} from '../selection.js';
+
+export const ROUNDED_CORNERS_STACKED_BAR_WITH_AVOID =
+  'Labels on stacked bar chart with rounded corners can only avoid the base mark (stacked bars)';
 
 export function invalidSpec(spec: GenericSpec<any, any, any, any>) {
   return `Invalid specification ${stringify(

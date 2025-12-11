@@ -1,4 +1,4 @@
-import {AggregateOp, AggregateTransform as VgAggregateTransform} from 'vega';
+import {AggregateOp, AggregateTransform as VgAggregateTransform} from '@omni-co/vega';
 import {isArgmaxDef, isArgminDef} from '../../aggregate.js';
 import {
   Channel,

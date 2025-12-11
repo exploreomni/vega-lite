@@ -1,4 +1,4 @@
-import type {BaseProjection, SignalRef, Vector2} from 'vega';
+import type {BaseProjection, SignalRef, Vector2} from '@omni-co/vega';
 import {ExprRef} from './expr.js';
 import {MapExcludeValueRefAndReplaceSignalWith, ProjectionType} from './vega.schema.js';
 

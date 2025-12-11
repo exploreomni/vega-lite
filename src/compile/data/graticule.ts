@@ -1,4 +1,4 @@
-import {GraticuleTransform as VgGraticuleTransform} from 'vega';
+import {GraticuleTransform as VgGraticuleTransform} from '@omni-co/vega';
 import {GraticuleParams} from '../../data.js';
 import {hash} from '../../util.js';
 import {DataFlowNode} from './dataflow.js';

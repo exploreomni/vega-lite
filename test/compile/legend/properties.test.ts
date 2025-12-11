@@ -1,4 +1,4 @@
-import {LegendOrient} from 'vega';
+import {LegendOrient} from '@omni-co/vega';
 import * as properties from '../../../src/compile/legend/properties.js';
 
 describe('compile/legend', () => {

@@ -8,7 +8,7 @@ import {UnitModel} from '../unit.js';
 import {SelectionProjection} from './project.js';
 import {SelectionCompiler} from './index.js';
 import {replacePathInField} from '../../util.js';
-import {NewSignal} from 'vega';
+import {NewSignal} from '@omni-co/vega';
 
 const scaleBindings: SelectionCompiler<'interval'> = {
   defined: (selCmpt) => {

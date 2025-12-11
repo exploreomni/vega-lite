@@ -1,4 +1,4 @@
-import {QuantileTransform as VgQuantileTransform} from 'vega';
+import {QuantileTransform as VgQuantileTransform} from '@omni-co/vega';
 import {QuantileTransform} from '../../transform.js';
 import {duplicate, hash} from '../../util.js';
 import {DataFlowNode} from './dataflow.js';

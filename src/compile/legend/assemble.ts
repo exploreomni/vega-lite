@@ -1,4 +1,4 @@
-import {Legend as VgLegend, LegendEncode} from 'vega';
+import {Legend as VgLegend, LegendEncode} from '@omni-co/vega';
 import {Config} from '../../config.js';
 import {LEGEND_SCALE_CHANNELS} from '../../legend.js';
 import {keys, replaceAll, stringify, vals} from '../../util.js';

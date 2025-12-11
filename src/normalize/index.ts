@@ -1,10 +1,11 @@
-import type {SignalRef} from 'vega';
+import type {SignalRef} from '@omni-co/vega';
 import {isString} from 'vega-util';
 import {Field} from '../channeldef.js';
 import {Config, initConfig} from '../config.js';
 import * as log from '../log/index.js';
 import {
   FacetedUnitSpec,
+  isFacetSpec,
   isLayerSpec,
   isUnitSpec,
   LayoutSizeMixins,
@@ -72,7 +73,7 @@ export function normalizeAutoSize(
 ) {
   let {width, height} = sizeInfo;
 
-  const isFitCompatible = isUnitSpec(spec) || isLayerSpec(spec);
+  const isFitCompatible = isUnitSpec(spec) || isLayerSpec(spec) || isFacetSpec(spec);
   const autosizeDefault: AutoSizeParams = {};
 
   if (!isFitCompatible) {

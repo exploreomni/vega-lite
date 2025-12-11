@@ -1,4 +1,4 @@
-import {Align, AxisOrient, Orient, SignalRef} from 'vega';
+import {Align, AxisOrient, Orient, SignalRef} from '@omni-co/vega';
 import {isArray, isObject} from 'vega-util';
 import {AxisInternal} from '../../axis.js';
 import {isBinned, isBinning} from '../../bin.js';

@@ -1,4 +1,4 @@
-import {Mark} from 'vega';
+import {Mark} from '@omni-co/vega';
 import {VgEncodeEntry, VgPostEncodingTransform} from '../../vega.schema.js';
 import {UnitModel} from '../unit.js';
 
