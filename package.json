@@ -51,6 +51,7 @@
   ],
   "scripts": {
     "changelog": "conventional-changelog -p angular -r 2",
+    "prepare": "npm run build",
     "prebuild": "npm run clean:build",
     "build": "npm run build:only",
     "build:only": "rollup -c",
