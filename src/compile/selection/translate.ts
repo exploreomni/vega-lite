@@ -1,4 +1,4 @@
-import {NewSignal} from 'vega';
+import {NewSignal} from '@omni-co/vega';
 import {parseSelector} from 'vega-event-selector';
 import {SelectionComponent} from './index.js';
 import {ScaleChannel, X, Y} from '../../channel.js';

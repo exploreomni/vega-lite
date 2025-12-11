@@ -3,7 +3,7 @@ import {
   ImputeTransform as VgImputeTransform,
   SignalRef,
   WindowTransform as VgWindowTransform,
-} from 'vega';
+} from '@omni-co/vega';
 import {isFieldDef} from '../../channeldef.js';
 import {pathGroupingFields} from '../../encoding.js';
 import {ImputeSequence, ImputeTransform, isImputeSequence} from '../../transform.js';

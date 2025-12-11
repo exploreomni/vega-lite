@@ -1,4 +1,4 @@
-import {Signal, SignalRef} from 'vega';
+import {Signal, SignalRef} from '@omni-co/vega';
 import {parseSelector} from 'vega-event-selector';
 import {identity, isArray, stringValue} from 'vega-util';
 import {MODIFY, STORE, unitName, VL_SELECTION_RESOLVE, TUPLE, selectionCompilers, isTimerSelection} from './index.js';

@@ -1,6 +1,6 @@
 import {PivotTransform} from '../../transform.js';
 import {duplicate, hash, unique} from '../../util.js';
-import {PivotTransform as VgPivotTransform} from 'vega';
+import {PivotTransform as VgPivotTransform} from '@omni-co/vega';
 import {DataFlowNode} from './dataflow.js';
 
 /**

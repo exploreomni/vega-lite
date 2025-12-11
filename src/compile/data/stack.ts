@@ -1,4 +1,4 @@
-import {Transforms as VgTransform} from 'vega';
+import {Transforms as VgTransform} from '@omni-co/vega';
 import {isArray, isString} from 'vega-util';
 import {FieldDef, FieldName, getFieldDef, isFieldDef, isOrderOnlyDef, vgField} from '../../channeldef.js';
 import {SortFields, SortOrder} from '../../sort.js';

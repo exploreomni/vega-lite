@@ -1,4 +1,4 @@
-import {SignalRef} from 'vega';
+import {SignalRef} from '@omni-co/vega';
 import {COLOR, X, Y} from '../../../src/channel.js';
 import {area} from '../../../src/compile/mark/area.js';
 import {Encoding} from '../../../src/encoding.js';

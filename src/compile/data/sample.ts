@@ -1,4 +1,4 @@
-import {SampleTransform as VgSampleTransform} from 'vega';
+import {SampleTransform as VgSampleTransform} from '@omni-co/vega';
 import {SampleTransform} from '../../transform.js';
 import {duplicate, hash} from '../../util.js';
 import {DataFlowNode} from './dataflow.js';

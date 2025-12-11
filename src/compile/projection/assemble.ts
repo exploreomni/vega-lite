@@ -1,4 +1,4 @@
-import {Projection as VgProjection, SignalRef} from 'vega';
+import {Projection as VgProjection, SignalRef} from '@omni-co/vega';
 import {contains} from '../../util.js';
 import {isSignalRef} from '../../vega.schema.js';
 import {isConcatModel, isLayerModel, Model} from '../model.js';

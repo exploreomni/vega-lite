@@ -1,4 +1,4 @@
-import type {Color, InitSignal, Locale, NewSignal, RangeConfig, RangeScheme, SignalRef} from 'vega';
+import type {Color, InitSignal, Locale, NewSignal, RangeConfig, RangeScheme, SignalRef} from '@omni-co/vega';
 import {isObject, mergeConfig, writeConfig} from 'vega-util';
 import {Axis, AxisConfig, AxisConfigMixins, AXIS_CONFIGS, isConditionalAxisValue} from './axis.js';
 import {signalOrValueRefWithCondition, signalRefOrValue} from './compile/common.js';
@@ -246,7 +246,8 @@ export type StyleConfigIndex<ES extends ExprRef | SignalRef> = Partial<Record<st
   };
 
 export interface Config<ES extends ExprRef | SignalRef = ExprRef | SignalRef>
-  extends TopLevelProperties<ES>,
+  extends
+    TopLevelProperties<ES>,
     VLOnlyConfig<ES>,
     MarkConfigMixins<ES>,
     CompositeMarkConfigMixins,

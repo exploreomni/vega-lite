@@ -1,7 +1,7 @@
 /*
  * Constants and utilities for data.
  */
-import {Vector2} from 'vega';
+import {Vector2} from '@omni-co/vega';
 import {FieldName} from './channeldef.js';
 import {VgData} from './vega.schema.js';
 import {hasProperty} from './util.js';

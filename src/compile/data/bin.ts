@@ -1,4 +1,4 @@
-import {BinTransform as VgBinTransform, Transforms as VgTransform} from 'vega';
+import {BinTransform as VgBinTransform, Transforms as VgTransform} from '@omni-co/vega';
 import {isString} from 'vega-util';
 import {BinParams, binToString, isBinning, isParameterExtent} from '../../bin.js';
 import {Channel} from '../../channel.js';

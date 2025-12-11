@@ -1,4 +1,4 @@
-import {FormulaTransform as VgFormulaTransform} from 'vega';
+import {FormulaTransform as VgFormulaTransform} from '@omni-co/vega';
 import {SingleDefChannel} from '../../channel.js';
 import {FieldRefOption, isScaleFieldDef, TypedFieldDef, vgField} from '../../channeldef.js';
 import {DateTime} from '../../datetime.js';

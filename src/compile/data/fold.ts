@@ -1,4 +1,4 @@
-import type {FoldTransform as VgFoldTransform} from 'vega';
+import type {FoldTransform as VgFoldTransform} from '@omni-co/vega';
 import {FoldTransform} from '../../transform.js';
 import {duplicate, hash} from '../../util.js';
 import {DataFlowNode} from './dataflow.js';

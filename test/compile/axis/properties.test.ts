@@ -1,4 +1,4 @@
-import {AxisOrient, Orient, SignalRef} from 'vega';
+import {AxisOrient, Orient, SignalRef} from '@omni-co/vega';
 import {codegenExpression, parseExpression} from 'vega-expression';
 import {stringValue} from 'vega-util';
 import {getAxisConfigs} from '../../../src/compile/axis/config.js';

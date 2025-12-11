@@ -1,4 +1,4 @@
-import type {SignalRef} from 'vega';
+import type {SignalRef} from '@omni-co/vega';
 import {isString} from 'vega-util';
 import {isBinning} from '../bin.js';
 import {

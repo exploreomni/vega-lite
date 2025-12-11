@@ -1,4 +1,4 @@
-import {NewSignal, SignalRef} from 'vega';
+import {NewSignal, SignalRef} from '@omni-co/vega';
 import {Config} from '../config.js';
 import * as log from '../log/index.js';
 import {isHConcatSpec, isVConcatSpec, NormalizedConcatSpec, NormalizedSpec} from '../spec/index.js';

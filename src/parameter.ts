@@ -1,4 +1,4 @@
-import type {Binding, Expr, InitSignal, NewSignal} from 'vega';
+import type {Binding, Expr, InitSignal, NewSignal} from '@omni-co/vega';
 import {isSelectionParameter, TopLevelSelectionParameter} from './selection.js';
 
 export type ParameterName = string;

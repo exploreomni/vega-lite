@@ -1,4 +1,4 @@
-import {Signal, Stream} from 'vega';
+import {Signal, Stream} from '@omni-co/vega';
 import {stringValue} from 'vega-util';
 import {SelectionCompiler, TUPLE, isTimerSelection, unitName} from './index.js';
 import {SELECTION_ID} from '../../selection.js';

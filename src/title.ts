@@ -1,4 +1,4 @@
-import {BaseTitle, SignalRef, Text, TextEncodeEntry, TitleAnchor} from 'vega';
+import {BaseTitle, SignalRef, Text, TextEncodeEntry, TitleAnchor} from '@omni-co/vega';
 import {isArray, isString} from 'vega-util';
 import {ExprRef} from './expr.js';
 import {MarkConfig} from './mark.js';

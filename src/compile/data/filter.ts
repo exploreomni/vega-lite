@@ -1,4 +1,4 @@
-import type {FilterTransform as VgFilterTransform} from 'vega';
+import type {FilterTransform as VgFilterTransform} from '@omni-co/vega';
 import {LogicalComposition} from '../../logical.js';
 import {Predicate} from '../../predicate.js';
 import {duplicate} from '../../util.js';

@@ -1,4 +1,4 @@
-import {Legend as VgLegend, LegendEncode} from 'vega';
+import {Legend as VgLegend, LegendEncode} from '@omni-co/vega';
 import {COLOR, NonPositionScaleChannel, SHAPE} from '../../channel.js';
 import {
   DatumDef,

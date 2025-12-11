@@ -1,4 +1,4 @@
-import {Color, Cursor, SignalRef, Text} from 'vega';
+import {Color, Cursor, SignalRef, Text} from '@omni-co/vega';
 import {isNumber} from 'vega-util';
 import {NormalizedSpec} from './index.js';
 import {Data} from '../data.js';
@@ -114,6 +114,8 @@ export interface LayoutSizeMixins {
   height?: number | 'container' | Step; // Vega also supports SignalRef for width and height. However, we need to know if width is a step or not in VL and it's very difficult to check this at runtime, so we intentionally do not support SignalRef here.
 }
 
+export type LayoutSizeField = keyof LayoutSizeMixins;
+
 export function isFrameMixins(o: any): o is FrameMixins<any> {
   return hasProperty(o, 'view') || hasProperty(o, 'width') || hasProperty(o, 'height');
 }
@@ -134,22 +136,21 @@ export interface ResolveMixins {
   resolve?: Resolve;
 }
 
-export interface BaseViewBackground<ES extends ExprRef | SignalRef>
-  extends Partial<
-    Pick<
-      MarkConfig<ES>,
-      | 'cornerRadius'
-      | 'fillOpacity'
-      | 'opacity'
-      | 'strokeCap'
-      | 'strokeDash'
-      | 'strokeDashOffset'
-      | 'strokeJoin'
-      | 'strokeMiterLimit'
-      | 'strokeOpacity'
-      | 'strokeWidth'
-    >
-  > {
+export interface BaseViewBackground<ES extends ExprRef | SignalRef> extends Partial<
+  Pick<
+    MarkConfig<ES>,
+    | 'cornerRadius'
+    | 'fillOpacity'
+    | 'opacity'
+    | 'strokeCap'
+    | 'strokeDash'
+    | 'strokeDashOffset'
+    | 'strokeJoin'
+    | 'strokeMiterLimit'
+    | 'strokeOpacity'
+    | 'strokeWidth'
+  >
+> {
   // Override documentations for fill, stroke, and cursor
   /**
    * The fill color.

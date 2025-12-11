@@ -1,4 +1,4 @@
-import type {SignalRef} from 'vega';
+import type {SignalRef} from '@omni-co/vega';
 import {ScaleChannel} from './channel.js';
 import {Mark, MarkDef} from './mark.js';
 import {isObject} from 'vega-util';

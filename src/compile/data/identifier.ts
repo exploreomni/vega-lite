@@ -1,5 +1,5 @@
 import {SELECTION_ID} from '../../selection.js';
-import {IdentifierTransform as VgIdentifierTransform} from 'vega';
+import {IdentifierTransform as VgIdentifierTransform} from '@omni-co/vega';
 import {DataFlowNode} from './dataflow.js';
 
 export class IdentifierNode extends DataFlowNode {

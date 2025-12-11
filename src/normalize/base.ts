@@ -1,4 +1,4 @@
-import type {SignalRef} from 'vega';
+import type {SignalRef} from '@omni-co/vega';
 import {FieldName} from '../channeldef.js';
 import {Config} from '../config.js';
 import {Encoding} from '../encoding.js';

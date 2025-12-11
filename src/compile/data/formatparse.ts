@@ -1,4 +1,4 @@
-import {FormulaTransform as VgFormulaTransform, SignalRef} from 'vega';
+import {FormulaTransform as VgFormulaTransform, SignalRef} from '@omni-co/vega';
 import {isNumber, isString} from 'vega-util';
 import {AncestorParse} from './index.js';
 import {isMinMaxOp} from '../../aggregate.js';

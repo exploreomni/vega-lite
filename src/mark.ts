@@ -1,4 +1,12 @@
-import type {Align, Color, Gradient, Orientation, SignalRef, TextBaseline, MarkConfig as VgMarkConfig} from 'vega';
+import type {
+  Align,
+  Color,
+  Gradient,
+  Orientation,
+  SignalRef,
+  TextBaseline,
+  MarkConfig as VgMarkConfig,
+} from '@omni-co/vega';
 import {hasOwnProperty} from 'vega-util';
 import {CompositeMark, CompositeMarkDef} from './compositemark/index.js';
 import {ExprRef} from './expr.js';
@@ -121,7 +129,8 @@ export interface VLOnlyMarkConfig<ES extends ExprRef | SignalRef> extends ColorM
 }
 
 export interface MarkConfig<ES extends ExprRef | SignalRef>
-  extends VLOnlyMarkConfig<ES>,
+  extends
+    VLOnlyMarkConfig<ES>,
     MapExcludeValueRefAndReplaceSignalWith<Omit<VgMarkConfig, 'tooltip' | 'fill' | 'stroke'>, ES> {
   // ========== Overriding Vega ==========
 
@@ -520,9 +529,7 @@ export interface LineOverlayMixins<ES extends ExprRef | SignalRef> {
 }
 
 export interface AreaConfig<ES extends ExprRef | SignalRef>
-  extends MarkConfig<ES>,
-    PointOverlayMixins<ES>,
-    LineOverlayMixins<ES> {}
+  extends MarkConfig<ES>, PointOverlayMixins<ES>, LineOverlayMixins<ES> {}
 
 export interface TickThicknessMixins {
   /**
@@ -611,7 +618,8 @@ export interface RelativeBandSize {
 
 // Point/Line OverlayMixins are only for area, line, and trail but we don't want to declare multiple types of MarkDef
 export interface MarkDef<M extends string | Mark = Mark, ES extends ExprRef | SignalRef = ExprRef | SignalRef>
-  extends GenericMarkDef<M>,
+  extends
+    GenericMarkDef<M>,
     Omit<
       MarkConfig<ES> &
         AreaConfig<ES> &
@@ -669,9 +677,7 @@ export const defaultBarConfig: RectConfig<SignalRef> = {
 };
 
 export interface TickConfig<ES extends ExprRef | SignalRef>
-  extends MarkConfig<ES>,
-    TickThicknessMixins,
-    RectConfig<ES> {
+  extends MarkConfig<ES>, TickThicknessMixins, RectConfig<ES> {
   /**
    * The width of the ticks.
    *

@@ -1,4 +1,4 @@
-import {LabelOverlap, LegendOrient, LegendType, Orientation, SignalRef, SymbolShape} from 'vega';
+import {LabelOverlap, LegendOrient, LegendType, Orientation, SignalRef, SymbolShape} from '@omni-co/vega';
 import {isArray} from 'vega-util';
 import {isColorChannel} from '../../channel.js';
 import {

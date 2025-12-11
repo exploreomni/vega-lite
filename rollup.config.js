@@ -57,7 +57,7 @@ const outputs = [
       name: 'vegaLite',
       sourcemap: true,
       globals: {
-        vega: 'vega',
+        '@omni-co/vega': 'vega',
       },
     },
     plugins: [
@@ -65,9 +65,9 @@ const outputs = [
       debugImports(),
       alias({
         entries: {
-          'vega-event-selector': 'vega',
-          'vega-expression': 'vega',
-          'vega-util': 'vega',
+          'vega-event-selector': '@omni-co/vega',
+          'vega-expression': '@omni-co/vega',
+          'vega-util': '@omni-co/vega',
         },
       }),
       nodeResolve({browser: true, extensions: ['.ts']}),
@@ -79,7 +79,7 @@ const outputs = [
       terser(),
       bundleSize(),
     ],
-    external: ['vega'],
+    external: ['@omni-co/vega'],
   },
 ];
 
